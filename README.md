@@ -4,7 +4,7 @@ A short checklist to perform when setting up a new VPS. Assumes that the first l
 The guide assumes Debian 10 to be running on the VPS.
 
 1. **Update the system.**
-    * Run `apt update && apt upgrade`.
+    * `apt update && apt upgrade`
 2. **Change the root password.**
     * `passwd root`
 3. **Create a non-root user, grant sudo privileges.**
@@ -17,10 +17,10 @@ The guide assumes Debian 10 to be running on the VPS.
 5. **Log in as the newly created user.**
 6. **Disable root login via SSH, disable password authentication, change SSH port.**
     * `sudo vim /etc/ssh/sshd_config`
-        * Set `PermitRootLogin` to `no`.
-        * Set `PasswordAuthentication` to `no`.
-        * Set `Port` to `<new-ssh-port>`.
-    * Restart the SSH service: `sudo service sshd restart`.
+        * `PermitRootLogin no`
+        * `PasswordAuthentication no`
+        * `Port <new-ssh-port>`
+    * `sudo service sshd restart`.
     * Relog.
 7. **Set up a firewall.**
     * `sudo apt install nftables`
@@ -40,8 +40,8 @@ The guide assumes Debian 10 to be running on the VPS.
     enabled = true
     port = <new-ssh-port>
     ```
-    * Start the `fail2ban` service: `sudo systemctl start fail2ban`.
-    * Enable the `fail2ban` service: `sudo systemctl enable fail2ban`.
+    * `sudo systemctl start fail2ban`
+    * `sudo systemctl enable fail2ban`
     * Check `fail2ban` status: `sudo fail2ban-client status`.
     * Check the SSH jail status: `sudo fail2ban-client status sshd`.
 9. **Enable SSH 2FA.**
@@ -53,8 +53,8 @@ The guide assumes Debian 10 to be running on the VPS.
         * Comment out the `@include common-auth` line.
         * Add `auth required pam_google_authenticator.so` to the bottom of the file.
     * `sudo vim /etc/ssh/sshd_config`
-        * Set `ChallengeResponseAuthentication` to `yes`.
-        * Set `AuthenticationMethods` to `publickey,keyboard-interactive`.
+        * `ChallengeResponseAuthentication yes`
+        * `AuthenticationMethods publickey,keyboard-interactive`
         The first line makes SSH use PAM. The second line requires both the SSH key and the verification code -- by default, the SSH key would be sufficient.
     * Restart SSH: `sudo service sshd restart`.
 10. **Enable automatic updates.**
