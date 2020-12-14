@@ -26,7 +26,7 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo apt install nftables`
     * `sudo systemctl start nftables.service`
     * `sudo systemctl enable nftables.service`
-    * Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf` on the server. **Do not forget to replace <new-ssh-port> with the correct value!**
+    * Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf` on the server. **Do not forget to replace `<new-ssh-port>` with the correct value!**
     * `sudo nft -f /etc/nftables.conf`
 8. **Install `fail2ban`.**
     * `sudo apt install fail2ban`
