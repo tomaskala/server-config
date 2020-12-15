@@ -15,13 +15,18 @@ The guide assumes Debian 10 to be running on the VPS.
 4. **Log out, transfer the SSH key.**
     * `ssh-copy-id -i ~/.ssh/<public-key> <username>@<host>`
 5. **Log in as the newly created user.**
-6. **Disable root login via SSH, disable password authentication, change SSH port.**
+6. **Configure SSH.**
     * `sudo vim /etc/ssh/sshd_config`
         * `PermitRootLogin no`
         * `PasswordAuthentication no`
         * `Port <new-ssh-port>`
+        * `LogLevel VERBOSE`
+        * `KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256`
+        * `Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr`
+        * `MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com`
     * `sudo service sshd restart`.
     * Relog.
+    * Note: The cipher settings are taken from [this document](https://infosec.mozilla.org/guidelines/openssh#Modern_.28OpenSSH_6.7.2B.29).
 7. **Set up a firewall.**
     * `sudo apt install nftables`
     * `sudo systemctl start nftables.service`
