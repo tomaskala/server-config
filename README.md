@@ -40,6 +40,13 @@ The guide assumes Debian 10 to be running on the VPS.
     enabled = true
     port = <new-ssh-port>
     ```
+    With older `fail2ban` versions, the `[DEFAULT]` section should contain the following instead.
+    ```
+    [DEFAULT]
+    banaction = nftables-common
+    banaction_allports = nftables-allports
+    ```
+    Check `/etc/fail2ban/action.d/` whether `nftables.conf` exists. If yes, use the former `[DEFAULTS]`, otherwise, use the latter.
     * `sudo systemctl start fail2ban`
     * `sudo systemctl enable fail2ban`
     * Check `fail2ban` status: `sudo fail2ban-client status`.
