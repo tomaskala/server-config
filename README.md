@@ -45,7 +45,6 @@ The guide assumes Debian 10 to be running on the VPS.
     enabled = true
     port = <new-ssh-port>
     bantime = 2w
-    findtime = 1d
     maxretry = 5
     ```
     With older `fail2ban` versions, the `[DEFAULT]` section should contain the following instead.
