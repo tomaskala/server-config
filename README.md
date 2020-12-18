@@ -84,48 +84,11 @@ The guide assumes Debian 10 to be running on the VPS.
             "origin=Debian,codename=${distro_codename},label=Debian-Security";
     };
     ```
-
-
-## TODO
-* Let's Encrypt HTTPS?
-* Nextcloud fail2ban 
-    * **Nevermind, check out the nextcloud documentation, server hardening section.**
-    * The configuration below is likely outdated. Check also [this link](https://help.nextcloud.com/t/fail2ban-nextclouds-log-expression-chaged/59481).
-    * [This link](https://www.c-rieger.de/nextcloud-installationsanleitung/) is probably better, though auf Deutsch.
-    * Create filter `sudo vim /etc/fail2ban/filter.d/nextcloud.conf`
-    ```
-    [Definition]
-    failregex=^{"reqId":".","remoteAddr":".","app":"core","message":"Login failed: '.' (Remote IP: '')","level":2,"time":"."}$
-    ^{"reqId":".","level":2,"time":".","remoteAddr":".","app":"core".","message":"Login failed: '.' (Remote IP: '')".}$
-    ^.\"remoteAddr\":\"\".Trusted domain error.*$
-    ```
-    The first two check for login failures & flag the source IP. The third checks for trusted domain errors (bots accessing via IP, not the domain).
-
-    Check it: `sudo fail2ban-regex /var/nextcloud/data/nextcloud.log /etc/fail2ban/filter.d/nextcloud.conf -v`
-    * Create jail `sudo vim /etc/fail2ban/jail.d/nextcloud.local`
-    ```
-    [nextcloud]
-    enabled = true
-    banaction = ufw
-    port = http,https
-    filter = nextcloud
-    logpath = /var/nextcloud/data/nextcloud.log
-    maxretry = 3
-    ignoreip = 192.168.1.0/24
-    backend = auto
-    protocol = tcp
-    bantime = 36000
-    findtime = 36000
-    ```
-    * Then
-    ```
-    sudo fail2ban-client add nextcloud
-    sudo fail2ban-client restart
-    ```
-    and check status as above.
-* In case ssh key transfer does not go as expected.
-    * `su - <username>`
-    * `mkdir ~/.ssh`
-    * `chmod 700 ~/.ssh`
-    * `touch ~/.ssh/authorized_keys`, paste the SSH public key inside.
-    * `chmod 600 ~/.ssh/authorized_keys`
+11. Nginx
+    * Fail2ban
+12. SSL certificate
+13. Grafana
+    * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
+14. Nextcloud
+    * Fail2ban setup is described in the official documentation, section server hardening.
+15. Disable port 80
