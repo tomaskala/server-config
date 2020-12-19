@@ -84,7 +84,7 @@ The guide assumes Debian 10 to be running on the VPS.
             "origin=Debian,codename=${distro_codename},label=Debian-Security";
     };
     ```
-11. **Install `NginX`.**
+11. **Install `nginx`.**
     * `sudo apt install nginx`
     * Setup denial of service protection.
         * `sudo vim /etc/nginx/nginx.conf`
@@ -150,14 +150,28 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo systemctl enable nginx`
     * `sudo systemctl restart fail2ban`
     * `sudo fail2ban-client status`
-
-12. SSL certificate
+12. **Setup an SSL certificate.**
+    * Since the only user accessing the server is us, we do not setup a domain name. Let's Encrypt does not allow setting certificates for bare IP addresses, so a self-signed certificate has to do.
+    * `sudo openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl/private/nginx-self-signed.key -out /etc/ssl/certs/nginx-self-signed.crt`
+        * For the Common Name, enter the server public IP address.
+    * `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048`
+    * Configure `nginx` to use the generated certificate.
+        * `sudo cp --archive /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak`
+        * Use the [Mozilla SSL Configuration Generator](https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx) to generate a secure `nginx` config and save it in `/etc/nginx/sites-available/default`.
+        * `sudo vim /etc/nginx/sites-available/default`
+        ```
+        ssl_certificate /etc/ssl/certs/nginx-self-signed.crt;
+        ssl_certificate_key /etc/ssl/private/nginx-self-signed.key;
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
+        resolver <dns-server-address1> <dns-server-address2>
+        ```
+        * Also comment-out `ssl_trusted_certificate`, since we are using a self-signed certificate.
+        * Verify that there are no errors in the config: `sudo nginx -t`.
+        * `sudo systemctl restart nginx`
+    * Browsers will complain that the connection cannot be trusted, but that is okay. We only care about encryption, not verification.
 13. Grafana
     * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
     * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
 14. Nextcloud
     * Fail2ban setup is described in the official documentation, section server hardening.
 15. Disable port 80
-
-# TODO
-* When configuring nginx servers, store the config in `/etc/nginx/sites-available/server.conf` and symlink into `/etc/nginx/sites-enabled/server.conf`.
