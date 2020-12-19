@@ -158,3 +158,6 @@ The guide assumes Debian 10 to be running on the VPS.
 14. Nextcloud
     * Fail2ban setup is described in the official documentation, section server hardening.
 15. Disable port 80
+
+# TODO
+* When configuring nginx servers, store the config in `/etc/nginx/sites-available/server.conf` and symlink into `/etc/nginx/sites-enabled/server.conf`.
