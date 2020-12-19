@@ -154,6 +154,7 @@ The guide assumes Debian 10 to be running on the VPS.
 12. SSL certificate
 13. Grafana
     * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
+    * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
 14. Nextcloud
     * Fail2ban setup is described in the official documentation, section server hardening.
 15. Disable port 80
