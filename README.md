@@ -84,8 +84,73 @@ The guide assumes Debian 10 to be running on the VPS.
             "origin=Debian,codename=${distro_codename},label=Debian-Security";
     };
     ```
-11. Nginx
-    * Fail2ban
+11. **Install `NginX`.**
+    * `sudo apt install nginx`
+    * Setup denial of service protection.
+        * `sudo vim /etc/nginx/nginx.conf`
+        * Add the following under `http`.
+        ```
+        limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+        limit_req zone=one burst=5;
+        ```
+        * This defines a zone called `one` sized 10MB and limits its processing rate to a given number of requests/second/key, the key being the client IP address.
+        * When the rate is exceeded, additional requests are delayed until their number reaches the burst size, at which point 503 (Service Unavailable) is returned instead.
+        * Works with `nginx-limit-req` in the `fail2ban` configuration below.
+    * Configure `fail2ban`.
+        * `sudo vim /etc/fail2ban/jail.local`
+        ```
+        [nginx-http-auth]
+        enabled = true
+
+        [nginx-limit-req]
+        enabled = true
+
+        [nginx-botsearch]
+        enabled = true
+
+        [nginx-badbots]
+        enabled = true
+        port = http,https
+        filter = nginx-badbots
+        logpath = /var/log/nginx/access.log
+        maxretry = 2
+
+        [nginx-nohome]
+        enabled = true
+        port = http,https
+        filter = nginx-nohome
+        logpath = /var/log/nginx/access.log
+        maxretry = 2
+
+        [nginx-noproxy]
+        enabled = true
+        port = http,https
+        filter = nginx-noproxy
+        logpath = /var/log/nginx/access.log
+        maxretry = 2
+        ```
+        * `sudo cp /etc/fail2ban/filter.d/apache-badbots.conf /etc/fail2ban/filter.d/nginx-badbots.conf`
+        * `sudo vim /etc/fail2ban/filter.d/nginx-nohome.conf`
+        ```
+        [Definition]
+
+        failregex = ^<HOST> -.*GET .*/~.*
+
+        ignoreregex =
+        ```
+        * `sudo vim /etc/fail2ban/filter.d/nginx-noproxy.conf`
+        ```
+        [Definition]
+
+        failregex = ^<HOST> -.*GET http.*
+
+        ignoreregex =
+        ```
+    * `sudo systemctl start nginx`
+    * `sudo systemctl enable nginx`
+    * `sudo systemctl restart fail2ban`
+    * `sudo fail2ban-client status`
+
 12. SSL certificate
 13. Grafana
     * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
