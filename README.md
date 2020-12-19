@@ -174,4 +174,3 @@ The guide assumes Debian 10 to be running on the VPS.
     * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
 14. Nextcloud
     * Fail2ban setup is described in the official documentation, section server hardening.
-15. Disable port 80
