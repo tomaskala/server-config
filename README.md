@@ -34,6 +34,7 @@ Configuration for my VPS. Assumes Debian 10.
 8. **Install `fail2ban`.**
     * `sudo apt install fail2ban`
     * Copy [fail2ban](fail2ban) to `/etc/fail2ban` on the server. **Do not forget to replace `<NEW-SSH-PORT>` in [jail.local](fail2ban/jail.local) with the correct value!**
+    * `sudo cp /etc/fail2ban/filter.d/apache-badbots.conf /etc/fail2ban/filter.d/nginx-badbots.con`
         * Check `/etc/fail2ban/action.d/` whether `nftables.conf` exists. If yes, replace the `[DEFAULT]` section in [jail.local](fail2ban/jail.local) with the following.
         ```
         [DEFAULT]
