@@ -19,7 +19,7 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo vim /etc/ssh/sshd_config`
         * `PermitRootLogin no`
         * `PasswordAuthentication no`
-        * `Port <new-ssh-port>`
+        * `Port <NEW-SSH-PORT>`
         * `LogLevel VERBOSE`
         * `KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256`
         * `Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr`
@@ -31,7 +31,7 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo apt install nftables`
     * `sudo systemctl start nftables.service`
     * `sudo systemctl enable nftables.service`
-    * Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf` on the server. **Do not forget to replace `<new-ssh-port>` with the correct value!**
+    * Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf` on the server. **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
     * `sudo nft -f /etc/nftables.conf`
 8. **Install `fail2ban`.**
     * `sudo apt install fail2ban`
@@ -43,7 +43,7 @@ The guide assumes Debian 10 to be running on the VPS.
 
     [sshd]
     enabled = true
-    port = <new-ssh-port>
+    port = <NEW-SSH-PORT>
     bantime = 2w
     maxretry = 5
     ```
