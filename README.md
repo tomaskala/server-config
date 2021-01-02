@@ -151,38 +151,24 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo systemctl restart fail2ban`
     * `sudo fail2ban-client status`
 12. **Setup an SSL certificate.**
+    * This assumes that a domain has been registered for the server. If not, it is possible to setup a self-signed certificate to encrypt the connection, though obviously without any verification.
     * Use [Let's Encrypt](https://letsencrypt.org/) to generate a certificate.
-        * This assumes that a domain has been registered for the server. If not, it is possible to setup a self-signed certificate to encrypt the connection, though obviously without any verification.
         * `sudo apt update`
         * `sudo apt install certbot python-certbot-nginx`
+        * In the command below, you are asked to enter your domain name. From now on, this will be referred to as `YOUR-DOMAIN`.
         * `sudo certbot certonly --nginx`
     * Generate a Diffie-Hellman parameter.
         * `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048`
-    * Configure `nginx` to use the generated certificate and parameter.
-        * `sudo cp --archive /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak`
-        * Use the [Mozilla SSL Configuration Generator](https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx) to generate a secure `nginx` config and save it at `/etc/nginx/sites-available/default`.
-        * `sudo vim /etc/nginx/sites-available/default`
-        ```
-        ssl_certificate /etc/letsencrypt/live/YOUR-DOMAIN/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/YOUR-DOMAIN/privkey.pem;
-        ssl_dhparam /etc/ssl/certs/dhparam.pem;
-        resolver <dns-server-address1> <dns-server-address2>
-        ```
-        * Ensure that OCSP stapling is enabled.
-        ```
-        ssl_stapling on;  # This is most likely set from the Mozilla config.
-        ssl_stapling_verify on;  # Ditto.
-        ssl_trusted_certificate /etc/letsencrypt/live/YOUR-DOMAIN/chain.pem;
-        ```
-        * Verify that there are no errors in the config: `sudo nginx -t`.
-        * Verify `certbot` auto-renewal: `sudo certbot renew --dry-run`.
-            * Also check the related cronjob at `/etc/cron.d/certbot`.
-        * `sudo systemctl restart nginx`
+    * Copy [YOUR-DOMAIN.conf](YOUR-DOMAIN.conf) to `/etc/nginx/sites-available/YOUR-DOMAIN.conf` on the server. **Do not forget to replace `YOUR-DOMAIN` with your domain, both in the filename and its contents!**
+    * `sudo rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default`
+    * `sudo ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/`
+    * Verify that there are no errors in the config: `sudo nginx -t`.
+    * Verify `certbot` auto-renewal: `sudo certbot renew --dry-run`.
+        * Also check the related cronjob at `/etc/cron.d/certbot`.
+    * `sudo systemctl restart nginx`
     * Optionally, you can use the [Qualys SSL Server Test](https://www.ssllabs.com/ssltest/) to check your configuration.
 13. Grafana
     * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
     * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
 14. Nextcloud
     * Fail2ban setup is described in the official documentation, section server hardening.
-
-# TODO: Disable directory listing in nginx!
