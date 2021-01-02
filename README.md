@@ -152,7 +152,7 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo fail2ban-client status`
 12. **Setup an SSL certificate.**
     * Use [Let's Encrypt](https://letsencrypt.org/) to generate a certificate.
-        * This assumes that a domain has been registered for the server. If not, it is possible to setup a self-signed certificate. This ensures an encrypted connection, but not verification.
+        * This assumes that a domain has been registered for the server. If not, it is possible to setup a self-signed certificate to encrypt the connection, though obviously without any verification.
         * `sudo apt update`
         * `sudo apt install certbot python-certbot-nginx`
         * `sudo certbot certonly --nginx`
@@ -160,7 +160,7 @@ The guide assumes Debian 10 to be running on the VPS.
         * `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048`
     * Configure `nginx` to use the generated certificate and parameter.
         * `sudo cp --archive /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak`
-        * Use the [Mozilla SSL Configuration Generator](https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx) to generate a secure `nginx` config and save it in `/etc/nginx/sites-available/default`.
+        * Use the [Mozilla SSL Configuration Generator](https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx) to generate a secure `nginx` config and save it at `/etc/nginx/sites-available/default`.
         * `sudo vim /etc/nginx/sites-available/default`
         ```
         ssl_certificate /etc/letsencrypt/live/YOUR-DOMAIN/fullchain.pem;
