@@ -92,7 +92,7 @@ Configuration for my VPS. Assumes Debian 10.
     * Use [Let's Encrypt](https://letsencrypt.org/) to generate a certificate.
         * `sudo apt update`
         * `sudo apt install certbot python-certbot-nginx`
-        * In the command below, you are asked to enter your domain name. From now on, this will be referred to as `YOUR-DOMAIN`.
+        * In the command below, you will be asked to enter your domain name. From now on, this will be referred to as `YOUR-DOMAIN`.
         * `sudo certbot certonly --nginx`
     * Generate a Diffie-Hellman parameter.
         * `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048`
