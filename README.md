@@ -151,24 +151,33 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo systemctl restart fail2ban`
     * `sudo fail2ban-client status`
 12. **Setup an SSL certificate.**
-    * Since the only user accessing the server is us, we do not setup a domain name. Let's Encrypt does not allow setting certificates for bare IP addresses, so a self-signed certificate has to do.
-    * `sudo openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl/private/nginx-self-signed.key -out /etc/ssl/certs/nginx-self-signed.crt`
-        * For the Common Name, enter the server public IP address.
-    * `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048`
-    * Configure `nginx` to use the generated certificate.
+    * Use [Let's Encrypt](https://letsencrypt.org/) to generate a certificate.
+        * This assumes that a domain has been registered for the server. If not, it is possible to setup a self-signed certificate. This ensures an encrypted connection, but not verification.
+        * `sudo apt update`
+        * `sudo apt install certbot python-certbot-nginx`
+        * `sudo certbot certonly --nginx`
+    * Generate a Diffie-Hellman parameter.
+        * `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048`
+    * Configure `nginx` to use the generated certificate and parameter.
         * `sudo cp --archive /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak`
         * Use the [Mozilla SSL Configuration Generator](https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx) to generate a secure `nginx` config and save it in `/etc/nginx/sites-available/default`.
         * `sudo vim /etc/nginx/sites-available/default`
         ```
-        ssl_certificate /etc/ssl/certs/nginx-self-signed.crt;
-        ssl_certificate_key /etc/ssl/private/nginx-self-signed.key;
+        ssl_certificate /etc/letsencrypt/live/YOUR-DOMAIN/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/YOUR-DOMAIN/privkey.pem;
         ssl_dhparam /etc/ssl/certs/dhparam.pem;
         resolver <dns-server-address1> <dns-server-address2>
         ```
-        * Also comment-out `ssl_trusted_certificate`, since we are using a self-signed certificate.
+        * Ensure that OCSP stapling is enabled.
+        ```
+        ssl_stapling on;  # This is most likely set from the Mozilla config.
+        ssl_stapling_verify on;  # Ditto.
+        ssl_trusted_certificate /etc/letsencrypt/live/YOUR-DOMAIN/chain.pem;
+        ```
         * Verify that there are no errors in the config: `sudo nginx -t`.
+        * Verify `certbot` auto-renewal: `sudo certbot renew --dry-run`.
+            * Also check the related cronjob at `/etc/cron.d/certbot`.
         * `sudo systemctl restart nginx`
-    * Browsers will complain that the connection cannot be trusted, but that is okay. We only care about encryption, not verification.
 13. Grafana
     * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
     * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
