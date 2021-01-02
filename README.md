@@ -35,25 +35,13 @@ The guide assumes Debian 10 to be running on the VPS.
     * `sudo nft -f /etc/nftables.conf`
 8. **Install `fail2ban`.**
     * `sudo apt install fail2ban`
-    * `sudo vim /etc/fail2ban/jail.local`
-    ```
-    [DEFAULT]
-    banaction = nftables
-    banaction_allports = nftables[type=allports]
-
-    [sshd]
-    enabled = true
-    port = <NEW-SSH-PORT>
-    bantime = 2w
-    maxretry = 5
-    ```
-    With older `fail2ban` versions, the `[DEFAULT]` section should contain the following instead.
-    ```
-    [DEFAULT]
-    banaction = nftables-common
-    banaction_allports = nftables-allports
-    ```
-    Check `/etc/fail2ban/action.d/` whether `nftables.conf` exists. If yes, use the former `[DEFAULTS]`, otherwise, use the latter.
+    * Copy [fail2ban](fail2ban) to `/etc/fail2ban` on the server. **Do not forget to replace `<NEW-SSH-PORT>` in [jail.local](fail2ban/jail.local) with the correct value!**
+        * Check `/etc/fail2ban/action.d/` whether `nftables.conf` exists. If yes, replace the `[DEFAULT]` section in [jail.local](fail2ban/jail.local) with the following.
+        ```
+        [DEFAULT]
+        banaction = nftables
+        banaction_allports = nftables[type=allports]
+        ```
     * `sudo systemctl start fail2ban`
     * `sudo systemctl enable fail2ban`
     * Check `fail2ban` status: `sudo fail2ban-client status`.
@@ -95,57 +83,7 @@ The guide assumes Debian 10 to be running on the VPS.
         ```
         * This defines a zone called `one` sized 10MB and limits its processing rate to a given number of requests/second/key, the key being the client IP address.
         * When the rate is exceeded, additional requests are delayed until their number reaches the burst size, at which point 503 (Service Unavailable) is returned instead.
-        * Works with `nginx-limit-req` in the `fail2ban` configuration below.
-    * Configure `fail2ban`.
-        * `sudo vim /etc/fail2ban/jail.local`
-        ```
-        [nginx-http-auth]
-        enabled = true
-
-        [nginx-limit-req]
-        enabled = true
-
-        [nginx-botsearch]
-        enabled = true
-
-        [nginx-badbots]
-        enabled = true
-        port = http,https
-        filter = nginx-badbots
-        logpath = /var/log/nginx/access.log
-        maxretry = 2
-
-        [nginx-nohome]
-        enabled = true
-        port = http,https
-        filter = nginx-nohome
-        logpath = /var/log/nginx/access.log
-        maxretry = 2
-
-        [nginx-noproxy]
-        enabled = true
-        port = http,https
-        filter = nginx-noproxy
-        logpath = /var/log/nginx/access.log
-        maxretry = 2
-        ```
-        * `sudo cp /etc/fail2ban/filter.d/apache-badbots.conf /etc/fail2ban/filter.d/nginx-badbots.conf`
-        * `sudo vim /etc/fail2ban/filter.d/nginx-nohome.conf`
-        ```
-        [Definition]
-
-        failregex = ^<HOST> -.*GET .*/~.*
-
-        ignoreregex =
-        ```
-        * `sudo vim /etc/fail2ban/filter.d/nginx-noproxy.conf`
-        ```
-        [Definition]
-
-        failregex = ^<HOST> -.*GET http.*
-
-        ignoreregex =
-        ```
+        * Works with `nginx-limit-req` in the `fail2ban` configuration.
     * `sudo systemctl start nginx`
     * `sudo systemctl enable nginx`
     * `sudo systemctl restart fail2ban`
