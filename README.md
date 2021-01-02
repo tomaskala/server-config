@@ -178,6 +178,7 @@ The guide assumes Debian 10 to be running on the VPS.
         * Verify `certbot` auto-renewal: `sudo certbot renew --dry-run`.
             * Also check the related cronjob at `/etc/cron.d/certbot`.
         * `sudo systemctl restart nginx`
+    * Optionally, you can use the [Qualys SSL Server Test](https://www.ssllabs.com/ssltest/) to check your configuration.
 13. Grafana
     * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
     * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
