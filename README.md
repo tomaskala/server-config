@@ -1,7 +1,5 @@
 # VPS initial setup
-A short checklist to perform when setting up a new VPS. Assumes that the first login is under the root user.
-
-The guide assumes Debian 10 to be running on the VPS.
+Configuration for my VPS. Assumes Debian 10.
 
 1. **Update the system.**
     * `apt update && apt upgrade`
