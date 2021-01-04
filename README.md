@@ -71,24 +71,9 @@ Configuration for my VPS. Assumes Debian 10.
             "origin=Debian,codename=${distro_codename},label=Debian-Security";
     };
     ```
-11. **Install `nginx`.**
-    * `sudo apt install nginx`
-    * Setup denial of service protection.
-        * `sudo vim /etc/nginx/nginx.conf`
-        * Add the following under `http`.
-        ```
-        limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
-        limit_req zone=one burst=5;
-        ```
-        * This defines a zone called `one` sized 10MB and limits its processing rate to a given number of requests/second/key, the key being the client IP address.
-        * When the rate is exceeded, additional requests are delayed until their number reaches the burst size, at which point 503 (Service Unavailable) is returned instead.
-        * Works with `nginx-limit-req` in the `fail2ban` configuration.
-    * `sudo systemctl start nginx`
-    * `sudo systemctl enable nginx`
-    * `sudo systemctl restart fail2ban`
-    * `sudo fail2ban-client status`
-12. **Setup an SSL certificate.**
+11. **Install `nginx` and setup an SSL certificate.**
     * This assumes that a domain has been registered for the server. If not, it is possible to setup a self-signed certificate to encrypt the connection, though obviously without any verification.
+    * `sudo apt install nginx`
     * Use [Let's Encrypt](https://letsencrypt.org/) to generate a certificate.
         * `sudo apt update`
         * `sudo apt install certbot python-certbot-nginx`
@@ -96,16 +81,19 @@ Configuration for my VPS. Assumes Debian 10.
         * `sudo certbot certonly --nginx`
     * Generate a Diffie-Hellman parameter.
         * `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048`
-    * Copy [YOUR-DOMAIN.conf](YOUR-DOMAIN.conf) to `/etc/nginx/sites-available/YOUR-DOMAIN.conf` on the server. **Do not forget to replace `YOUR-DOMAIN` with your domain, both in the filename and its contents!**
+    * Copy [nginx](nginx) to `/etc/nginx/` on the server. **Do not forget to replace `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and `<DNS-SERVER-2>` with the DNS servers your server is using. Also rename [nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf) based on your domain.**
     * `sudo rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default`
     * `sudo ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/`
     * Verify that there are no errors in the config: `sudo nginx -t`.
     * Verify `certbot` auto-renewal: `sudo certbot renew --dry-run`.
         * Also check the related cronjob at `/etc/cron.d/certbot`.
-    * `sudo systemctl restart nginx`
+    * `sudo systemctl start nginx`
+    * `sudo systemctl enable nginx`
+    * `sudo systemctl restart fail2ban`
+    * `sudo fail2ban-client status`
     * Optionally, you can use the [Qualys SSL Server Test](https://www.ssllabs.com/ssltest/) to check your configuration.
-13. Grafana
+12. Grafana
     * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
     * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
-14. Nextcloud
+13. Nextcloud
     * Fail2ban setup is described in the official documentation, section server hardening.
