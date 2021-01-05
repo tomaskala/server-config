@@ -1,4 +1,4 @@
-# VPS initial setup
+# VPS setup
 Configuration for my VPS. Assumes Debian 10.
 
 1. **Update the system.**
@@ -26,7 +26,9 @@ Configuration for my VPS. Assumes Debian 10.
     * The settings are based on the [Mozilla OpenSSH guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default settings are included.
     * Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server. **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
     ```
-    $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli  # Deactivate short Diffie-Hellman moduli.
+    $ awk '$5 >= 3071' /etc/ssh/moduli \
+        | sudo tee /etc/ssh/moduli.tmp > /dev/null \
+        && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli  # Deactivate short Diffie-Hellman moduli.
     $ sudo service sshd restart
     ```
     * Relog.
@@ -45,8 +47,10 @@ Configuration for my VPS. Assumes Debian 10.
     $ sudo apt install fail2ban
     ```
     * Copy [fail2ban](fail2ban) to `/etc/fail2ban` on the server. **Do not forget to replace `<NEW-SSH-PORT>` in [jail.local](fail2ban/jail.local) with the correct value!**
-    * `$ sudo cp /etc/fail2ban/filter.d/apache-badbots.conf /etc/fail2ban/filter.d/nginx-badbots.con`
-        * Check `/etc/fail2ban/action.d/` whether `nftables.conf` exists. If yes, replace the `[DEFAULT]` section in [jail.local](fail2ban/jail.local) with the following.
+    ```
+    $ sudo cp /etc/fail2ban/filter.d/apache-badbots.conf /etc/fail2ban/filter.d/nginx-badbots.conf
+    ```
+    * Check `/etc/fail2ban/action.d/` whether `nftables.conf` exists. If yes, replace the `[DEFAULT]` section in [jail.local](fail2ban/jail.local) with the following.
         ```
         [DEFAULT]
         banaction = nftables
@@ -76,7 +80,9 @@ Configuration for my VPS. Assumes Debian 10.
     $ sudo service sshd restart
     ```
 10. **Enable automatic updates.**
-    * `$ sudo apt install unattended-upgrades`
+    ```
+    $ sudo apt install unattended-upgrades
+    ```
     * `$ sudo vim /etc/apt/apt.conf.d/20auto-upgrades`
         ```
         APT::Periodic::Update-Package-Lists "1";
@@ -95,7 +101,7 @@ Configuration for my VPS. Assumes Debian 10.
     $ sudo apt update
     $ sudo apt install nginx certbot python-certbot-nginx
     $ sudo certbot certonly --nginx  # Generate a certificate, but do not modify the nginx config.
-    $ sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048  # Generate a Diffie-Hellman parameter.
+    $ sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048  # Generate a Diffie-Hellman parameter 2048 bits long.
     ```
     * Copy [nginx](nginx) to `/etc/nginx/` on the server. **Do not forget to replace `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and `<DNS-SERVER-2>` with the DNS servers your server is using. Also rename [nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf) based on your domain.**
     * The configuration is based on the [Mozilla SSL Configuration Generator](https://ssl-config.mozilla.org/).
