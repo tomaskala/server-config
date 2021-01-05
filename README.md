@@ -23,7 +23,7 @@ Configuration for my VPS. Assumes Debian 10.
 5. **Log in as the newly created user.**
 6. **Configure SSH.**
     * The configuration involves changing the default SSH port from 22 to deter dumb bots.
-    * The settings are based on [Mozilla OpenSSH guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default settings are included.
+    * The settings are based on the [Mozilla OpenSSH guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default settings are included.
     * Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server. **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
     ```
     $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli  # Deactivate short Diffie-Hellman moduli.
@@ -98,6 +98,7 @@ Configuration for my VPS. Assumes Debian 10.
     $ sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048  # Generate a Diffie-Hellman parameter.
     ```
     * Copy [nginx](nginx) to `/etc/nginx/` on the server. **Do not forget to replace `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and `<DNS-SERVER-2>` with the DNS servers your server is using. Also rename [nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf) based on your domain.**
+    * The configuration is based on the [Mozilla SSL Configuration Generator](https://ssl-config.mozilla.org/).
     ```
     $ sudo rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
     $ sudo ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/
