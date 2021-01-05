@@ -1,0 +1,44 @@
+# Set a different SSH port.
+Port <NEW-SSH-PORT>
+
+# Supported HostKey algorithms by order of preference.
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+
+# Ciphers and keying.
+KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+
+# Logging.
+LogLevel VERBOSE
+
+# Forbid root login.
+PermitRootLogin no
+
+# Require a public key and a verification code.
+AuthenticationMethods publickey,keyboard-interactive
+
+# Forbid login using a password, only allow SSH keys.
+PasswordAuthentication no
+
+# Use an authentication key.
+ChallengeResponseAuthentication yes
+UsePAM yes
+
+# Forbid SSH agent forwarding.
+AllowAgentForwarding no
+
+# Forbid port forwarding.
+AllowTcpForwarding no
+GatewayPorts no
+
+# Forbid X11 forwarding, we do not use GUI over SSH.
+X11Forwarding no
+
+# Hide MOTD.
+PrintMotd no
+
+# Log sftp level file access (read/write/etc) that would not be easily logged.
+Subsystem sftp /usr/lib/openssh/sftp-server

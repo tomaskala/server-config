@@ -22,17 +22,14 @@ Configuration for my VPS. Assumes Debian 10.
     ```
 5. **Log in as the newly created user.**
 6. **Configure SSH.**
-    * `$ sudo vim /etc/ssh/sshd_config`
-        * `PermitRootLogin no`
-        * `PasswordAuthentication no`
-        * `Port <NEW-SSH-PORT>`
-        * `LogLevel VERBOSE`
-        * `KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256`
-        * `Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr`
-        * `MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com`
-    * `$ sudo service sshd restart`.
+    * The configuration involves changing the default SSH port from 22 to deter dumb bots.
+    * The settings are based on [Mozilla OpenSSH guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default settings are included.
+    * Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server. **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
+    ```
+    $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli  # Deactivate short Diffie-Hellman moduli.
+    $ sudo service sshd restart
+    ```
     * Relog.
-    * Note: The cipher settings are taken from [this document](https://infosec.mozilla.org/guidelines/openssh#Modern_.28OpenSSH_6.7.2B.29).
 7. **Set up a firewall.**
     ```
     $ sudo apt install nftables
