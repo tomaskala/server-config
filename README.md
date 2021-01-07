@@ -116,8 +116,5 @@ Configuration for my VPS. Assumes Debian 10.
     $ sudo fail2ban-client status
     ```
     * Optionally, you can use the [Qualys SSL Server Test](https://www.ssllabs.com/ssltest/) to check your configuration.
-12. Grafana
-    * (Fail2ban](https://community.grafana.com/t/how-can-we-set-up-fail2ban-to-protect-our-dashboard/21962/10)
-    * [nginx proxy](https://serverfault.com/questions/684709/how-to-proxy-grafana-with-nginx)
-13. Nextcloud
+12. Nextcloud
     * Fail2ban setup is described in the official documentation, section server hardening.
