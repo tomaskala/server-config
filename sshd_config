@@ -17,9 +17,6 @@ LogLevel VERBOSE
 # Forbid root login.
 PermitRootLogin no
 
-# Require a public key and a verification code.
-AuthenticationMethods publickey,keyboard-interactive
-
 # Forbid login using a password, only allow SSH keys.
 PasswordAuthentication no
 
@@ -42,3 +39,11 @@ PrintMotd no
 
 # Log sftp level file access (read/write/etc) that would not be easily logged.
 Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Require a public key and a verification code for the main user.
+Match User <USERNAME>
+    AuthenticationMethods publickey,keyboard-interactive
+
+# Require a public key for the git users.
+Match Group git
+    AuthenticationMethods publickey

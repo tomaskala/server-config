@@ -9,22 +9,36 @@ Configuration for my VPS. Assumes Debian 10.
     ```
     $ passwd root
     ```
-3. **Create a non-root user, grant sudo privileges.**
+3. **Add users.**
+    * A sudo user.
     ```
     $ apt install sudo
     $ adduser <username>
     $ passwd <username>
     $ usermod -aG sudo <username>`
     ```
-4. **Log out, transfer the SSH key.**
+    * An unprivileged user for `git`. The setup of `git` itself is addressed later.
+    ```
+    $ # Create a system account, create home, create a 'git' group and add the
+    $ # user to it, set the home directory and set the shell for a user 'git'.
+    $ useradd -r -m -U -d /home/git -s /bin/bash git
+    $ passwd git
+    ```
+    * Setup access rights for the users' home directories.
+    ```
+    $ chmod 700 /home/<username>
+    $ chmod 700 /home/git
+    ```
+4. **Log out, transfer the SSH key(s).**
     ```
     $ ssh-copy-id -i ~/.ssh/<public-key> <username>@<host>
+    $ ssh-copy-id -i ~/.ssh/<public-key-git> git@<host>
     ```
 5. **Log in as the newly created user.**
 6. **Configure SSH.**
     * The configuration involves changing the default SSH port from 22 to deter dumb bots.
     * The settings are based on the [Mozilla OpenSSH guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default settings are included.
-    * Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server. **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
+    * Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server. **Do not forget to replace `<NEW-SSH-PORT>` with the correct value and `<USERNAME>` with your main account username!**
     ```
     $ awk '$5 >= 3071' /etc/ssh/moduli \
         | sudo tee /etc/ssh/moduli.tmp > /dev/null \
