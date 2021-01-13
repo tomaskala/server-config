@@ -130,5 +130,3 @@ Configuration for my VPS. Assumes Debian 10.
     $ sudo fail2ban-client status
     ```
     * Optionally, you can use the [Qualys SSL Server Test](https://www.ssllabs.com/ssltest/) to check your configuration.
-12. Nextcloud
-    * Fail2ban setup is described in the official documentation, section server hardening.
