@@ -17,10 +17,8 @@ Configuration for my VPS. Assumes Debian 10.
     $ passwd <username>
     $ usermod -aG sudo <username>`
     ```
-    * An unprivileged user for `git`. The setup of `git` itself is addressed later.
+    * An unprivileged user for `git`. The command below creates a system account called 'git' and adds it to a group with the same name. Additionally, it creates a given home directory and sets the shell. The setup of `git` itself, along with disabling shell access, is addressed later.
     ```
-    $ # Create a system account, create home, create a 'git' group and add the
-    $ # user to it, set the home directory and set the shell for a user 'git'.
     $ useradd -r -m -U -d /home/git -s /bin/bash git
     $ passwd git
     ```
