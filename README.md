@@ -33,6 +33,11 @@ Configuration for my VPS. Assumes Debian 10.
     $ ssh-copy-id -i ~/.ssh/<public-key-git> git@<host>
     ```
 5. **Log in as the newly created user.**
+    * Change permissions for the authorized keys files.
+    ```
+    $ sudo chmod 600 /home/<username>/.ssh/authorized_keys
+    $ sudo chmod 600 /home/git/.ssh/authorized_keys
+    ```
 6. **Configure SSH.**
     * The configuration involves changing the default SSH port from 22 to deter dumb bots.
     * The settings are based on the [Mozilla OpenSSH guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default settings are included.
