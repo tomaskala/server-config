@@ -134,6 +134,9 @@ Configuration for my VPS. Assumes Debian 10.
     ```
     * Optionally, you can use the [Qualys SSL Server Test](https://www.ssllabs.com/ssltest/) to check your configuration.
 12. **Setup `git`.**
+    ```
+    $ sudo apt install git
+    ```
     * This section works with the git user created earlier.
     * Set the limited `git-shell` as the git user's shell.
         * Make sure that `git-shell` is present in `/etc/shells`.
