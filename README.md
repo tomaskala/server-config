@@ -161,9 +161,9 @@ Configuration for my VPS. Assumes Debian 10.
             IdentitiesOnly yes
             IdentityFile ~/.ssh/<PRIVATE-KEY-GIT>
         ```
-        * This configuration allows to simplify git queries to the server. It is no longer necessary to specify the different SSH port and it allows to use a unique SSH key. Furthermore, `IdentitiesOnly yes` ensures that SSH will not try all your keys but immediately use the specified one.
+        * This configuration allows to simplify git queries to the server. It is no longer necessary to specify the different SSH port and it is possible to use a unique SSH key. Furthermore, `IdentitiesOnly yes` ensures that SSH will not try all your keys but immediately use the specified one.
     * The following is a template to initialize a new git repository on the server. This must be repeated for each new repository.
-        * On the server side, logged as the main user (the git user does not have a proper shell, so logging is impossible anyway).
+        * On the server side, logged as the main user (the git user does not have a proper shell, so login is impossible anyway).
             ```
             $ sudo mkdir /home/git/<REPO-NAME>.git
             $ cd /home/git/<REPO-NAME>.git
@@ -178,7 +178,7 @@ Configuration for my VPS. Assumes Debian 10.
             ```
             $ cd <REPO-DIRECTORY>
             $ git init
-            $ # Do some changes.
+            $ touch README.md
             $ git add -A
             $ git commit -m "Initial commit"
             $ git remote add origin vps-git:<REPO-NAME>.git
