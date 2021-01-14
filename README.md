@@ -169,7 +169,7 @@ Configuration for my VPS. Assumes Debian 10.
             ```
         * On the client side, clone the repository.
             ```
-            $ git clone vps-git:/home/git/<REPO-NAME>.git
+            $ git clone vps-git:<REPO-NAME>.git
             ```
         * Alternatively, you can initialize an empty Git repository and point it to the server.
             ```
@@ -178,6 +178,6 @@ Configuration for my VPS. Assumes Debian 10.
             $ # Do some changes.
             $ git add -A
             $ git commit -m "Initial commit"
-            $ git remote add origin vps-git:/home/git/<REPO-NAME>.git
+            $ git remote add origin vps-git:<REPO-NAME>.git
             $ git push origin master
             ```
