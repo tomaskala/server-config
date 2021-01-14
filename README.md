@@ -22,10 +22,10 @@ Configuration for my VPS. Assumes Debian 10.
     $ useradd -r -m -U -d /home/git -s /bin/bash git
     $ passwd git
     ```
-    * Setup access rights for the users' home directories.
+    * Setup access rights for the users' home directories. We keep 755 for the git user to be able to access its home directory and initialize repositories.
     ```
     $ chmod 700 /home/<username>
-    $ chmod 700 /home/git
+    $ chmod 755 /home/git
     ```
 4. **Log out, transfer the SSH key(s).**
     ```
@@ -133,3 +133,51 @@ Configuration for my VPS. Assumes Debian 10.
     $ sudo fail2ban-client status
     ```
     * Optionally, you can use the [Qualys SSL Server Test](https://www.ssllabs.com/ssltest/) to check your configuration.
+12. **Setup `git`.**
+    * This section works with the git user created earlier.
+    * Set the limited `git-shell` as the git user's shell.
+        * Make sure that `git-shell` is present in `/etc/shells`.
+            ```
+            $ cat /etc/shells
+            ```
+        * If not, add it.
+            ```
+            $ which git-shell | sudo tee -a /etc/shells
+            ```
+        * Change the git user's shell. From now on, the user's access is restricted to the pull/push functionality.
+            ```
+            $ sudo chsh git -s $(which git-shell)
+            ```
+    * Strongly recommended SSH configuration on the local computer (i.e., not the server).
+        * Put this into `~/.ssh/config`
+        ```
+        Host vps-git
+            User git
+            Hostname <YOUR-DOMAIN>
+            Port <NEW-SSH-PORT>
+            IdentitiesOnly yes
+            IdentityFile ~/.ssh/<PRIVATE-KEY-GIT>
+        ```
+        * This configuration allows to simplify git queries to the server. It is no longer necessary to specify the different SSH port and it allows to use a unique SSH key. Furthermore, `IdentitiesOnly yes` ensures that SSH will not try all your keys but immediately use the specified one.
+    * The following is a template to initialize a new git repository on the server. This must be repeated for each new repository.
+        * On the server side, logged as the main user (the git user does not have a proper shell, so logging is impossible anyway).
+            ```
+            $ sudo mkdir /home/git/<REPO-NAME>.git
+            $ cd /home/git/<REPO-NAME>.git
+            $ sudo git init --bare
+            $ sudo chown -R git:git /home/git/<REPO-NAME>.git
+            ```
+        * On the client side, clone the repository.
+            ```
+            $ git clone vps-git:/home/git/<REPO-NAME>.git
+            ```
+        * Alternatively, you can initialize an empty Git repository and point it to the server.
+            ```
+            $ cd <REPO-DIRECTORY>
+            $ git init
+            $ # Do some changes.
+            $ git add -A
+            $ git commit -m "Initial commit"
+            $ git remote add origin vps-git:/home/git/<REPO-NAME>.git
+            $ git push origin master
+            ```
