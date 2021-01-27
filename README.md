@@ -233,3 +233,17 @@ Encrypt](https://letsencrypt.org/).**
           $ git remote add origin vps-git:<REPO-NAME>.git
           $ git push origin master
           ```
+    * To mirror an existing repository to the VPS, do the following.
+        * Create the bare repository on the server, as described above.
+        * On the client side, do the following in the repository.
+          ```
+          $ git remote set-url origin --add vps-git:<REPO-NAME>.git
+          $ git push
+          ```
+        * On the server side: `cd` to the repository and `git log` to check it. If
+          your master branch is not called `master` and you get `fatal: your
+          current branch 'master' does not have any commits yet`, do the
+          following.
+          ```
+          $ sudo git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
+          ```
