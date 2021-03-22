@@ -27,23 +27,31 @@ Configuration for my VPS. Assumes Debian 10.
     $ useradd -r -m -U -d /home/git -s /bin/bash git
     $ passwd git
     ```
+  * An unprivileged user for `rsync`.
+    ```
+    $ useradd -r -m -U -d /home/storage -s /bin/bash storage
+    $ passwd storage
+    ```
   * Setup access rights for the users' home directories. We keep 755 for the
     git user to be able to access its home directory and initialize
     repositories.
     ```
     $ chmod 700 /home/<username>
     $ chmod 755 /home/git
+    $ chmod 755 /home/storage
     ```
 4. **Log out, transfer the SSH key(s).**
   ```
   $ ssh-copy-id -i ~/.ssh/<public-key> <username>@<host>
   $ ssh-copy-id -i ~/.ssh/<public-key-git> git@<host>
+  $ ssh-copy-id -i ~/.ssh/<public-key-storage> storage@<host>
   ```
 5. **Log in as the newly created user.**
   * Change permissions for the authorized keys files.
     ```
     $ sudo chmod 600 /home/<username>/.ssh/authorized_keys
     $ sudo chmod 600 /home/git/.ssh/authorized_keys
+    $ sudo chmod 600 /home/storage/.ssh/authorized_keys
     ```
 6. **Configure SSH.**
   * The configuration involves changing the default SSH port from 22 to deter
@@ -249,3 +257,21 @@ Encrypt](https://letsencrypt.org/).**
       ```
       $ sudo git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
       ```
+13. **Setup `rsync`.**
+  ```
+  $ sudo apt install rsync
+  ```
+  * This section works with the rsync user created earlier.
+  * Configure the restricted rsync (`rrsync`) script that came with the `rsync`
+    installation.
+    ```
+    $ sudo ln -fs /usr/share/doc/rsync/scripts/rrsync /usr/bin/rrsync
+    $ sudo chmod +x /usr/share/doc/rsync/scripts/rrsync
+    ```
+  * Restrict the rsync user to only be able to use the `rrsync` script inside
+    his home directory with a limited SSH connection.
+    * Edit the `~/storage/.ssh/authorized_keys` file to look like
+      ```
+      command="/usr/bin/rrsync /home/storage/",restrict <key>
+      ```
+      where `<key>` is the SSH key transferred earlier.

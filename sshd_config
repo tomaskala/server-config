@@ -47,3 +47,7 @@ Match User <USERNAME>
 # Require a public key for the git users.
 Match Group git
     AuthenticationMethods publickey
+
+# Require a public key for the storage user.
+Match User storage
+    AuthenticationMethods publickey
