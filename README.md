@@ -181,8 +181,8 @@ Encrypt](https://letsencrypt.org/).**
     $ sudo systemctl restart fail2ban
     $ sudo fail2ban-client status
     ```
-  * Optionally, you can use the [Qualys SSL Server
-    Test](https://www.ssllabs.com/ssltest/) to check your configuration.
+  * Optionally, you can use the [Mozilla
+    Observatory](https://observatory.mozilla.org/) to check your configuration.
 12. **Setup `git`.**
   ```
   $ sudo apt install git
