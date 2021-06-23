@@ -175,12 +175,13 @@ Encrypt](https://letsencrypt.org/).**
     $ sudo ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf \
       /etc/nginx/sites-enabled/
     $ sudo nginx -t  # Verify that there are no errors in the config.
-    $ sudo certbot renew --dry-run  # Verify certbot auto-renewal.
     $ sudo systemctl start nginx
     $ sudo systemctl enable nginx
     $ sudo systemctl restart fail2ban
     $ sudo fail2ban-client status
     ```
+  * To verify that certbot auto-renewal is set, check either the crontab or the
+    systemd timers.
   * Optionally, you can use the [Mozilla
     Observatory](https://observatory.mozilla.org/) to check your configuration.
 12. **Setup `git`.**
