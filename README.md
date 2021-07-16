@@ -154,13 +154,15 @@ Encrypt](https://letsencrypt.org/).**
   * In the `certbot` command below, you will be asked to enter your domain
     name. From now on, this will be referred to as `YOUR-DOMAIN`. We generate
     a certificate but do not modify the nginx config, because it would
-    overwrite our settings. We also generate a 2048 bits-long Diffie-Hellman
-    parameter.
+    overwrite our settings.
     ```
     $ sudo apt update
-    $ sudo apt install nginx certbot python-certbot-nginx
-    $ sudo certbot certonly --nginx
-    $ sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+    $ sudo apt install snapd
+    $ sudo reboot
+    $ sudo snap install core && sudo snap refresh core
+    $ sudo snap install --classic certbot
+    $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
+    $ sudo certbot certonly --key-type ecdsa --nginx
     ```
   * Copy [nginx](nginx) to `/etc/nginx/` on the server. **Do not forget to
     replace `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and
@@ -181,10 +183,13 @@ Encrypt](https://letsencrypt.org/).**
     $ sudo fail2ban-client status
     ```
   * To verify that certbot auto-renewal is set, check either the crontab or the
-    systemd timers.
+    systemd timers. You can also use the following command.
+    ```
+    $ sudo certbot renew --dry-run
+    ```
   * Optionally, you can use the [Mozilla
     Observatory](https://observatory.mozilla.org/) to check your configuration.
-12. **Setup `git`.**
+1. **Setup `git`.**
   ```
   $ sudo apt install git
   ```
@@ -258,7 +263,7 @@ Encrypt](https://letsencrypt.org/).**
       ```
       $ sudo git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
       ```
-13. **Setup `rsync`.**
+2. **Setup `rsync`.**
   ```
   $ sudo apt install rsync
   ```
