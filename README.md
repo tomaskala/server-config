@@ -50,7 +50,7 @@ At first, some minimal configuration is needed.
 * Deactivate short Diffie-Hellman moduli.
   ```
   $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli
-  $ sudo service sshd restart
+  $ sudo systemctl restart sshd
   ```
 * Relog.
 
@@ -77,6 +77,87 @@ $ sudo apt install unattended-upgrades
   ```
   APT::Periodic::Update-Package-Lists "1";
   APT::Periodic::Unattended-Upgrade "1";
+  ```
+
+## Security hardening
+
+The goal of this section is twofold. First, WireGuard is set up as a secure way
+to access the server. This includes hiding the SSH server behind it. Second,
+the support for tunneling all traffic from a client through the server. This
+involves making sure that there are no DNS leaks. As such, Unbound is set up as
+a local DNS resolver and configured to be used by all WireGuard peers connected
+to the server.
+
+### WireGuard server setup
+
+* Install WireGuard.
+* Generate the server key.
+  ```
+  # wg genkey | (umask 0077 && tee /etc/wireguard/private.key) | wg pubkey > /etc/wireguard/public.key
+  ```
+* Create the server configuration in `/etc/wireguard/wg0.conf`.
+  ```
+  [Interface]
+  Address = 10.200.200.1/24
+  PrivateKey = <server-private-key>
+  ListenPort = 51820
+  ```
+* Set NetworkManager to ignore the WireGuard interface. Add the following
+to `/etc/NetworkManager/conf.d/unmanaged.conf`:
+  ```
+  [keyfile]
+  unmanaged-devices=type:wireguard
+  ```
+* Enable IP forwarding on the server. Add the following to
+`/etc/sysctl.conf` and reboot:
+  ```
+  net.ipv4.ip_forward=1
+  net.ipv6.conf.all.forwarding=1
+  ```
+* Enable the WireGuard interface.
+  ```
+  # chown root:root /etc/wireguard/wg0.conf
+  # chmod 600 /etc/wireguard/wg0.conf
+  # wg-quick up wg0
+  # systemctl enable --now wg-quick@wg0.service
+  ```
+
+
+### SSH configuration
+
+* TODO
+
+
+### Unbound setup
+
+* TODO
+
+
+### WireGuard client setup
+
+* Install WireGuard.
+* Generate the client key.
+  ```
+  # wg genkey | (umask 0077 && tee /etc/wireguard/private.key) | wg pubkey > /etc/wireguard/public.key
+  ```
+* Create the client configuration in `/etc/wireguard/wg0.conf`.
+  ```
+  [Interface]
+  Address = <client-address-within-10.200.200.0/24-e.g.-10.200.200.2/32>
+  PrivateKey = <client-private-key>
+  DNS = 10.200.200.1
+  MTU = 1420
+  
+  [Peer]
+  PublicKey = <server-public-key>
+  Endpoint = <server-hostname-or-ip-address>:51820
+  AllowedIPs = 0.0.0.0/0, ::/0
+  ```
+* Insert the client to the server configuration.
+  ```
+  [Peer]
+  PublicKey = <client-public-key>
+  AllowedIPs = <client-address-within-10.200.200.0/24-e.g.-10.200.200.2/32>
   ```
 
 
