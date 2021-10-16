@@ -82,30 +82,7 @@ Configuration for my VPS. Assumes Debian 10.
   ```
   $ sudo nft -f /etc/nftables.conf
   ```
-8. **Enable SSH 2FA.**
-  * Make sure that the currently logged user is the one we are setting 2FA
-    for.
-    ```
-    $ sudo apt install libpam-google-authenticator
-    $ google-authenticator
-    $ sudo cp --archive /etc/pam.d/sshd \
-      /etc/pam.d/sshd-COPY-$(date +"%Y%m%d%H%M%S")  # Backup PAM SSH config.
-    ```
-  * `$ sudo vim /etc/pam.d/sshd`
-    * Comment out the `@include common-auth` line.
-    * Add `auth required pam_google_authenticator.so` to the bottom of the
-      file.
-  * `$ sudo vim /etc/ssh/sshd_config`
-    * `ChallengeResponseAuthentication yes`
-    * `AuthenticationMethods publickey,keyboard-interactive`
-    * The first line makes SSH use PAM. The second line requires both the
-      SSH key and the verification code -- by default, the SSH key would be
-      sufficient.
-  * Restart the service.
-  ```
-  $ sudo service sshd restart
-  ```
-9. **Enable automatic updates.**
+8. **Enable automatic updates.**
   ```
   $ sudo apt install unattended-upgrades
   ```
@@ -120,7 +97,7 @@ Configuration for my VPS. Assumes Debian 10.
         "origin=Debian,codename=${distro_codename},label=Debian-Security";
     };
     ```
-10. **Install `nginx` and setup an SSL certificate using [Let's
+9. **Install `nginx` and setup an SSL certificate using [Let's
 Encrypt](https://letsencrypt.org/).**
   * This assumes that a domain has been registered for the server. If not, it
     is possible to setup a self-signed certificate to encrypt the connection,
@@ -161,7 +138,7 @@ Encrypt](https://letsencrypt.org/).**
     ```
   * Optionally, you can use the [Mozilla
     Observatory](https://observatory.mozilla.org/) to check your configuration.
-11. **Setup `git`.**
+10. **Setup `git`.**
   ```
   $ sudo apt install git
   ```
@@ -235,7 +212,7 @@ Encrypt](https://letsencrypt.org/).**
       ```
       $ sudo git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
       ```
-12. **Setup `rsync`.**
+11. **Setup `rsync`.**
   ```
   $ sudo apt install rsync
   ```
