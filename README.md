@@ -46,11 +46,11 @@ At first, some minimal configuration is needed.
 * The settings are based on the [Mozilla OpenSSH
   guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
   settings are included.
-* Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server.
+* Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config`.
 * Deactivate short Diffie-Hellman moduli.
   ```
   $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli
-  $ sudo systemctl restart sshd
+  $ sudo systemctl restart sshd.service
   ```
 * Relog.
 
@@ -61,7 +61,8 @@ At first, some minimal configuration is needed.
 $ sudo apt install nftables
 $ sudo systemctl enable --now nftables.service
 ```
-* Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf` on the server.
+* Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf`.
+* Set the `<WAN-INTERFACE>` variable for the Internet-facing interface name.
 * Load the configuration.
   ```
   $ sudo nft -f /etc/nftables.conf
@@ -125,7 +126,23 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
 
 ### SSH configuration
 
-* TODO
+* Add the following to `/etc/sshd_config`:
+  ```
+  ListenAddress 10.200.200.1
+  AddressFamily inet
+  ```
+* Make sure that the `sshd` service is only started after the WireGuard
+  interface has been set up. Run `sudo systemctl edit sshd.service` and add the
+  following:
+  ```
+  [Unit]
+  After=network.target wg-quick@wg0.service
+  Requires=sys-devices-virtual-net-wg0.device
+  ```
+* Finally, restart the `sshd` service.
+  ```
+  $ sudo systemctl restart sshd.service
+  ```
 
 
 ### Unbound setup
@@ -184,9 +201,9 @@ Finally, various services running on the server can be configured.
   $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
   $ sudo certbot certonly --key-type ecdsa --nginx
   ```
-* Copy [nginx](nginx) to `/etc/nginx/` on the server. **Do not forget to
-  replace `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and
-  `<DNS-SERVER-2>` with the DNS servers your server is using. Also rename
+* Copy [nginx](nginx) to `/etc/nginx/`. **Do not forget to replace
+  `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and `<DNS-SERVER-2>`
+  with the DNS servers your server is using. Also rename
   [nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf)
   based on your domain.**
 * The configuration is based on the [Mozilla SSL Configuration
@@ -195,7 +212,7 @@ Finally, various services running on the server can be configured.
   $ sudo rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
   $ sudo ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/
   $ sudo nginx -t  # Verify that there are no errors in the config.
-  $ sudo systemctl enable --now nginx
+  $ sudo systemctl enable --now nginx.service
   ```
 * To verify that certbot auto-renewal is set, check either the crontab or the
   systemd timers. You can also use the following command.
