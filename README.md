@@ -189,7 +189,7 @@ Encrypt](https://letsencrypt.org/).**
     ```
   * Optionally, you can use the [Mozilla
     Observatory](https://observatory.mozilla.org/) to check your configuration.
-1. **Setup `git`.**
+12. **Setup `git`.**
   ```
   $ sudo apt install git
   ```
@@ -263,7 +263,7 @@ Encrypt](https://letsencrypt.org/).**
       ```
       $ sudo git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
       ```
-2. **Setup `rsync`.**
+13. **Setup `rsync`.**
   ```
   $ sudo apt install rsync
   ```
