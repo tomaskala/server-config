@@ -60,8 +60,7 @@ Configuration for my VPS. Assumes Debian 10.
     guidelines](https://infosec.mozilla.org/guidelines/openssh). Only
     non-default settings are included.
   * Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server.
-    **Do not forget to replace `<NEW-SSH-PORT>` with the correct value and
-    `<USERNAME>` with your main account username!**
+    **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
   * Deactivate short Diffie-Hellman moduli.
     ```
     $ awk '$5 >= 3071' /etc/ssh/moduli \

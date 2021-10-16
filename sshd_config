@@ -11,6 +11,9 @@ KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
 
+# Only public key-based logins are allowed.
+AuthenticationMethods publickey
+
 # Logging.
 LogLevel VERBOSE
 
@@ -33,17 +36,8 @@ X11Forwarding no
 # Hide MOTD.
 PrintMotd no
 
-# Log sftp level file access (read/write/etc) that would not be logged otherwise.
-Subsystem sftp /usr/lib/openssh/sftp-server
+# Use kernel sandbox mechanisms where possible in unprivileged processes.
+UsePrivilegeSeparation sandbox
 
-# Require a public key for the main user.
-Match User <USERNAME>
-    AuthenticationMethods publickey
-
-# Require a public key for the git users.
-Match Group git
-    AuthenticationMethods publickey
-
-# Require a public key for the storage user.
-Match User storage
-    AuthenticationMethods publickey
+# Log sftp level file access that would not be easily logged otherwise.
+Subsystem sftp /usr/lib/ssh/sftp-server -f AUTHPRIV -l INFO
