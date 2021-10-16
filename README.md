@@ -44,7 +44,6 @@ Configuration for my VPS. Assumes Debian 10.
   guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
   settings are included.
 * Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config` on the server.
-  **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
 * Deactivate short Diffie-Hellman moduli.
   ```
   $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli
@@ -60,7 +59,6 @@ $ sudo apt install nftables
 $ sudo systemctl enable --now nftables.service
 ```
 * Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf` on the server.
-  **Do not forget to replace `<NEW-SSH-PORT>` with the correct value!**
 * Load the configuration.
   ```
   $ sudo nft -f /etc/nftables.conf
@@ -162,7 +160,7 @@ $ chmod 755 /home/git
     Host vps-git
         User git
         Hostname <YOUR-DOMAIN>
-        Port <NEW-SSH-PORT>
+        Port 10022
         IdentitiesOnly yes
         IdentityFile ~/.ssh/<PRIVATE-KEY-GIT>
     ```

@@ -1,5 +1,5 @@
 # Set a different SSH port.
-Port <NEW-SSH-PORT>
+Port 10022
 
 # Supported HostKey algorithms by order of preference.
 HostKey /etc/ssh/ssh_host_ed25519_key
