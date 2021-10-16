@@ -1,6 +1,6 @@
 # VPS setup
 
-Configuration for my VPS. Assumes Debian 10.
+Configuration for my VPS. Assumes Debian 11.
 
 
 ## Initial configuration
