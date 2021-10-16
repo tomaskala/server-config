@@ -5,6 +5,9 @@ Configuration for my VPS. Assumes Debian 10.
 
 ## Initial configuration
 
+At first, some minimal configuration is needed.
+
+
 ### Basic setup
 
 * Update the system.
@@ -78,6 +81,9 @@ $ sudo apt install unattended-upgrades
 
 
 ## Services
+
+Finally, various services running on the server can be configured.
+
 
 ### nginx and certbot
 
