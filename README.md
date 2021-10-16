@@ -82,33 +82,7 @@ Configuration for my VPS. Assumes Debian 10.
   ```
   $ sudo nft -f /etc/nftables.conf
   ```
-8. **Install `fail2ban`.**
-  ```
-  $ sudo apt install fail2ban
-  ```
-  * Copy [fail2ban](fail2ban) to `/etc/fail2ban` on the server. **Do not
-    forget to replace `<NEW-SSH-PORT>` in [jail.local](fail2ban/jail.local)
-    with the correct value!**
-    ```
-    $ sudo cp /etc/fail2ban/filter.d/apache-badbots.conf \
-      /etc/fail2ban/filter.d/nginx-badbots.conf
-    ```
-  * Check `/etc/fail2ban/action.d/` whether `nftables.conf` exists. If yes,
-    replace the `[DEFAULT]` section in [jail.local](fail2ban/jail.local) with
-    the following.
-    ```
-    [DEFAULT]
-    banaction = nftables
-    banaction_allports = nftables[type=allports]
-    ```
-  * Start the service.
-  ```
-  $ sudo systemctl start fail2ban
-  $ sudo systemctl enable fail2ban
-  $ sudo fail2ban-client status  # Check fail2ban status.
-  $ sudo fail2ban-client status sshd  # Check the SSH jail status.
-  ```
-9. **Enable SSH 2FA.**
+8. **Enable SSH 2FA.**
   * Make sure that the currently logged user is the one we are setting 2FA
     for.
     ```
@@ -131,7 +105,7 @@ Configuration for my VPS. Assumes Debian 10.
   ```
   $ sudo service sshd restart
   ```
-10. **Enable automatic updates.**
+9. **Enable automatic updates.**
   ```
   $ sudo apt install unattended-upgrades
   ```
@@ -146,7 +120,7 @@ Configuration for my VPS. Assumes Debian 10.
         "origin=Debian,codename=${distro_codename},label=Debian-Security";
     };
     ```
-11. **Install `nginx` and setup an SSL certificate using [Let's
+10. **Install `nginx` and setup an SSL certificate using [Let's
 Encrypt](https://letsencrypt.org/).**
   * This assumes that a domain has been registered for the server. If not, it
     is possible to setup a self-signed certificate to encrypt the connection,
@@ -179,8 +153,6 @@ Encrypt](https://letsencrypt.org/).**
     $ sudo nginx -t  # Verify that there are no errors in the config.
     $ sudo systemctl start nginx
     $ sudo systemctl enable nginx
-    $ sudo systemctl restart fail2ban
-    $ sudo fail2ban-client status
     ```
   * To verify that certbot auto-renewal is set, check either the crontab or the
     systemd timers. You can also use the following command.
@@ -189,7 +161,7 @@ Encrypt](https://letsencrypt.org/).**
     ```
   * Optionally, you can use the [Mozilla
     Observatory](https://observatory.mozilla.org/) to check your configuration.
-12. **Setup `git`.**
+11. **Setup `git`.**
   ```
   $ sudo apt install git
   ```
@@ -263,7 +235,7 @@ Encrypt](https://letsencrypt.org/).**
       ```
       $ sudo git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
       ```
-13. **Setup `rsync`.**
+12. **Setup `rsync`.**
   ```
   $ sudo apt install rsync
   ```
