@@ -147,7 +147,37 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
 
 ### Unbound setup
 
-* TODO
+* Install unbound.
+* Copy [unbound.conf](unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
+* For security, unbound is chrooted into `/etc/unbound`. However, it needs
+  access to entropy and to the system log, so they must be bound inside the
+  chroot. To make the binding persistent, the information needs to be added to
+  `/etc/fstab`.
+  ```
+  $ sudo mkdir -p /etc/unbound/dev
+  $ sudo touch /etc/unbound/dev/random
+  $ sudo touch /etc/unbound/dev/log
+  ```
+  Add the following lines to `/etc/fstab`.
+  ```
+  /dev/random /etc/unbound/dev/random none bind 0 0
+  /dev/log /etc/unbound/dev/log none bind 0 0
+  ```
+  Furthermore, to periodically probe the root anchor, the directory
+  `/etc/unbound` as well as the file `/etc/unbound/trusted-key.key` must be
+  writable by the `unbound` user.
+* Next, NetworkManager needs to be configured not to overwrite the DNS server
+  address with the DHCP-supplied one. Create a
+  `/etc/NetworkManager/conf.d/dns.conf` file with the following contents.
+  ```
+  [main]
+      dns=none
+  ```
+  Then, restart NetworkManager and enable and start unbound.
+  ```
+  $ sudo systemctl restart NetworkManager
+  $ sudo systemctl enable --now unbound
+  ```
 
 
 ### WireGuard client setup
@@ -164,7 +194,7 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
   PrivateKey = <client-private-key>
   DNS = 10.200.200.1
   MTU = 1420
-  
+
   [Peer]
   PublicKey = <server-public-key>
   Endpoint = <server-hostname-or-ip-address>:51820
