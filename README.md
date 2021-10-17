@@ -46,7 +46,7 @@ At first, some minimal configuration is needed.
 * The settings are based on the [Mozilla OpenSSH
   guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
   settings are included.
-* Copy [sshd_config](ssh/sshd_config) to `/etc/ssh/sshd_config`.
+* Copy [sshd_config](etc/ssh/sshd_config) to `/etc/ssh/sshd_config`.
 * Deactivate short Diffie-Hellman moduli.
   ```
   $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli
@@ -61,7 +61,7 @@ At first, some minimal configuration is needed.
 $ sudo apt install nftables
 $ sudo systemctl enable --now nftables.service
 ```
-* Copy [nftables.conf](nftables.conf) to `/etc/nftables.conf`.
+* Copy [nftables.conf](etc/nftables.conf) to `/etc/nftables.conf`.
 * Set the `<WAN-INTERFACE>` variable for the Internet-facing interface name.
 * Load the configuration.
   ```
@@ -148,7 +148,7 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
 ### Unbound setup
 
 * Install unbound.
-* Copy [unbound.conf](unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
+* Copy [unbound.conf](etc/unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
 * For security, unbound is chrooted into `/etc/unbound`. However, it needs
   access to entropy and to the system log, so they must be bound inside the
   chroot. To make the binding persistent, the information needs to be added to
@@ -175,8 +175,8 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
   ```
   Then, restart NetworkManager and enable and start unbound.
   ```
-  $ sudo systemctl restart NetworkManager
-  $ sudo systemctl enable --now unbound
+  $ sudo systemctl restart NetworkManager.service
+  $ sudo systemctl enable --now unbound.service
   ```
 
 
@@ -231,10 +231,10 @@ Finally, various services running on the server can be configured.
   $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
   $ sudo certbot certonly --key-type ecdsa --nginx
   ```
-* Copy [nginx](nginx) to `/etc/nginx/`. **Do not forget to replace
+* Copy [nginx](etc/nginx) to `/etc/nginx`. **Do not forget to replace
   `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and `<DNS-SERVER-2>`
   with the DNS servers your server is using. Also rename
-  [nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf)
+  [etc/nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf)
   based on your domain.**
 * The configuration is based on the [Mozilla SSL Configuration
   Generator](https://ssl-config.mozilla.org/).
