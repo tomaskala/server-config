@@ -46,7 +46,7 @@ At first, some minimal configuration is needed.
 * The settings are based on the [Mozilla OpenSSH
   guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
   settings are included.
-* Copy [sshd_config](sshd_config) to `/etc/ssh/sshd_config`.
+* Copy [sshd_config](ssh/sshd_config) to `/etc/ssh/sshd_config`.
 * Deactivate short Diffie-Hellman moduli.
   ```
   $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli
@@ -126,7 +126,7 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
 
 ### SSH configuration
 
-* Add the following to `/etc/sshd_config`:
+* Add the following to `/etc/ssh/sshd_config`:
   ```
   ListenAddress 10.200.200.1
   AddressFamily inet
