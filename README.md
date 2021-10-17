@@ -117,7 +117,7 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
   ```
 * Enable the WireGuard interface.
   ```
-  # chown root:root /etc/wireguard/wg0.conf
+  # chown -R root:root /etc/wireguard/
   # chmod 600 /etc/wireguard/wg0.conf
   # wg-quick up wg0
   # systemctl enable --now wg-quick@wg0.service
