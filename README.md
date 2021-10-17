@@ -12,18 +12,18 @@ At first, some minimal configuration is needed.
 
 * Update the system.
   ```
-  $ apt update && apt upgrade
+  # apt update && apt upgrade
   ```
 * Change the root password.
   ```
-  $ passwd root
+  # passwd root
   ```
 * Create a user.
   ```
-  $ apt install sudo
-  $ useradd -m -G sudo -s /bin/bash <username>
-  $ passwd <username>
-  $ chmod 700 /home/<username>
+  # apt install sudo
+  # useradd -m -G sudo -s /bin/bash <username>
+  # passwd <username>
+  # chmod 700 /home/<username>
   ```
 
 
@@ -260,11 +260,11 @@ $ sudo apt install git
 ```
 * Create an unprivileged git user.
 ```
-$ useradd -r -m -U -d /home/git -s /bin/bash git
-$ passwd git
+$ sudo useradd -r -m -U -d /home/git -s /bin/bash git
+$ sudo passwd git
 
 # Allow the main user to access the git directory and to initialize repos.
-$ chmod 755 /home/git
+$ sudo chmod 755 /home/git
 ```
 * Set the limited `git-shell` as the git user's shell.
   * Make sure that `git-shell` is present in `/etc/shells`.
@@ -350,11 +350,11 @@ $ sudo apt install rsync
 ```
 * Create an unprivileged rsync user.
   ```
-  $ useradd -r -m -U -d /home/storage -s /bin/bash storage
-  $ passwd storage
+  $ sudo useradd -r -m -U -d /home/storage -s /bin/bash storage
+  $ sudo passwd storage
 
   # Allow the main user to access the rsync directory and to initialize dirs.
-  $ chmod 755 /home/storage
+  $ sudo chmod 755 /home/storage
   ```
 * Transfer the SSH key.
   ```
