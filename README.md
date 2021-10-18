@@ -12,7 +12,7 @@ At first, some minimal configuration is needed.
 
 * Update the system.
   ```
-  # apt update && apt upgrade
+  # apt update && apt full-upgrade
   ```
 * Change the root password.
   ```
@@ -33,10 +33,7 @@ At first, some minimal configuration is needed.
   ```
   $ ssh-copy-id -i ~/.ssh/<public-key> <username>@<host>
   ```
-* Log back in as the newly created user and change permissions.
-  ```
-  $ sudo chmod 600 /home/<username>/.ssh/authorized_keys
-  ```
+* Log back in as the newly created user.
 
 
 ### Configure SSH
@@ -47,6 +44,9 @@ At first, some minimal configuration is needed.
   guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
   settings are included.
 * Copy [sshd_config](etc/ssh/sshd_config) to `/etc/ssh/sshd_config`.
+  ```
+  $ sudo chown root:root /etc/ssh/sshd_config
+  ```
 * Deactivate short Diffie-Hellman moduli.
   ```
   $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli
@@ -62,10 +62,13 @@ $ sudo apt install nftables
 $ sudo systemctl enable --now nftables.service
 ```
 * Copy [nftables.conf](etc/nftables.conf) to `/etc/nftables.conf`.
+  ```
+  $ sudo chown root:root /etc/nftables.conf
+  ```
 * Set the `<WAN-INTERFACE>` variable for the Internet-facing interface name.
 * Load the configuration.
   ```
-  $ sudo nft -f /etc/nftables.conf
+  # /usr/sbin/nft -f /etc/nftables.conf
   ```
 
 
@@ -89,12 +92,19 @@ involves making sure that there are no DNS leaks. As such, Unbound is set up as
 a local DNS resolver and configured to be used by all WireGuard peers connected
 to the server.
 
-### WireGuard server setup
+### WireGuard setup
 
-* Install WireGuard.
+
+#### Server
+
+```
+# apt install wireguard-tools
+```
 * Generate the server key.
   ```
-  # wg genkey | (umask 0077 && tee /etc/wireguard/private.key) | wg pubkey > /etc/wireguard/public.key
+  # umask 0077
+  # mkdir -p /etc/wireguard/{keys,psk}
+  # wg genkey | tee /etc/wireguard/keys/wg0_private.key | wg pubkey > /etc/wireguard/keys/wg0_public.key
   ```
 * Create the server configuration in `/etc/wireguard/wg0.conf`.
   ```
@@ -103,14 +113,8 @@ to the server.
   PrivateKey = <server-private-key>
   ListenPort = 1194
   ```
-* Set NetworkManager to ignore the WireGuard interface. Add the following
-to `/etc/NetworkManager/conf.d/unmanaged.conf`:
-  ```
-  [keyfile]
-  unmanaged-devices=type:wireguard
-  ```
 * Enable IP forwarding on the server. Add the following to
-`/etc/sysctl.conf` and reboot:
+  `/etc/sysctl.d/local.conf`:
   ```
   net.ipv4.ip_forward=1
   net.ipv6.conf.all.forwarding=1
@@ -119,8 +123,44 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
   ```
   # chown -R root:root /etc/wireguard/
   # chmod 600 /etc/wireguard/wg0.conf
-  # wg-quick up wg0
   # systemctl enable --now wg-quick@wg0.service
+  ```
+
+
+#### Client
+
+* Install WireGuard.
+* Generate the pre-shared key on the server (unique for each client):
+  ```
+  # wg genpsk > /etc/wireguard/psk/client_name.psk
+  ```
+* Generate the client key.
+  ```
+  # wg genkey | (umask 0077 && tee /etc/wireguard/private.key) | wg pubkey > /etc/wireguard/public.key
+  ```
+* Create the client configuration in `/etc/wireguard/wg0.conf`.
+  ```
+  [Interface]
+  Address = <client-ip-address-inside-the-vpn>
+  PrivateKey = <client-private-key>
+  MTU = 1420
+
+  [Peer]
+  PublicKey = <server-public-key>
+  PresharedKey = <preshared-key-for-the-client>
+  Endpoint = <server-hostname-or-ip-address>:1194
+  AllowedIPs = 10.200.200.1/32
+  ```
+
+
+#### Server
+
+* Insert the client to the server configuration.
+  ```
+  [Peer]
+  PublicKey = <client-public-key>
+  PresharedKey = <preshared-key-for-the-client>
+  AllowedIPs = <client-ip-address-inside-the-vpn>
   ```
 
 
@@ -132,22 +172,28 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
   AddressFamily inet
   ```
 * Make sure that the `sshd` service is only started after the WireGuard
-  interface has been set up. Run `sudo systemctl edit sshd.service` and add the
-  following:
+  interface has been set up. Run `sudo systemctl edit --full sshd.service` and
+  change `After` and `Requires` inside `[Unit]` to contain the following:
   ```
   [Unit]
-  After=network.target wg-quick@wg0.service
-  Requires=sys-devices-virtual-net-wg0.device
+  After=network.target auditd.service wg-quick@wg0.service
+  Requires=wg-quick@wg0.service
   ```
-* Finally, restart the `sshd` service.
+* Reload daemons and restart the sshd service:
   ```
-  $ sudo systemctl restart sshd.service
+  # systemctl daemon-reload
+  # systemctl restart sshd.service
   ```
+* From this point, the server is accessed on 10.200.200.1:10022 after having
+  connected to the VPN.
 
 
 ### Unbound setup
 
-* Install unbound.
+```
+# apt install unbound
+# systemctl stop unbound.service
+```
 * Copy [unbound.conf](etc/unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
 * For security, unbound is chrooted into `/etc/unbound`. However, it needs
   access to entropy and to the system log, so they must be bound inside the
@@ -180,32 +226,21 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
   ```
 
 
-### WireGuard client setup
+### WireGuard client configuration for full tunneling
 
-* Install WireGuard.
-* Generate the client key.
+* Add the following under `[Interface]` in `/etc/wireguard/wg0.conf`:
   ```
-  # wg genkey | (umask 0077 && tee /etc/wireguard/private.key) | wg pubkey > /etc/wireguard/public.key
-  ```
-* Create the client configuration in `/etc/wireguard/wg0.conf`.
-  ```
-  [Interface]
-  Address = <client-address-within-10.200.200.0/24-e.g.-10.200.200.2/32>
-  PrivateKey = <client-private-key>
   DNS = 10.200.200.1
-  MTU = 1420
-
-  [Peer]
-  PublicKey = <server-public-key>
-  Endpoint = <server-hostname-or-ip-address>:1194
+  ```
+  and the following under the server `[Peer]`:
+  ```
   AllowedIPs = 0.0.0.0/0, ::/0
   ```
-* Insert the client to the server configuration.
-  ```
-  [Peer]
-  PublicKey = <client-public-key>
-  AllowedIPs = <client-address-within-10.200.200.0/24-e.g.-10.200.200.2/32>
-  ```
+
+
+### Reboot
+
+* When all this has been configured, reboot the server.
 
 
 ## Services
