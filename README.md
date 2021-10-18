@@ -101,7 +101,7 @@ to the server.
   [Interface]
   Address = 10.200.200.1/24
   PrivateKey = <server-private-key>
-  ListenPort = 51820
+  ListenPort = 1194
   ```
 * Set NetworkManager to ignore the WireGuard interface. Add the following
 to `/etc/NetworkManager/conf.d/unmanaged.conf`:
@@ -197,7 +197,7 @@ to `/etc/NetworkManager/conf.d/unmanaged.conf`:
 
   [Peer]
   PublicKey = <server-public-key>
-  Endpoint = <server-hostname-or-ip-address>:51820
+  Endpoint = <server-hostname-or-ip-address>:1194
   AllowedIPs = 0.0.0.0/0, ::/0
   ```
 * Insert the client to the server configuration.
