@@ -1,0 +1,21 @@
+#!/bin/sh
+
+die() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+src1='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
+src2='https://someonewhocares.org/hosts/zero/'
+src3='https://winhelp2002.mvps.org/hosts.txt'
+
+[ "$#" -ne 1 ] && die "No output file specified."
+output="$1"
+
+curl "${src1}" "${src2}" "${src3}" \
+  | grep '^0\.0\.0\.0' \
+  | sort \
+  | uniq \
+  | sort \
+  | awk '{print "local-zone: \""$2"\" redirect\nlocal-data: \""$2" A 0.0.0.0\""}' \
+  > "${output}"
