@@ -192,7 +192,6 @@ to the server.
 
 ```
 # apt install unbound
-# systemctl stop unbound.service
 ```
 * Copy [unbound.conf](etc/unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
 * For security, unbound is chrooted into `/etc/unbound`. However, it needs
@@ -200,29 +199,20 @@ to the server.
   chroot. To make the binding persistent, the information needs to be added to
   `/etc/fstab`.
   ```
-  $ sudo mkdir -p /etc/unbound/dev
-  $ sudo touch /etc/unbound/dev/random
-  $ sudo touch /etc/unbound/dev/log
+  # mkdir -p /etc/unbound/dev
+  # touch /etc/unbound/dev/{log,random}
   ```
   Add the following lines to `/etc/fstab`.
   ```
   /dev/random /etc/unbound/dev/random none bind 0 0
   /dev/log /etc/unbound/dev/log none bind 0 0
   ```
-  Furthermore, to periodically probe the root anchor, the directory
-  `/etc/unbound` as well as the file `/etc/unbound/trusted-key.key` must be
-  writable by the `unbound` user.
-* Next, NetworkManager needs to be configured not to overwrite the DNS server
-  address with the DHCP-supplied one. Create a
-  `/etc/NetworkManager/conf.d/dns.conf` file with the following contents.
+* To periodically probe the root anchor, the directory `/etc/unbound` as well
+  as the file `/etc/unbound/trusted-key.key` must be writable by the `unbound`
+  user.
+* Restart unbound:
   ```
-  [main]
-      dns=none
-  ```
-  Then, restart NetworkManager and enable and start unbound.
-  ```
-  $ sudo systemctl restart NetworkManager.service
-  $ sudo systemctl enable --now unbound.service
+  # systemctl restart unbound.service
   ```
 
 
@@ -236,6 +226,7 @@ to the server.
   ```
   AllowedIPs = 0.0.0.0/0, ::/0
   ```
+* For the DNS clause to work, it is necessary to install `openresolv`.
 
 
 ### Reboot
