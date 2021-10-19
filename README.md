@@ -235,7 +235,14 @@ to the server.
   ```
   AllowedIPs = 0.0.0.0/0, ::/0
   ```
-* For the DNS clause to work, it is necessary to install `openresolv`.
+* For the DNS clause to work, it is necessary to install `resolvconf`.
+* If using `systemd-resolved`, the following must be added to the `[Interface]`
+  section. Otherwise, the DNS setting is ignored and the default DNS servers
+  leak through the VPN tunnel.
+  ```
+  PostUp = resolvectl dns %i 10.200.200.1; resolvectl domain %i "~."; resolvectl default-route %i true
+  PreDown = resolvectl revert %i
+  ```
 
 
 ### Reboot
