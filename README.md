@@ -27,13 +27,17 @@ At first, some minimal configuration is needed.
   ```
 
 
-### Transfer the SSH key
+### Transfer the SSH key and the configuration
 
 * Log out and transfer the key.
   ```
   $ ssh-copy-id -i ~/.ssh/<public-key> <username>@<host>
+  $ scp -i ~/.ssh/<private-key> -r ./etc <username>@<host>:<path>
   ```
-* Log back in as the newly created user.
+* Log back in as the newly created user and change the ownership.
+  ```
+  # chown -R root:root <path-to-etc-from-this-repo>
+  ```
 
 
 ### Configure SSH
@@ -43,14 +47,11 @@ At first, some minimal configuration is needed.
 * The settings are based on the [Mozilla OpenSSH
   guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
   settings are included.
-* Copy [sshd_config](etc/ssh/sshd_config) to `/etc/ssh/sshd_config`.
-  ```
-  $ sudo chown root:root /etc/ssh/sshd_config
-  ```
+* Move [sshd_config](etc/ssh/sshd_config) to `/etc/ssh/sshd_config`.
 * Deactivate short Diffie-Hellman moduli.
   ```
-  $ awk '$5 >= 3071' /etc/ssh/moduli | sudo tee /etc/ssh/moduli.tmp > /dev/null && sudo mv /etc/ssh/moduli.tmp /etc/ssh/moduli
-  $ sudo systemctl restart sshd.service
+  # awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.tmp && mv /etc/ssh/moduli.tmp /etc/ssh/moduli
+  # systemctl restart sshd.service
   ```
 * Relog.
 
@@ -58,13 +59,10 @@ At first, some minimal configuration is needed.
 ### Setup a firewall
 
 ```
-$ sudo apt install nftables
-$ sudo systemctl enable --now nftables.service
+# apt install nftables
+# systemctl enable --now nftables.service
 ```
-* Copy [nftables.conf](etc/nftables.conf) to `/etc/nftables.conf`.
-  ```
-  $ sudo chown root:root /etc/nftables.conf
-  ```
+* Move [nftables.conf](etc/nftables.conf) to `/etc/nftables.conf`.
 * Set the `<WAN-INTERFACE>` variable for the Internet-facing interface name.
 * Load the configuration.
   ```
@@ -75,7 +73,7 @@ $ sudo systemctl enable --now nftables.service
 ### Enable automatic updates
 
 ```
-$ sudo apt install unattended-upgrades
+# apt install unattended-upgrades
 ```
 * Add the following to `/etc/apt/apt.conf.d/20auto-upgrades`:
   ```
@@ -172,12 +170,18 @@ to the server.
   AddressFamily inet
   ```
 * Make sure that the `sshd` service is only started after the WireGuard
-  interface has been set up. Run `sudo systemctl edit --full sshd.service` and
-  change `After` and `Requires` inside `[Unit]` to contain the following:
+  interface has been set up.
+  ```
+  # systemctl edit --full sshd.service
+  ```
+  Change the `After` and `Requires` clauses inside `[Unit]` to contain the
+  following:
   ```
   [Unit]
+  ...
   After=network.target auditd.service wg-quick@wg0.service
   Requires=wg-quick@wg0.service
+  ...
   ```
 * Reload daemons and restart the sshd service:
   ```
@@ -193,13 +197,13 @@ to the server.
 ```
 # apt install unbound
 ```
-* Copy [unbound.conf](etc/unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
+* Move [unbound.conf](etc/unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
 * For security, unbound is chrooted into `/etc/unbound`. However, it needs
   access to entropy and to the system log, so they must be bound inside the
   chroot. To make the binding persistent, the information needs to be added to
   `/etc/fstab`.
   ```
-  # mkdir -p /etc/unbound/dev
+  # mkdir /etc/unbound/dev
   # touch /etc/unbound/dev/{log,random}
   ```
   Add the following lines to `/etc/fstab`.
@@ -210,6 +214,11 @@ to the server.
 * To periodically probe the root anchor, the directory `/etc/unbound` as well
   as the file `/etc/unbound/trusted-key.key` must be writable by the `unbound`
   user.
+  ```
+  # chown root:unbound /etc/unbound
+  # chown root:unbound /etc/unbound/trusted-key.key
+  # chmod g+w /etc/unbound /etc/unbound/trusted-key.key
+  ```
 * Restart unbound:
   ```
   # systemctl restart unbound.service
@@ -241,6 +250,9 @@ Finally, various services running on the server can be configured.
 
 ### nginx and certbot
 
+```
+# apt install nginx
+```
 * This assumes that a domain has been registered for the server. If not, it
   is possible to setup a self-signed certificate to encrypt the connection,
   though obviously without any verification.
@@ -249,15 +261,15 @@ Finally, various services running on the server can be configured.
   a certificate but do not modify the nginx config, because it would
   overwrite our settings.
   ```
-  $ sudo apt update
-  $ sudo apt install snapd
-  $ sudo reboot
-  $ sudo snap install core && sudo snap refresh core
-  $ sudo snap install --classic certbot
-  $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
-  $ sudo certbot certonly --key-type ecdsa --nginx
+  # apt update
+  # apt install snapd
+  # reboot
+  # snap install core && snap refresh core
+  # snap install --classic certbot
+  # ln -s /snap/bin/certbot /usr/bin/certbot
+  # certbot certonly --key-type ecdsa --nginx
   ```
-* Copy [nginx](etc/nginx) to `/etc/nginx`. **Do not forget to replace
+* Move [nginx](etc/nginx) to `/etc/nginx`. **Do not forget to replace
   `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and `<DNS-SERVER-2>`
   with the DNS servers your server is using. Also rename
   [etc/nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf)
@@ -265,15 +277,15 @@ Finally, various services running on the server can be configured.
 * The configuration is based on the [Mozilla SSL Configuration
   Generator](https://ssl-config.mozilla.org/).
   ```
-  $ sudo rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
-  $ sudo ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/
-  $ sudo nginx -t  # Verify that there are no errors in the config.
-  $ sudo systemctl enable --now nginx.service
+  # rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+  # ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/
+  # nginx -t  # Verify that there are no errors in the config.
+  # systemctl enable --now nginx.service
   ```
 * To verify that certbot auto-renewal is set, check either the crontab or the
   systemd timers. You can also use the following command.
   ```
-  $ sudo certbot renew --dry-run
+  # certbot renew --dry-run
   ```
 * Optionally, you can use the [Mozilla
   Observatory](https://observatory.mozilla.org/) to check your configuration.
@@ -282,15 +294,15 @@ Finally, various services running on the server can be configured.
 ### git
 
 ```
-$ sudo apt install git
+# apt install git
 ```
 * Create an unprivileged git user.
 ```
-$ sudo useradd -r -m -U -d /home/git -s /bin/bash git
-$ sudo passwd git
+# useradd -r -m -U -d /home/git -s /bin/bash git
+# passwd git
 
 # Allow the main user to access the git directory and to initialize repos.
-$ sudo chmod 755 /home/git
+# chmod 755 /home/git
 ```
 * Set the limited `git-shell` as the git user's shell.
   * Make sure that `git-shell` is present in `/etc/shells`.
@@ -299,44 +311,36 @@ $ sudo chmod 755 /home/git
     ```
   * If not, add it.
     ```
-    $ which git-shell | sudo tee -a /etc/shells
+    # which git-shell >> /etc/shells
     ```
   * Change the git user's shell. From now on, the user's access is
     restricted to the pull/push functionality.
     ```
-    $ sudo chsh git -s $(which git-shell)
+    # chsh git -s $(which git-shell)
     ```
 * Transfer the SSH key.
   ```
   $ ssh-copy-id -i ~/.ssh/<public-key-git> git@<host>
   ```
-* Relog and change permissions.
-  ```
-  $ sudo chmod 600 /home/git/.ssh/authorized_keys
-  ```
+* Relog.
 * Recommended SSH configuration on the local computer (i.e., not the server).
-  * Put this into `~/.ssh/config`.
-    ```
-    Host vps-git
-        User git
-        Hostname <YOUR-DOMAIN>
-        Port 10022
-        IdentitiesOnly yes
-        IdentityFile ~/.ssh/<PRIVATE-KEY-GIT>
-    ```
-  * This configuration allows simplifying git queries to the server. It is no
-    longer necessary to specify the different SSH port and it is possible to
-    use a unique SSH key. Furthermore, `IdentitiesOnly yes` ensures that SSH
-    will not try all your keys but immediately use the specified one.
+  ```
+  Host vps-git
+      User git
+      Hostname 10.200.200.1
+      Port 10022
+      IdentitiesOnly yes
+      IdentityFile ~/.ssh/<PRIVATE-KEY-GIT>
+  ```
 * The following is a template to initialize a new git repository on the server.
   This must be repeated for each new repository.
   * On the server side, logged as the main user (the git user does not have a
     proper shell, so login is impossible anyway).
     ```
-    $ sudo mkdir /home/git/<REPO-NAME>.git
-    $ cd /home/git/<REPO-NAME>.git
-    $ sudo git init --bare
-    $ sudo chown -R git:git /home/git/<REPO-NAME>.git
+    # mkdir /home/git/<REPO-NAME>.git
+    # cd /home/git/<REPO-NAME>.git
+    # git init --bare
+    # chown -R git:git /home/git/<REPO-NAME>.git
     ```
   * On the client side, clone the repository.
     ```
@@ -345,13 +349,13 @@ $ sudo chmod 755 /home/git
   * Alternatively, you can initialize an empty Git repository and point it to
     the server.
     ```
-    $ cd <REPO-DIRECTORY>
+    $ cd <REPO-NAME>
     $ git init
     $ touch README.md
     $ git add -A
     $ git commit -m "Initial commit"
     $ git remote add origin vps-git:<REPO-NAME>.git
-    $ git push origin master
+    $ git push -u origin master
     ```
 * To mirror an existing repository to the VPS, do the following.
   * Create the bare repository on the server, as described above.
@@ -365,36 +369,33 @@ $ sudo chmod 755 /home/git
     current branch 'master' does not have any commits yet`, do the
     following.
     ```
-    $ sudo git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
+    # git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
     ```
 
 
 ### rsync
 
 ```
-$ sudo apt install rsync
+# apt install rsync
 ```
 * Create an unprivileged rsync user.
   ```
-  $ sudo useradd -r -m -U -d /home/storage -s /bin/bash storage
-  $ sudo passwd storage
+  # useradd -r -m -U -d /home/storage -s /bin/bash storage
+  # passwd storage
 
   # Allow the main user to access the rsync directory and to initialize dirs.
-  $ sudo chmod 755 /home/storage
+  # chmod 755 /home/storage
   ```
 * Transfer the SSH key.
   ```
   $ ssh-copy-id -i ~/.ssh/<public-key-storage> storage@<host>
   ```
-* Relog and change permissions.
-  ```
-  $ sudo chmod 600 /home/storage/.ssh/authorized_keys
-  ```
+* Relog.
 * Configure the restricted rsync (`rrsync`) script that came with the `rsync`
   installation.
   ```
-  $ sudo ln -fs /usr/share/doc/rsync/scripts/rrsync /usr/bin/rrsync
-  $ sudo chmod +x /usr/share/doc/rsync/scripts/rrsync
+  # ln -fs /usr/share/doc/rsync/scripts/rrsync /usr/bin/rrsync
+  # chmod +x /usr/share/doc/rsync/scripts/rrsync
   ```
 * Restrict the rsync user to only be able to use the `rrsync` script inside
   their home directory with a limited SSH connection.
