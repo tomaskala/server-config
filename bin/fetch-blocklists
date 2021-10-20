@@ -18,5 +18,7 @@ curl "${src1}" "${src2}" "${src3}" \
   | sort \
   | uniq \
   | sort \
+  | sed 's/\r//' \
+  | awk '{$1=$1;print}' \
   | awk '{print "local-zone: \""$2"\" redirect\nlocal-data: \""$2" A 0.0.0.0\""}' \
   > "${output}"
