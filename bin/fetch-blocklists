@@ -1,7 +1,7 @@
 #!/bin/sh
 
 die() {
-  printf '%s\n' "$1" >&2
+  /usr/bin/printf '%s\n' "$1" >&2
   exit 1
 }
 
@@ -17,12 +17,12 @@ src3='https://winhelp2002.mvps.org/hosts.txt'
 # My file with shitty Czech news sites
 src4='https://raw.githubusercontent.com/tomaskala/dotfiles/master/.local/share/dns-blacklist'
 
-curl "${src1}" "${src2}" "${src3}" "${src4}" \
-  | grep '^0\.0\.0\.0' \
-  | grep -v '^0\.0\.0\.0  *0\.0\.0\.0$' \
-  | sort \
-  | uniq \
-  | sort \
-  | sed 's/\r//' \
-  | awk '{$1=$1;print}' \
-  | awk '{print "local-zone: \""$2".\" redirect\nlocal-data: \""$2". A 0.0.0.0\""}'
+/usr/bin/curl "${src1}" "${src2}" "${src3}" "${src4}" \
+  | /usr/bin/grep '^0\.0\.0\.0' \
+  | /usr/bin/grep -v '^0\.0\.0\.0  *0\.0\.0\.0$' \
+  | /usr/bin/sort \
+  | /usr/bin/uniq \
+  | /usr/bin/sort \
+  | /usr/bin/sed 's/\r//' \
+  | /usr/bin/awk '{$1=$1;print}' \
+  | /usr/bin/awk '{print "local-zone: \""$2".\" redirect\nlocal-data: \""$2". A 0.0.0.0\""}'

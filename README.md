@@ -29,10 +29,10 @@ At first, some minimal configuration is needed.
 
 ### Transfer the SSH key and the configuration
 
-* Log out and transfer the key.
+* Log out and transfer the key and the contents of this directory.
   ```
   $ ssh-copy-id -i ~/.ssh/<public-key> <username>@<host>
-  $ scp -i ~/.ssh/<private-key> -r ./etc <username>@<host>:<path>
+  $ scp -i ~/.ssh/<private-key> -r ./* <username>@<host>:<path>
   ```
 * Log back in as the newly created user and change the ownership.
   ```
@@ -47,7 +47,9 @@ At first, some minimal configuration is needed.
 * The settings are based on the [Mozilla OpenSSH
   guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
   settings are included.
-* Move [sshd_config](etc/ssh/sshd_config) to `/etc/ssh/sshd_config`.
+```
+# mv ./etc/ssh/sshd_config /etc/ssh/sshd_config
+```
 * Deactivate short Diffie-Hellman moduli.
   ```
   # awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.tmp && mv /etc/ssh/moduli.tmp /etc/ssh/moduli
@@ -61,8 +63,8 @@ At first, some minimal configuration is needed.
 ```
 # apt install nftables
 # systemctl enable --now nftables.service
+# mv ./etc/nftables.conf /etc/nftables.conf
 ```
-* Move [nftables.conf](etc/nftables.conf) to `/etc/nftables.conf`.
 * Set the `<WAN-INTERFACE>` variable for the Internet-facing interface name.
 * Load the configuration.
   ```
@@ -196,8 +198,9 @@ to the server.
 
 ```
 # apt install unbound
+# mkdir /etc/unbound/blocklists
+# mv ./etc/unbound/unbound.conf /etc/unbound/unbound.conf
 ```
-* Move [unbound.conf](etc/unbound/unbound.conf) to `/etc/unbound/unbound.conf`.
 * For security, unbound is chrooted into `/etc/unbound`. However, it needs
   access to entropy and to the system log, so they must be bound inside the
   chroot. To make the binding persistent, the information needs to be added to
@@ -222,6 +225,24 @@ to the server.
 * Restart unbound:
   ```
   # systemctl restart unbound.service
+  ```
+
+### Setup Unbound blocklists with periodic updates
+
+#### TODO
+* Configure unbound remote control
+
+```
+# apt install curl
+# mv ./bin/fetch-blocklists /usr/local/bin/fetch-blocklists
+```
+* Add the following to the root crontab:
+  ```
+  0 5 * * 0 /usr/local/bin/fetch-blocklists > /etc/unbound/blocklists/blocklist.conf && /usr/sbin/unbound-control reload
+  ```
+* Run the query manually to build the blocklist for the first time:
+  ```
+  # /usr/local/bin/fetch-blocklists > /etc/unbound/blocklists/blocklist.conf && /usr/sbin/unbound-control reload
   ```
 
 
@@ -276,9 +297,12 @@ Finally, various services running on the server can be configured.
   # ln -s /snap/bin/certbot /usr/bin/certbot
   # certbot certonly --key-type ecdsa --nginx
   ```
-* Move [nginx](etc/nginx) to `/etc/nginx`. **Do not forget to replace
-  `<YOUR-DOMAIN>` with your domain and `<DNS-SERVER-1>` and `<DNS-SERVER-2>`
-  with the DNS servers your server is using. Also rename
+```
+# mv ./etc/nginx /etc/nginx
+```
+* **Do not forget to replace `<YOUR-DOMAIN>` with your domain and
+  `<DNS-SERVER-1>` and `<DNS-SERVER-2>` with the DNS servers your server is
+  using. Also rename
   [etc/nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf)
   based on your domain.**
 * The configuration is based on the [Mozilla SSL Configuration
