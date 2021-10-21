@@ -151,7 +151,6 @@ shitty place.
   [Interface]
   Address = <client-ip-address-inside-the-vpn>
   PrivateKey = <client-private-key>
-  MTU = 1420
 
   [Peer]
   PublicKey = <server-public-key>
