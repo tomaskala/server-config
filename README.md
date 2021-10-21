@@ -205,7 +205,6 @@ shitty place.
 
 ```
 # apt install unbound
-# mkdir /etc/unbound/blocklists
 # mv ./etc/unbound/unbound.conf /etc/unbound/unbound.conf
 ```
 * For security, unbound is chrooted into `/etc/unbound`. However, it needs
@@ -236,20 +235,48 @@ shitty place.
 
 ### Setup Unbound blocklists with periodic updates
 
-#### TODO
-* Configure unbound remote control
-
 ```
 # apt install curl
 # mv ./bin/fetch-blocklists /usr/local/bin/fetch-blocklists
 ```
+* Setup remote control in the unbound config and include the blocklist file.
+  ```
+  # unbound-control-setup -d /etc/unbound
+  ```
+  * Add the following to `/etc/unbound/unbound.conf`:
+    ```
+    remote-control:
+      # Enable remote control with unbound-control(8).
+      control-enable: yes
+
+      # Listen for remote control on this interface only.
+      control-interface: 127.0.0.1
+
+      # Use this port for remote control.
+      control-port: 8953
+
+      # Unbound server key file.
+      server-key-file: "/etc/unbound/unbound_server.key"
+
+      # Unbound server certificate file.
+      server-cert-file: "/etc/unbound/unbound_server.pem"
+
+      # Unbound-control key file.
+      control-key-file: "/etc/unbound/unbound_control.key"
+
+      # Unbound-control certificate file.
+      control-cert-file: "/etc/unbound/unbound_control.pem"
+
+    # Include the blocklist file.
+    include: "/etc/unbound/blocklist.conf"
+    ```
 * Add the following to the root crontab:
   ```
-  0 5 * * 0 /usr/local/bin/fetch-blocklists > /etc/unbound/blocklists/blocklist.conf && /usr/sbin/unbound-control reload
+  0 5 * * 0 /usr/local/bin/fetch-blocklists > /etc/unbound/blocklist.conf && /usr/sbin/unbound-control reload
   ```
-* Run the query manually to build the blocklist for the first time:
+* Run the command manually to build the blocklist for the first time:
   ```
-  # /usr/local/bin/fetch-blocklists > /etc/unbound/blocklists/blocklist.conf && /usr/sbin/unbound-control reload
+  # /usr/local/bin/fetch-blocklists > /etc/unbound/blocklist.conf && /usr/sbin/unbound-control reload
   ```
 
 
