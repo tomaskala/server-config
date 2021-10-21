@@ -36,7 +36,7 @@ At first, some minimal configuration is needed.
   ```
 * Log back in as the newly created user and change the ownership.
   ```
-  # chown -R root:root <path-to-etc-from-this-repo>
+  # chown -R root:root <this-repo>
   ```
 
 
@@ -112,6 +112,7 @@ shitty place.
   # umask 0077
   # mkdir -p /etc/wireguard/{keys,psk}
   # wg genkey | tee /etc/wireguard/keys/wg0_private.key | wg pubkey > /etc/wireguard/keys/wg0_public.key
+  # umask 0022
   ```
 * Create the server configuration in `/etc/wireguard/wg0.conf`.
   ```
@@ -128,7 +129,6 @@ shitty place.
   ```
 * Enable the WireGuard interface.
   ```
-  # chown -R root:root /etc/wireguard/
   # chmod 600 /etc/wireguard/wg0.conf
   # systemctl enable --now wg-quick@wg0.service
   ```
@@ -139,13 +139,14 @@ shitty place.
 * Install WireGuard.
 * Generate the pre-shared key on the server (unique for each client):
   ```
+  # umask 0077
   # wg genpsk > /etc/wireguard/psk/client_name.psk
   ```
-* Generate the client key.
+* Generate the client key (on the client).
   ```
   # wg genkey | (umask 0077 && tee /etc/wireguard/private.key) | wg pubkey > /etc/wireguard/public.key
   ```
-* Create the client configuration in `/etc/wireguard/wg0.conf`.
+* Create the client configuration in `/etc/wireguard/wg0.conf` (on the client).
   ```
   [Interface]
   Address = <client-ip-address-inside-the-vpn>
@@ -157,6 +158,10 @@ shitty place.
   PresharedKey = <preshared-key-for-the-client>
   Endpoint = <server-hostname-or-ip-address>:1194
   AllowedIPs = 10.200.200.1/32
+  ```
+* Change the configuration permissions:
+  ```
+  # chmod 600 /etc/wireguard/wg0.conf
   ```
 
 
@@ -197,7 +202,7 @@ shitty place.
   # systemctl daemon-reload
   # systemctl restart sshd.service
   ```
-* From this point, the server is accessed on 10.200.200.1:10022 after having
+* From this point, the server is accessed on `10.200.200.1:10022` after having
   connected to the VPN.
 
 
@@ -238,37 +243,39 @@ shitty place.
 ```
 # apt install curl
 # mv ./bin/fetch-blocklists /usr/local/bin/fetch-blocklists
+# chmod 700 /usr/local/bin/fetch-blocklists
 ```
 * Setup remote control in the unbound config and include the blocklist file.
   ```
-  # unbound-control-setup -d /etc/unbound
+  # /usr/sbin/unbound-control-setup -d /etc/unbound
   ```
   * Add the following to `/etc/unbound/unbound.conf`:
     ```
     remote-control:
-      # Enable remote control with unbound-control(8).
-      control-enable: yes
+        # Enable remote control with unbound-control(8).
+        control-enable: yes
 
-      # Listen for remote control on this interface only.
-      control-interface: 127.0.0.1
+        # Listen for remote control on this interface only.
+        control-interface: 127.0.0.1
 
-      # Use this port for remote control.
-      control-port: 8953
+        # Use this port for remote control.
+        control-port: 8953
 
-      # Unbound server key file.
-      server-key-file: "/etc/unbound/unbound_server.key"
+        # Unbound server key file.
+        server-key-file: "/etc/unbound/unbound_server.key"
 
-      # Unbound server certificate file.
-      server-cert-file: "/etc/unbound/unbound_server.pem"
+        # Unbound server certificate file.
+        server-cert-file: "/etc/unbound/unbound_server.pem"
 
-      # Unbound-control key file.
-      control-key-file: "/etc/unbound/unbound_control.key"
+        # Unbound-control key file.
+        control-key-file: "/etc/unbound/unbound_control.key"
 
-      # Unbound-control certificate file.
-      control-cert-file: "/etc/unbound/unbound_control.pem"
+        # Unbound-control certificate file.
+        control-cert-file: "/etc/unbound/unbound_control.pem"
 
-    # Include the blocklist file.
-    include: "/etc/unbound/blocklist.conf"
+    server:
+        # Include the blocklist file.
+        include: "/etc/unbound/blocklist.conf"
     ```
 * Add the following to the root crontab:
   ```
