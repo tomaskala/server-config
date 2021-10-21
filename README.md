@@ -85,12 +85,19 @@ At first, some minimal configuration is needed.
 
 ## Security hardening
 
-The goal of this section is twofold. First, WireGuard is set up as a secure way
-to access the server. This includes hiding the SSH server behind it. Second,
-the support for tunneling all traffic from a client through the server. This
-involves making sure that there are no DNS leaks. As such, Unbound is set up as
-a local DNS resolver and configured to be used by all WireGuard peers connected
-to the server.
+The goal of this section is twofold.
+
+First, WireGuard is set up as a secure way to access the server. This includes
+hiding the SSH server behind it.
+
+Second, the support for tunneling all client traffic through the server is
+implemented. This involves making sure that there are no DNS leaks. As such,
+Unbound is set up as a local DNS resolver and configured to be used by all
+WireGuard peers connected to the server.
+
+In addition, unbound is configured with blocklists to make the internet a less
+shitty place.
+
 
 ### WireGuard setup
 
