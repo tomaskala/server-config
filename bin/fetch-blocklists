@@ -5,9 +5,16 @@ die() {
   exit 1
 }
 
+# Steven Black
 src1='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
+
+# Dan Pollock
 src2='https://someonewhocares.org/hosts/zero/'
+
+# MVPS hosts
 src3='https://winhelp2002.mvps.org/hosts.txt'
+
+# My file with shitty Czech news sites
 src4='https://raw.githubusercontent.com/tomaskala/dotfiles/master/.local/share/dns-blacklist'
 
 curl "${src1}" "${src2}" "${src3}" "${src4}" \
