@@ -9,9 +9,6 @@ src1='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fake
 src2='https://someonewhocares.org/hosts/zero/'
 src3='https://winhelp2002.mvps.org/hosts.txt'
 
-[ "$#" -ne 1 ] && die "No output file specified."
-output="$1"
-
 curl "${src1}" "${src2}" "${src3}" \
   | grep '^0\.0\.0\.0' \
   | grep -v '^0\.0\.0\.0  *0\.0\.0\.0$' \
@@ -20,5 +17,4 @@ curl "${src1}" "${src2}" "${src3}" \
   | sort \
   | sed 's/\r//' \
   | awk '{$1=$1;print}' \
-  | awk '{print "local-zone: \""$2".\" redirect\nlocal-data: \""$2". A 0.0.0.0\""}' \
-  > "${output}"
+  | awk '{print "local-zone: \""$2".\" redirect\nlocal-data: \""$2". A 0.0.0.0\""}'
