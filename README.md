@@ -121,12 +121,6 @@ shitty place.
   PrivateKey = <server-private-key>
   ListenPort = 1194
   ```
-* Enable IP forwarding on the server. Add the following to
-  `/etc/sysctl.d/local.conf`:
-  ```
-  net.ipv4.ip_forward=1
-  net.ipv6.conf.all.forwarding=1
-  ```
 * Enable the WireGuard interface.
   ```
   # chmod 600 /etc/wireguard/wg0.conf
@@ -283,6 +277,16 @@ shitty place.
 * Run the command manually to build the blocklist for the first time:
   ```
   # /usr/local/bin/fetch-blocklists > /etc/unbound/blocklist.conf && /usr/sbin/unbound-control reload
+  ```
+
+
+### WireGuard server configuration for full tunneling
+
+* Enable IP forwarding on the server. Add the following to
+  `/etc/sysctl.d/local.conf`:
+  ```
+  net.ipv4.ip_forward=1
+  net.ipv6.conf.all.forwarding=1
   ```
 
 
