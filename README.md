@@ -354,34 +354,25 @@ $ sudo certbot certonly --key-type ecdsa --nginx
 ```
 # apt install git
 ```
+* Make sure that `git-shell` is present in `/etc/shells`.
+  ```
+  # cat /etc/shells
+  ```
+* If not, add it.
+  ```
+  # which git-shell >> /etc/shells
+  ```
 * Create an unprivileged git user.
 ```
-# useradd -r -m -U -d /home/git -s /bin/bash git
+# /usr/sbin/useradd -r -m -s "$(which git-shell)" git
 # passwd git
 
 # Allow the main user to access the git directory and to initialize repos.
 # chmod 755 /home/git
 ```
-* Set the limited `git-shell` as the git user's shell.
-  * Make sure that `git-shell` is present in `/etc/shells`.
-    ```
-    $ cat /etc/shells
-    ```
-  * If not, add it.
-    ```
-    # which git-shell >> /etc/shells
-    ```
-  * Change the git user's shell. From now on, the user's access is
-    restricted to the pull/push functionality.
-    ```
-    # chsh git -s $(which git-shell)
-    ```
-* Transfer the SSH key.
-  ```
-  $ ssh-copy-id -i ~/.ssh/<public-key-git> git@<host>
-  ```
-* Relog.
-* Recommended SSH configuration on the local computer (i.e., not the server).
+* The SSH keys need to be transferred manually at this point due to having
+  disabled SSH password login and set `git-shell` as the `git` user's shell.
+* Recommended SSH configuration on the client:
   ```
   Host vps-git
       User git
@@ -392,8 +383,7 @@ $ sudo certbot certonly --key-type ecdsa --nginx
   ```
 * The following is a template to initialize a new git repository on the server.
   This must be repeated for each new repository.
-  * On the server side, logged as the main user (the git user does not have a
-    proper shell, so login is impossible anyway).
+  * On the server side:
     ```
     # mkdir /home/git/<REPO-NAME>.git
     # cd /home/git/<REPO-NAME>.git
@@ -419,7 +409,7 @@ $ sudo certbot certonly --key-type ecdsa --nginx
   * Create the bare repository on the server, as described above.
   * On the client side, do the following in the repository.
     ```
-    $ git remote set-url origin --add vps-git:<REPO-NAME>.git
+    $ git remote set-url --add origin vps-git:<REPO-NAME>.git
     $ git push
     ```
   * On the server side: `cd` to the repository and `git log` to check it. If
