@@ -323,25 +323,8 @@ Finally, various services running on the server can be configured.
 ### nginx and certbot
 
 ```
-# apt install nginx
-```
-* This assumes that a domain has been registered for the server. If not, it
-  is possible to setup a self-signed certificate to encrypt the connection,
-  though obviously without any verification.
-* In the `certbot` command below, you will be asked to enter your domain
-  name. From now on, this will be referred to as `YOUR-DOMAIN`. We generate
-  a certificate but do not modify the nginx config, because it would
-  overwrite our settings.
-  ```
-  # apt update
-  # apt install snapd
-  # reboot
-  # snap install core && snap refresh core
-  # snap install --classic certbot
-  # ln -s /snap/bin/certbot /usr/bin/certbot
-  # certbot certonly --key-type ecdsa --nginx
-  ```
-```
+# apt install nginx certbot python3-certbot-nginx
+$ sudo certbot certonly --key-type ecdsa --nginx
 # mv ./etc/nginx /etc/nginx
 ```
 * **Do not forget to replace `<YOUR-DOMAIN>` with your domain and
@@ -354,13 +337,13 @@ Finally, various services running on the server can be configured.
   ```
   # rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
   # ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/
-  # nginx -t  # Verify that there are no errors in the config.
+  # /usr/sbin/nginx -t  # Verify that there are no errors in the config.
   # systemctl enable --now nginx.service
   ```
 * To verify that certbot auto-renewal is set, check either the crontab or the
   systemd timers. You can also use the following command.
   ```
-  # certbot renew --dry-run
+  $ sudo certbot renew --dry-run
   ```
 * Optionally, you can use the [Mozilla
   Observatory](https://observatory.mozilla.org/) to check your configuration.
