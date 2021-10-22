@@ -363,13 +363,13 @@ $ sudo certbot certonly --key-type ecdsa --nginx
   # which git-shell >> /etc/shells
   ```
 * Create an unprivileged git user.
-```
-# /usr/sbin/useradd -r -m -s "$(which git-shell)" git
-# passwd git
+  ```
+  # /usr/sbin/useradd -r -m -s "$(which git-shell)" git
+  # passwd git
 
-# Allow the main user to access the git directory and to initialize repos.
-# chmod 755 /home/git
-```
+  # Allow the main user to access the git directory and to initialize repos.
+  # chmod 755 /home/git
+  ```
 * The SSH keys need to be transferred manually at this point due to having
   disabled SSH password login and set `git-shell` as the `git` user's shell.
 * Recommended SSH configuration on the client:
@@ -428,23 +428,14 @@ $ sudo certbot certonly --key-type ecdsa --nginx
 ```
 * Create an unprivileged rsync user.
   ```
-  # useradd -r -m -U -d /home/storage -s /bin/bash storage
+  # /usr/sbin/useradd -r -m -s /bin/bash storage
   # passwd storage
 
   # Allow the main user to access the rsync directory and to initialize dirs.
   # chmod 755 /home/storage
   ```
-* Transfer the SSH key.
-  ```
-  $ ssh-copy-id -i ~/.ssh/<public-key-storage> storage@<host>
-  ```
-* Relog.
-* Configure the restricted rsync (`rrsync`) script that came with the `rsync`
-  installation.
-  ```
-  # ln -fs /usr/share/doc/rsync/scripts/rrsync /usr/bin/rrsync
-  # chmod +x /usr/share/doc/rsync/scripts/rrsync
-  ```
+* The SSH keys need to be transferred manually at this point due to having
+  disabled SSH password login and set `git-shell` as the `git` user's shell.
 * Restrict the rsync user to only be able to use the `rrsync` script inside
   their home directory with a limited SSH connection.
   * Edit the `~/storage/.ssh/authorized_keys` file to look like
