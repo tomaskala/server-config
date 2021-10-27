@@ -18,11 +18,10 @@ src3='https://winhelp2002.mvps.org/hosts.txt'
 src4='https://raw.githubusercontent.com/tomaskala/dotfiles/master/.local/share/dns-blacklist'
 
 /usr/bin/curl "${src1}" "${src2}" "${src3}" "${src4}" \
-  | /usr/bin/grep '^0\.0\.0\.0' \
-  | /usr/bin/grep -v '^0\.0\.0\.0  *0\.0\.0\.0$' \
+  | /usr/bin/awk '$1 == "0.0.0.0" && $2 != "0.0.0.0" {print $2}' \
+  | /usr/bin/tr -d '\r' \
+  | /usr/bin/tr '[:upper:]' '[:lower:]' \
   | /usr/bin/sort \
   | /usr/bin/uniq \
   | /usr/bin/sort \
-  | /usr/bin/sed 's/\r//' \
-  | /usr/bin/awk '{$1=$1;print}' \
-  | /usr/bin/awk '{print "local-zone: \""$2".\" redirect\nlocal-data: \""$2". A 0.0.0.0\""}'
+  | /usr/bin/awk '{print "local-zone: \""$1".\" redirect\nlocal-data: \""$1". A 0.0.0.0\""}'
