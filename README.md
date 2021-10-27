@@ -206,19 +206,6 @@ shitty place.
 # rm -r /etc/unbound/unbound.conf.d
 # mv ./etc/unbound/* /etc/unbound/
 ```
-* For security, unbound is chrooted into `/etc/unbound`. However, it needs
-  access to entropy and to the system log, so they must be bound inside the
-  chroot. To make the binding persistent, the information needs to be added to
-  `/etc/fstab`.
-  ```
-  # mkdir /etc/unbound/dev
-  # touch /etc/unbound/dev/{log,random}
-  ```
-  Add the following lines to `/etc/fstab`.
-  ```
-  /dev/random /etc/unbound/dev/random none bind 0 0
-  /dev/log /etc/unbound/dev/log none bind 0 0
-  ```
 * To periodically probe the root anchor, the directory `/etc/unbound` as well
   as the file `/etc/unbound/trusted-key.key` must be writable by the `unbound`
   user.
