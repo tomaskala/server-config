@@ -204,6 +204,7 @@ shitty place.
 ```
 # apt install unbound
 # rm -r /etc/unbound/unbound.conf.d
+# mkdir /etc/unbound/unbound.conf.d
 # mv ./etc/unbound/* /etc/unbound/
 ```
 * To periodically probe the root anchor, the directory `/etc/unbound` as well
