@@ -203,7 +203,8 @@ shitty place.
 
 ```
 # apt install unbound
-# mv ./etc/unbound/unbound.conf /etc/unbound/unbound.conf
+# rm -r /etc/unbound/unbound.conf.d
+# mv ./etc/unbound/* /etc/unbound/
 ```
 * For security, unbound is chrooted into `/etc/unbound`. However, it needs
   access to entropy and to the system log, so they must be bound inside the
@@ -265,18 +266,14 @@ shitty place.
 
         # Unbound-control certificate file.
         control-cert-file: "/etc/unbound/unbound_control.pem"
-
-    server:
-        # Include the blocklist file.
-        include: "/etc/unbound/blocklist.conf"
     ```
 * Add the following to the root crontab:
   ```
-  0 5 * * 0 /usr/local/bin/fetch-blocklists > /etc/unbound/blocklist.conf && /usr/sbin/unbound-control reload
+  0 5 * * 0 /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
   ```
 * Run the command manually to build the blocklist for the first time:
   ```
-  # /usr/local/bin/fetch-blocklists > /etc/unbound/blocklist.conf && /usr/sbin/unbound-control reload
+  # /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
   ```
 
 
