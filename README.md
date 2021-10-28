@@ -312,9 +312,7 @@ Finally, various services running on the server can be configured.
 $ sudo certbot certonly --key-type ecdsa --nginx
 # mv ./etc/nginx /etc/nginx
 ```
-* **Do not forget to replace `<YOUR-DOMAIN>` with your domain and
-  `<DNS-SERVER-1>` and `<DNS-SERVER-2>` with the DNS servers your server is
-  using. Also rename
+* **Do not forget to replace `<YOUR-DOMAIN>`. Also rename
   [etc/nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf)
   based on your domain.**
 * The configuration is based on the [Mozilla SSL Configuration
