@@ -312,14 +312,11 @@ Finally, various services running on the server can be configured.
 $ sudo certbot certonly --key-type ecdsa --nginx
 # mv ./etc/nginx /etc/nginx
 ```
-* **Do not forget to replace `<YOUR-DOMAIN>`. Also rename
-  [etc/nginx/sites-available/YOUR-DOMAIN.conf](nginx/sites-available/YOUR-DOMAIN.conf)
-  based on your domain.**
 * The configuration is based on the [Mozilla SSL Configuration
   Generator](https://ssl-config.mozilla.org/).
   ```
   # rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
-  # ln -s /etc/nginx/sites-available/YOUR-DOMAIN.conf /etc/nginx/sites-enabled/
+  # ln -sf /etc/nginx/sites-available/*.conf /etc/nginx/sites-enabled/
   # /usr/sbin/nginx -t  # Verify that there are no errors in the config.
   # systemctl enable --now nginx.service
   ```
