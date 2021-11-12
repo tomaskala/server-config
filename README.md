@@ -21,9 +21,9 @@ At first, some minimal configuration is needed.
 * Create a user.
   ```
   # apt install sudo
-  # useradd -m -G sudo -s /bin/bash <username>
-  # passwd <username>
-  # chmod 700 /home/<username>
+  # useradd -m -G sudo -s /bin/bash tomas
+  # passwd tomas
+  # chmod 700 /home/tomas
   ```
 
 
@@ -31,8 +31,8 @@ At first, some minimal configuration is needed.
 
 * Log out and transfer the key and the contents of this directory.
   ```
-  $ ssh-copy-id -i ~/.ssh/<public-key> <username>@<host>
-  $ scp -i ~/.ssh/<private-key> -r ./* <username>@<host>:<path>
+  $ ssh-copy-id -i ~/.ssh/<public-key> tomas@<host>
+  $ scp -i ~/.ssh/<private-key> -r ./* tomas@<host>:<path>
   ```
 * Log back in as the newly created user and change the ownership.
   ```
@@ -430,7 +430,7 @@ $ sudo certbot certonly --key-type ecdsa --nginx
 ```
 # apt install git gcc make
 # mkdir -p /var/www/tomaskala.com/rss
-# chown -R <username>:<username> /var/www/tomaskala.com/rss
+# chown -R tomas:tomas /var/www/tomaskala.com/rss
 $ cd
 $ git clone git://git.codemadness.org/sfeed
 $ cd sfeed
@@ -440,8 +440,7 @@ $ mkdir -p ~/.config/sfeed ~/.local/share/sfeed
 ```
 
 * Put the `sfeedrc` configuration file to `~/.config/sfeed/sfeedrc`.
-* Add the following to the <username> crontab:
+* Add the following to the tomas crontab:
   ```
-  0 * * * * /usr/local/bin/sfeed_update /home/<username>/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/<username>/.local/share/sfeed/feeds/* > /var/www/tomaskala.com/rss/index.html
-
+  0 * * * * /usr/local/bin/sfeed_update /home/tomas/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/tomas/.local/share/sfeed/feeds/* > /var/www/tomaskala.com/rss/index.html
   ```
