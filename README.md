@@ -423,3 +423,25 @@ $ sudo certbot certonly --key-type ecdsa --nginx
     command="/usr/bin/rrsync /home/storage/",restrict <key>
     ```
     where `<key>` is the SSH key transferred earlier.
+
+
+### RSS
+
+```
+# apt install git gcc make
+# mkdir -p /var/www/tomaskala.com/rss
+# chown -R <username>:<username> /var/www/tomaskala.com/rss
+$ cd
+$ git clone git://git.codemadness.org/sfeed
+$ cd sfeed
+# make clean install
+$ cp style.css /var/www/tomaskala.com/rss/style.css
+$ mkdir -p ~/.config/sfeed ~/.local/share/sfeed
+```
+
+* Put the `sfeedrc` configuration file to `~/.config/sfeed/sfeedrc`.
+* Add the following to the <username> crontab:
+  ```
+  0 * * * * /usr/local/bin/sfeed_update /home/<username>/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/<username>/.local/share/sfeed/feeds/* > /var/www/tomaskala.com/rss/index.html
+
+  ```
