@@ -429,18 +429,18 @@ $ sudo certbot certonly --key-type ecdsa --nginx
 
 ```
 # apt install git gcc make
-# mkdir -p /var/www/tomaskala.com/rss
-# chown -R tomas:tomas /var/www/tomaskala.com/rss
+# mkdir -p /var/www/tomaskala.com/reader
+# chown -R tomas:tomas /var/www/tomaskala.com/reader
 $ cd
 $ git clone git://git.codemadness.org/sfeed
 $ cd sfeed
 # make clean install
-$ cp style.css /var/www/tomaskala.com/rss/style.css
+$ cp style.css /var/www/tomaskala.com/reader/style.css
 $ mkdir -p ~/.config/sfeed ~/.local/share/sfeed
 ```
 
 * Put the `sfeedrc` configuration file to `~/.config/sfeed/sfeedrc`.
 * Add the following to the tomas crontab:
   ```
-  0 * * * * /usr/local/bin/sfeed_update /home/tomas/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/tomas/.local/share/sfeed/feeds/* > /var/www/tomaskala.com/rss/index.html
+  0 * * * * /usr/local/bin/sfeed_update /home/tomas/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/tomas/.local/share/sfeed/feeds/* > /var/www/tomaskala.com/reader/index.html
   ```
