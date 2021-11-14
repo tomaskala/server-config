@@ -340,11 +340,11 @@ $ sudo certbot certonly --key-type ecdsa --nginx
   ```
 * If not, add it.
   ```
-  # which git-shell >> /etc/shells
+  # command -v git-shell >> /etc/shells
   ```
 * Create an unprivileged git user.
   ```
-  # /usr/sbin/useradd -r -m -s "$(which git-shell)" git
+  # /usr/sbin/useradd -r -m -s "$(command -v git-shell)" git
   # passwd git
 
   # Allow the main user to access the git directory and to initialize repos.
