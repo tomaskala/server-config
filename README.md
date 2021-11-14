@@ -440,7 +440,7 @@ $ mkdir -p ~/.config/sfeed ~/.local/share/sfeed
 ```
 
 * Put the `sfeedrc` configuration file to `~/.config/sfeed/sfeedrc`.
-* Add the following to the tomas crontab:
+* Add the following to the `tomas` crontab:
   ```
   0 */4 * * * /usr/local/bin/sfeed_update /home/tomas/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/tomas/.local/share/sfeed/feeds/* > /var/www/tomaskala.com/reader/index.html
   ```
