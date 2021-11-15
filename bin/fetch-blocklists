@@ -1,10 +1,5 @@
 #!/bin/sh
 
-die() {
-  /usr/bin/printf '%s\n' "$1" >&2
-  exit 1
-}
-
 # Steven Black
 src1='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
 
