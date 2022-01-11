@@ -1,285 +1,101 @@
-# VPS setup
+# Server configuration
 
-Configuration for my VPS. Assumes Debian 11.
+Configuration for my server. Assumes Debian 11.
+
+
+## Ansible setup
+
+Because the first login uses a password instead of an SSH key, we install
+`paramiko` as well. Otherwise, `sshpass` would have to be installed, but that
+cannot be limited to a virtual environment.
+```
+$ python -m venv ./venv
+$ source ./venv/bin/activate
+$ python -m pip install ansible paramiko
+```
 
 
 ## Initial configuration
 
-At first, some minimal configuration is needed.
+Before the VPN is set up and the SSH config alias can be used, the server
+address must be overriden to its public address. This is done by specifying a
+new inventory (note the trailing comma) and setting the `target` variable.
 
 
-### Basic setup
+### Initialize the server
 
-* Update the system.
-  ```
-  # apt update && apt full-upgrade
-  ```
-* Change the root password.
-  ```
-  # passwd root
-  ```
-* Create a user.
-  ```
-  # apt install sudo
-  # useradd -m -G sudo -s /bin/bash tomas
-  # passwd tomas
-  # chmod 700 /home/tomas
-  ```
+The initial configuration assumes that there is a `root` account without an SSH
+key, so a password login must be used. The user is prompted for the `root`
+password.
 
-
-### Transfer the SSH key and the configuration
-
-* Log out and transfer the key and the contents of this directory.
-  ```
-  $ ssh-copy-id -i ~/.ssh/<public-key> tomas@<host>
-  $ scp -i ~/.ssh/<private-key> -r ./* tomas@<host>:<path>
-  ```
-* Log back in as the newly created user and change the ownership.
-  ```
-  # chown -R root:root <this-repo>
-  ```
-
-
-### Configure SSH
-
-* The configuration involves changing the default SSH port from 22 to deter
-  dumb bots.
-* The settings are based on the [Mozilla OpenSSH
-  guidelines](https://infosec.mozilla.org/guidelines/openssh). Only non-default
-  settings are included.
+The command performs a basic server initialization, and creates an admin user
+with the specified password. The password is immediately expired, forcing the
+admin user to change it upon the first login.
 ```
-# mv ./etc/ssh/sshd_config /etc/ssh/sshd_config
+$ cd playbooks
+$ ansible-playbook -t init -k -i <server-address>, -c paramiko -e "target=<server-address> user=root ssh_port=22 admin_password=<admin-password>" main.yml
 ```
-* Deactivate short Diffie-Hellman moduli.
-  ```
-  # awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.tmp && mv /etc/ssh/moduli.tmp /etc/ssh/moduli
-  # systemctl restart sshd.service
-  ```
-* Relog.
 
 
-### Setup a firewall
+### Setup security
 
+First, login as the admin user and change the password. Next, run the
+following:
 ```
-# apt install nftables
-# systemctl enable --now nftables.service
-# mv ./etc/nftables.conf /etc/nftables.conf
+$ cd playbooks
+$ ansible-playbook -t security -i <server-address>, -e "target=<server-address> old_ssh_port=22 vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" main.yml
 ```
-* Set the `<WAN-INTERFACE>` variable for the Internet-facing interface name.
-* Load the configuration.
-  ```
-  # /usr/sbin/nft -f /etc/nftables.conf
-  ```
 
 
-### Enable automatic updates
+### Setup services
 
+The `git` user password variable only needs to be specified on the first run.
+As the user is never accessed directly and his shell is set to `git-shell`,
+this is more of a good practice, and we don't mind potentially leaking the
+password in the local bash history. This is better than being prompted for the
+password every time the playbook is run, or carrying an ansible vault around.
 ```
-# apt install unattended-upgrades
+$ cd playbooks
+$ ansible-playbook -t services -e "git_password=<git-user-password>" main.yml
 ```
-* Add the following to `/etc/apt/apt.conf.d/20auto-upgrades`:
-  ```
-  APT::Periodic::Update-Package-Lists "1";
-  APT::Periodic::Unattended-Upgrade "1";
-  ```
-
-## Security hardening
-
-The goal of this section is twofold.
-
-First, WireGuard is set up as a secure way to access the server. This includes
-hiding the SSH server behind it.
-
-Second, the support for tunneling all client traffic through the server is
-implemented. This involves making sure that there are no DNS leaks. As such,
-Unbound is set up as a local DNS resolver and configured to be used by all
-WireGuard peers connected to the server.
-
-In addition, unbound is configured with blocklists to make the internet a less
-shitty place.
 
 
-### WireGuard setup
+## Wireguard setup
 
+### Client
 
-#### Server
-
-```
-# apt install wireguard-tools
-```
-* Generate the server key.
+* Install Wireguard.
+* Generate the pre-shared key and the client key.
   ```
   # umask 0077
-  # mkdir -p /etc/wireguard/{keys,psk}
-  # wg genkey | tee /etc/wireguard/keys/wg0_private.key | wg pubkey > /etc/wireguard/keys/wg0_public.key
-  # umask 0022
-  ```
-* Create the server configuration in `/etc/wireguard/wg0.conf`.
-  ```
-  [Interface]
-  Address = 10.200.200.1/24
-  PrivateKey = <server-private-key>
-  ListenPort = 1194
-  ```
-* Enable the WireGuard interface.
-  ```
-  # chmod 600 /etc/wireguard/wg0.conf
-  # systemctl enable --now wg-quick@wg0.service
-  ```
-
-
-#### Client
-
-* Install WireGuard.
-* Generate the pre-shared key on the server (unique for each client):
-  ```
-  # umask 0077
-  # wg genpsk > /etc/wireguard/psk/client_name.psk
-  ```
-* Generate the client key (on the client).
-  ```
+  # wg genpsk > /etc/wireguard/preshared.key
   # wg genkey | (umask 0077 && tee /etc/wireguard/private.key) | wg pubkey > /etc/wireguard/public.key
   ```
-* Create the client configuration in `/etc/wireguard/wg0.conf` (on the client).
+* Create the client configuration in `/etc/wireguard/wg0.conf`.
   ```
   [Interface]
-  Address = <client-ip-address-inside-the-vpn>
+  Address = <client-ip-address-inside-the-vpn>/32
   PrivateKey = <client-private-key>
 
   [Peer]
   PublicKey = <server-public-key>
-  PresharedKey = <preshared-key-for-the-client>
-  Endpoint = <server-hostname-or-ip-address>:1194
-  AllowedIPs = 10.200.200.1/32
+  PresharedKey = <preshared-key>
+  Endpoint = <server-public-ip-address>:<server-vpn-port>
+  AllowedIPs = <server-ip-address-inside-the-vpn>/32
   ```
-* Change the configuration permissions:
+* Change the configuration ownership and permissions:
   ```
+  # chown root:root /etc/wireguard/wg0.conf
   # chmod 600 /etc/wireguard/wg0.conf
   ```
 
 
-#### Server
+### Client, full tunneling
 
-* Insert the client to the server configuration.
-  ```
-  [Peer]
-  PublicKey = <client-public-key>
-  PresharedKey = <preshared-key-for-the-client>
-  AllowedIPs = <client-ip-address-inside-the-vpn>
-  ```
-
-
-### SSH configuration
-
-* Add the following to `/etc/ssh/sshd_config`:
-  ```
-  ListenAddress 10.200.200.1
-  AddressFamily inet
-  ```
-* Make sure that the `sshd` service is only started after the WireGuard
-  interface has been set up.
-  ```
-  # systemctl edit --full sshd.service
-  ```
-  Change the `After` and `Requires` clauses inside `[Unit]` to contain the
-  following:
-  ```
-  [Unit]
-  ...
-  After=network.target auditd.service wg-quick@wg0.service
-  Requires=wg-quick@wg0.service
-  ...
-  ```
-* Reload daemons and restart the sshd service:
-  ```
-  # systemctl daemon-reload
-  # systemctl restart sshd.service
-  ```
-* From this point, the server is accessed on `10.200.200.1:10022` after having
-  connected to the VPN.
-
-
-### Unbound setup
-
-```
-# apt install unbound
-# rm -r /etc/unbound/unbound.conf.d
-# mkdir /etc/unbound/unbound.conf.d
-# mv ./etc/unbound/* /etc/unbound/
-```
-* To periodically probe the root anchor, the directory `/etc/unbound` as well
-  as the file `/etc/unbound/trusted-key.key` must be writable by the `unbound`
-  user.
-  ```
-  # chown root:unbound /etc/unbound
-  # chown root:unbound /etc/unbound/trusted-key.key
-  # chmod g+w /etc/unbound /etc/unbound/trusted-key.key
-  ```
-* Restart unbound:
-  ```
-  # systemctl restart unbound.service
-  ```
-
-### Setup Unbound blocklists with periodic updates
-
-```
-# apt install curl
-# mv ./bin/fetch-blocklists /usr/local/bin/fetch-blocklists
-# chmod 700 /usr/local/bin/fetch-blocklists
-```
-* Setup remote control in the unbound config and include the blocklist file.
-  ```
-  # /usr/sbin/unbound-control-setup -d /etc/unbound
-  ```
-  * Add the following to `/etc/unbound/unbound.conf`:
-    ```
-    remote-control:
-        # Enable remote control with unbound-control(8).
-        control-enable: yes
-
-        # Listen for remote control on this interface only.
-        control-interface: 127.0.0.1
-
-        # Use this port for remote control.
-        control-port: 8953
-
-        # Unbound server key file.
-        server-key-file: "/etc/unbound/unbound_server.key"
-
-        # Unbound server certificate file.
-        server-cert-file: "/etc/unbound/unbound_server.pem"
-
-        # Unbound-control key file.
-        control-key-file: "/etc/unbound/unbound_control.key"
-
-        # Unbound-control certificate file.
-        control-cert-file: "/etc/unbound/unbound_control.pem"
-    ```
-* Add the following to the root crontab:
-  ```
-  0 5 * * 0 /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
-  ```
-* Run the command manually to build the blocklist for the first time:
-  ```
-  # /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
-  ```
-
-
-### WireGuard server configuration for full tunneling
-
-* Enable IP forwarding on the server. Add the following to
-  `/etc/sysctl.d/local.conf`:
-  ```
-  net.ipv4.ip_forward=1
-  net.ipv6.conf.all.forwarding=1
-  ```
-
-
-### WireGuard client configuration for full tunneling
-
+* Assumes that a DNS resolver is running on the server.
 * Add the following under `[Interface]` in `/etc/wireguard/wg0.conf`:
   ```
-  DNS = 10.200.200.1
+  DNS = <server-ip-address-inside-the-vpn>
   ```
   and the following under the server `[Peer]`:
   ```
@@ -290,77 +106,24 @@ shitty place.
   section. Otherwise, the DNS setting is ignored and the default DNS servers
   leak through the VPN tunnel.
   ```
-  PostUp = resolvectl dns %i 10.200.200.1; resolvectl domain %i "~."; resolvectl default-route %i true
+  PostUp = resolvectl dns %i <server-ip-address-inside-the-vpn>; resolvectl domain %i "~."; resolvectl default-route %i true
   PreDown = resolvectl revert %i
   ```
 
 
-### Reboot
+### Server
 
-* When all this has been configured, reboot the server.
-
-
-## Services
-
-Finally, various services running on the server can be configured.
-
-
-### nginx and certbot
-
-```
-# apt install nginx certbot python3-certbot-nginx
-$ sudo certbot certonly --key-type ecdsa --nginx
-# mv ./etc/nginx /etc/nginx
-```
-* The configuration is based on the [Mozilla SSL Configuration
-  Generator](https://ssl-config.mozilla.org/).
+* Insert the client to the server configuration.
   ```
-  # rm /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
-  # ln -sf /etc/nginx/sites-available/*.conf /etc/nginx/sites-enabled/
-  # /usr/sbin/nginx -t  # Verify that there are no errors in the config.
-  # systemctl enable --now nginx.service
+  [Peer]
+  PublicKey = <client-public-key>
+  PresharedKey = <preshared-key>
+  AllowedIPs = <client-ip-address-inside-the-vpn>/32
   ```
-* To verify that certbot auto-renewal is set, check either the crontab or the
-  systemd timers. You can also use the following command.
-  ```
-  $ sudo certbot renew --dry-run
-  ```
-* Optionally, you can use the [Mozilla
-  Observatory](https://observatory.mozilla.org/) to check your configuration.
 
 
-### git
+## git
 
-```
-# apt install git
-```
-* Make sure that `git-shell` is present in `/etc/shells`.
-  ```
-  # cat /etc/shells
-  ```
-* If not, add it.
-  ```
-  # command -v git-shell >> /etc/shells
-  ```
-* Create an unprivileged git user.
-  ```
-  # /usr/sbin/useradd -r -m -s "$(command -v git-shell)" git
-  # passwd git
-
-  # Allow the main user to access the git directory and to initialize repos.
-  # chmod 755 /home/git
-  ```
-* The SSH keys need to be transferred manually at this point due to having
-  disabled SSH password login and set `git-shell` as the `git` user's shell.
-* Recommended SSH configuration on the client:
-  ```
-  Host vps-git
-      User git
-      Hostname 10.200.200.1
-      Port 10022
-      IdentitiesOnly yes
-      IdentityFile ~/.ssh/<PRIVATE-KEY-GIT>
-  ```
 * The following is a template to initialize a new git repository on the server.
   This must be repeated for each new repository.
   * On the server side:
@@ -399,48 +162,3 @@ $ sudo certbot certonly --key-type ecdsa --nginx
     ```
     # git symbolic-ref HEAD refs/heads/<MASTER-BRANCH-NAME>
     ```
-
-
-### rsync
-
-```
-# apt install rsync
-```
-* Create an unprivileged rsync user.
-  ```
-  # /usr/sbin/useradd -r -m -s /bin/bash storage
-  # passwd storage
-
-  # Allow the main user to access the rsync directory and to initialize dirs.
-  # chmod 755 /home/storage
-  ```
-* The SSH keys need to be transferred manually at this point due to having
-  disabled SSH password login and set `git-shell` as the `git` user's shell.
-* Restrict the rsync user to only be able to use the `rrsync` script inside
-  their home directory with a limited SSH connection.
-  * Edit the `~/storage/.ssh/authorized_keys` file to look like
-    ```
-    command="/usr/bin/rrsync /home/storage/",restrict <key>
-    ```
-    where `<key>` is the SSH key transferred earlier.
-
-
-### RSS
-
-```
-# apt install git gcc make
-# mkdir -p /var/www/tomaskala.com/reader
-# chown -R tomas:tomas /var/www/tomaskala.com/reader
-$ mv var/www/tomaskala.com/reader /var/www/tomaskala.com/
-$ cd
-$ git clone git://git.codemadness.org/sfeed
-$ cd sfeed
-# make clean install
-$ mkdir -p ~/.config/sfeed ~/.local/share/sfeed
-```
-
-* Put the `sfeedrc` configuration file to `~/.config/sfeed/sfeedrc`.
-* Add the following to the `tomas` crontab:
-  ```
-  0 */4 * * * PATH="$PATH:/usr/local/bin" /usr/local/bin/sfeed_update /home/tomas/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/tomas/.local/share/sfeed/feeds/* > /var/www/tomaskala.com/reader/index.html
-  ```

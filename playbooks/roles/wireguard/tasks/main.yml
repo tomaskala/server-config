@@ -1,0 +1,97 @@
+---
+
+- name: Install wireguard
+  apt:
+    name:
+      - wireguard-tools
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+  notify:
+    - Restart wireguard
+
+- name: Check if configuration exists
+  stat:
+    path: "/etc/wireguard/{{ vpn_interface }}.conf"
+  register:
+    wg_conf
+
+- name: Generate the server key
+  shell:
+    cmd: |
+      umask 0077
+
+      /usr/bin/mkdir -p /etc/wireguard/keys
+
+      /usr/bin/wg genkey \
+        | tee /etc/wireguard/keys/{{ vpn_interface | quote }}_private.key \
+        | /usr/bin/wg pubkey \
+        > /etc/wireguard/keys/{{ vpn_interface | quote }}_public.key
+
+      umask 0022
+  when: wg_conf is not defined or not wg_conf.stat.exists
+
+- name: Register the server key
+  command: "/usr/bin/cat /etc/wireguard/keys/{{ vpn_interface | quote }}_private.key"
+  register: vpn_private_key
+  when: wg_conf is not defined or not wg_conf.stat.exists
+
+- name: Copy the wireguard config
+  template:
+    src: wg.conf.j2
+    dest: "/etc/wireguard/{{ vpn_interface }}.conf"
+    owner: root
+    group: root
+    mode: 0600
+  when: wg_conf is not defined or not wg_conf.stat.exists
+
+- name: Enable the wireguard service
+  systemd:
+    name: "wg-quick@{{ vpn_interface }}.service"
+    enabled: yes
+    state: started
+
+- name: Enable IP forwarding
+  vars:
+    sysctl_config:
+      net.ipv4.ip_forward: 1
+      net.ipv6.conf.all.forwarding: 1
+  sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: yes
+    reload: yes
+  loop: "{{ sysctl_config | dict2items }}"
+
+- name: Fetch the server public key
+  fetch:
+    src: /etc/wireguard/keys/{{ vpn_interface }}_public.key
+    dest: "{{ ansible_ssh_host }}/{{ vpn_interface }}_public.key"
+    flat: yes
+
+- name: Ensure the sshd service directory exists
+  file:
+    # Debian-based systems name the sshd service directory 'ssh.service.d'.
+    path: /etc/systemd/system/ssh.service.d
+    state: directory
+    recurse: yes
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Start sshd after Wireguard
+  copy:
+    content: |
+      [Unit]
+      After=
+      After=network.target auditd.service wg-quick@{{ vpn_interface }}.service
+      Requires=
+      Requires=wg-quick@{{ vpn_interface }}.service
+    dest: /etc/systemd/system/ssh.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart sshd
+    - Reload daemons

@@ -1,0 +1,77 @@
+---
+
+- name: Install nginx
+  apt:
+    name:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+  notify:
+    - Restart nginx
+
+- name: Remove the default sites
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/nginx/sites-enabled/default
+    - /etc/nginx/sites-available/default
+
+- name: Register certbot
+  command:
+    cmd: "{{ item }}"
+    creates:
+      /etc/letsencrypt/.registered
+  loop:
+    - /usr/bin/certbot register --non-interactive --agree-tos --email {{ email | quote }}
+    - /usr/bin/touch /etc/letsencrypt/.registered
+
+- name: Generate a TLS certificate
+  command:
+    cmd: >
+      /usr/bin/certbot certonly
+        --nginx
+        --non-interactive
+        --key-type ecdsa
+        --domain {{ web_address }}
+    creates: "/etc/letsencrypt/live/{{ web_address }}"
+
+- name: Set up sites available
+  vars:
+    sites:
+      website.conf.j2: "{{ web_address }}"
+  template:
+    src: "{{ item.key }}"
+    dest: "/etc/nginx/sites-available/{{ item.value }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  loop: "{{ sites | dict2items }}"
+
+- name: Link sites available to sites enabled
+  shell:
+    cmd: /usr/bin/ln -sf /etc/nginx/sites-available/*.conf /etc/nginx/sites-enabled/ 
+
+- name: Copy the nginx config
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+    validate: /usr/sbin/nginx -t -c %s
+
+- name: Enable the nginx service
+  systemd:
+    name: nginx.service
+    enabled: yes
+    state: restarted
+
+- name: Enable the certbot timer
+  systemd:
+    name: certbot.timer
+    enabled: yes
+    state: started

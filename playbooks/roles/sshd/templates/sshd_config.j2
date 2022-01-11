@@ -1,5 +1,7 @@
-# Set a different SSH port.
-Port 10022
+# Listen on this address and port.
+ListenAddress {{ vpn_server }}
+AddressFamily inet
+Port {{ ssh_port }}
 
 # Supported HostKey algorithms by order of preference.
 HostKey /etc/ssh/ssh_host_ed25519_key
@@ -36,8 +38,5 @@ X11Forwarding no
 # Hide MOTD.
 PrintMotd no
 
-# Use kernel sandbox mechanisms where possible in unprivileged processes.
-UsePrivilegeSeparation sandbox
-
 # Log sftp level file access that would not be easily logged otherwise.
-Subsystem sftp /usr/lib/ssh/sftp-server -f AUTHPRIV -l INFO
+Subsystem sftp /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO

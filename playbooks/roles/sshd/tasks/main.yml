@@ -1,0 +1,16 @@
+---
+
+- name: Copy the sshd config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+    validate: /usr/sbin/sshd -T -f %s
+  notify:
+    - Reload sshd
+
+- name: Deactivate short Diffie-Hellman moduli
+  shell:
+    cmd: /usr/bin/awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.tmp && /usr/bin/mv /etc/ssh/moduli.tmp /etc/ssh/moduli

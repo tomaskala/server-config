@@ -1,0 +1,17 @@
+---
+
+admin_username: tomas
+web_address: tomaskala.com
+email: public@tomaskala.com
+
+ssh_port: 10022
+ssh_admin_pubkey_file: ~/.ssh/id_ed25519_vps.pub
+ssh_git_pubkey_file: ~/.ssh/id_ed25519_vps_git.pub
+
+wan_interface: venet0
+
+vpn_interface: wg0
+vpn_port: 1194
+vpn_server: 10.200.200.1
+vpn_subnet: 10.200.200.0
+vpn_mask: 24

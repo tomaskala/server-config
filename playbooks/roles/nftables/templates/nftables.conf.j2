@@ -1,9 +1,8 @@
-#!/usr/sbin/nft -f
 flush ruleset
 
-define wan_if = <WAN-INTERFACE>
-define vpn_if = wg0
-define vpn_net = 10.200.200.0/24
+define wan_if = {{ wan_interface }}
+define vpn_if = {{ vpn_interface }}
+define vpn_net = {{ vpn_subnet }}/{{ vpn_mask }}
 
 table inet firewall {
     set tcp_accepted_wan {
@@ -18,14 +17,14 @@ table inet firewall {
         type inet_service
         elements = {
             53,
-            10022,
+            {{ ssh_port }},
         }
     }
 
     set udp_accepted_wan {
         type inet_service
         elements = {
-            1194,
+            {{ vpn_port }},
         }
     }
 

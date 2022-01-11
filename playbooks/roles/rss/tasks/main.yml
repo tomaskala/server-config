@@ -1,0 +1,74 @@
+---
+
+- name: Install the necessary packages
+  apt:
+    name:
+      - git
+      - gcc
+      - make
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Make sure the web directory exists
+  file:
+    path: "/var/www/{{ web_address }}/reader"
+    state: directory
+    owner: "{{ admin_username }}"
+    group: "{{ admin_username }}"
+    mode: 0755
+    recurse: yes
+
+- name: Move the stylesheet
+  copy:
+    src: style.css
+    dest: "/var/www/{{ web_address }}/reader/style.css"
+    owner: "{{ admin_username }}"
+    group: "{{ admin_username }}"
+    mode: 0644
+
+- name: Clone the RSS reader
+  git:
+    repo: git://git.codemadness.org/sfeed
+    dest: "/home/{{ admin_username }}/sfeed"
+    clone: yes
+
+- name: Install the RSS reader
+  command:
+    chdir: "/home/{{ admin_username }}/sfeed"
+    cmd: /usr/bin/make BIN='sfeed sfeed_html sfeed_xmlenc' SCRIPTS=sfeed_update clean install
+
+- name: Make sure the config directory exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ admin_username }}"
+    group: "{{ admin_username }}"
+    mode: 0755
+    recurse: yes
+  loop:
+    - "/home/{{ admin_username }}/.config/sfeed"
+    - "/home/{{ admin_username }}/.local/share/sfeed/feeds"
+
+- name: Copy the sfeed config
+  template:
+    src: sfeedrc.j2
+    dest: "/home/{{ admin_username }}/.config/sfeed/sfeedrc"
+    owner: "{{ admin_username }}"
+    group: "{{ admin_username }}"
+    mode: 0644
+
+- name: Set up a feed updating cronjob
+  cron:
+    user: "{{ admin_username }}"
+    minute: 0
+    hour: "*/4"
+    day: "*"
+    month: "*"
+    dow: "*"
+    name: Update RSS feeds
+    job: PATH="$PATH:/usr/local/bin" /usr/local/bin/sfeed_update /home/{{ admin_username | quote }}/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/{{ admin_username | quote }}/.local/share/sfeed/feeds/* > /var/www/{{ web_address | quote }}/reader/index.html
+
+- name: Update the feed for the first time
+  shell:
+    cmd: PATH="$PATH:/usr/local/bin" /usr/local/bin/sfeed_update /home/{{ admin_username | quote }}/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/{{ admin_username | quote }}/.local/share/sfeed/feeds/* > /var/www/{{ web_address | quote }}/reader/index.html

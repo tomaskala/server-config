@@ -1,7 +1,7 @@
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name tomaskala.com;
+    server_name {{ web_address }};
 
     return 301 https://$host$request_uri;
 }
@@ -9,19 +9,19 @@ server {
 server {
     listen 443 ssl http2 default_server;
     listen [::]:443 ssl http2 default_server;
-    server_name tomaskala.com;
-    root /var/www/tomaskala.com;
+    server_name {{ web_address }};
+    root /var/www/{{ web_address | quote }};
     index index.html;
 
     # Setup the TLS certificate.
-    ssl_certificate /etc/letsencrypt/live/tomaskala.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/tomaskala.com/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{ web_address | quote }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ web_address | quote }}/privkey.pem;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:10m;
     ssl_session_tickets off;
 
     # Setup OCSP stapling.
-    ssl_trusted_certificate /etc/letsencrypt/live/tomaskala.com/chain.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ web_address | quote }}/chain.pem;
 
     # Tell browsers to only access this domain over HTTPS and store that
     # information for the given number of seconds.
@@ -62,7 +62,7 @@ server {
 
     # Prevent image hotlinking.
     location ~ .(gif|png|jpg|jpeg|ico)$ {
-        valid_referers none blocked tomaskala.com *.tomaskala.com;
+        valid_referers none blocked {{ web_address }} *.{{ web_address }};
         if ($invalid_referer) {
             return 403;
         }

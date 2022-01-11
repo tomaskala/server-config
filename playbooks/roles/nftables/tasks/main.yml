@@ -1,0 +1,28 @@
+---
+
+- name: Install nftables
+  apt:
+    name:
+      - nftables
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+  notify:
+    - Restart nftables
+
+- name: Copy the nftables config
+  template:
+    src: nftables.conf.j2
+    dest: /etc/nftables.conf
+    owner: root
+    group: root
+    mode: 0644
+    validate: /usr/sbin/nft -c -f %s
+  notify:
+    - Reload nftables
+
+- name: Enable the nftables service
+  systemd:
+    name: nftables.service
+    enabled: yes
+    state: started

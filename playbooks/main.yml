@@ -1,0 +1,38 @@
+---
+
+- name: Server initialization
+  hosts:
+    - "{{ target | default('vpn') }}"
+  vars_files:
+    - vars.yml
+  vars_prompt:
+    - name: ansible_become_pass
+      prompt: Enter the root user password
+      private: yes
+      unsafe: yes
+  become: yes
+  become_user: root
+  become_method: su
+  remote_user: "{{ user | default(admin_username) }}"
+  port: "{{ old_ssh_port | default(ssh_port) }}"
+  roles:
+    - role: init
+      tags: [ init ]
+
+    - role: sshd
+      tags: [ security, sshd ]
+    - role: nftables
+      tags: [ security, nftables ]
+    - role: wireguard
+      tags: [ security, wireguard ]
+
+    - role: unbound
+      tags: [ services, unbound ]
+    - role: nginx
+      tags: [ services, nginx ]
+    - role: git
+      tags: [ services, git ]
+    - role: rsync
+      tags: [ services, rsync ]
+    - role: rss
+      tags: [ services, rss ]

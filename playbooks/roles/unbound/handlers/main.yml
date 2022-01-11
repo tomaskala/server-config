@@ -1,0 +1,11 @@
+---
+
+- name: Restart unbound
+  systemd:
+    name: unbound.service
+    state: restarted
+
+- name: Reload unbound
+  systemd:
+    name: unbound.service
+    state: reloaded

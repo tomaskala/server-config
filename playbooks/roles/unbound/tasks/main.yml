@@ -1,0 +1,86 @@
+---
+
+- name: Install unbound
+  apt:
+    name:
+      - unbound
+      - curl
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+  notify:
+    - Restart unbound
+
+- name: Clear the default unbound configuration
+  file:
+    path: /etc/unbound/unbound.conf.d
+    state: absent
+
+- name: Create the unbound configuration subdirectory
+  file:
+    path: /etc/unbound/unbound.conf.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+# The unbound-anchor command returns 0 if no update is necessary and 1 when
+# an update was made.
+- name: Download the initial root trust anchor for DNSSEC validation
+  command: /usr/sbin/unbound-anchor -a /etc/unbound/trusted-key.key
+  ignore_errors: yes
+  notify:
+    - Reload unbound
+
+- name: Allow updating the root anchor by the unbound user
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: unbound
+    mode: 0775
+  loop:
+    - /etc/unbound
+    - /etc/unbound/trusted-key.key
+
+- name: Enable unbound remote control
+  command: /usr/sbin/unbound-control-setup -d /etc/unbound
+
+- name: Copy the unbound config
+  template:
+    src: unbound.conf.j2
+    dest: /etc/unbound/unbound.conf
+    owner: root
+    group: root
+    mode: 0644
+    validate: /usr/sbin/unbound-checkconf %s
+  notify:
+    - Restart unbound
+
+- name: Copy the blocklist fetching script
+  copy:
+    src: fetch-blocklists
+    dest: /usr/local/bin/fetch-blocklists
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Set up a blocklist filling cronjob
+  cron:
+    user: root
+    minute: 0
+    hour: 5
+    day: "*"
+    month: "*"
+    dow: 0
+    name: Fetch unbound blocklist
+    job: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
+
+- name: Fill the blocklist for the first time
+  shell:
+    cmd: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
+
+- name: Enable the unbound service
+  systemd:
+    name: unbound.service
+    enabled: yes
+    state: restarted

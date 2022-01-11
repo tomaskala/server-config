@@ -1,0 +1,9 @@
+[Interface]
+Address = {{ vpn_server }}/{{ vpn_mask }}
+PrivateKey = {{ vpn_private_key.stdout }}
+ListenPort = {{ vpn_port }}
+
+[Peer]
+PublicKey = {{ vpn_client_public_key }}
+PresharedKey = {{ vpn_client_preshared_key }}
+AllowedIPs = {{ vpn_client }}/32
