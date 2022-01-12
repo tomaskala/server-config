@@ -9,7 +9,6 @@ Because the first login uses a password instead of an SSH key, we install
 `paramiko` as well. Otherwise, `sshpass` would have to be installed, but that
 cannot be limited to a virtual environment.
 ```
-$ cd playbooks
 $ python -m venv ./venv
 $ source ./venv/bin/activate
 $ python -m pip install -r requirements.txt
@@ -33,7 +32,6 @@ The command performs a basic server initialization, and creates an admin user
 with the specified password. The password is immediately expired, forcing the
 admin user to change it upon the first login.
 ```
-$ cd playbooks
 $ ansible-playbook -t init -k -i <server-address>, -c paramiko -e "target=<server-address> user=root ssh_port=22 admin_password=<admin-password>" main.yml
 ```
 
@@ -43,7 +41,6 @@ $ ansible-playbook -t init -k -i <server-address>, -c paramiko -e "target=<serve
 First, login as the admin user and change the password. Next, run the
 following:
 ```
-$ cd playbooks
 $ ansible-playbook -t security -i <server-address>, -e "target=<server-address> old_ssh_port=22 vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" main.yml
 ```
 
@@ -56,7 +53,6 @@ this is more of a good practice, and we don't mind potentially leaking the
 password in the local bash history. This is better than being prompted for the
 password every time the playbook is run, or carrying an ansible vault around.
 ```
-$ cd playbooks
 $ ansible-playbook -t services -e "git_password=<git-user-password>" main.yml
 ```
 
