@@ -9,9 +9,10 @@ Because the first login uses a password instead of an SSH key, we install
 `paramiko` as well. Otherwise, `sshpass` would have to be installed, but that
 cannot be limited to a virtual environment.
 ```
+$ cd playbooks
 $ python -m venv ./venv
 $ source ./venv/bin/activate
-$ python -m pip install ansible paramiko
+$ python -m pip install -r requirements.txt
 ```
 
 
