@@ -6,7 +6,6 @@ email: public@tomaskala.com
 
 ssh_port: 10022
 ssh_admin_pubkey_file: ~/.ssh/id_ed25519_vps.pub
-ssh_git_pubkey_file: ~/.ssh/id_ed25519_vps_git.pub
 
 wan_interface: venet0
 
