@@ -19,6 +19,7 @@
   loop:
     - /etc/nginx/sites-enabled/default
     - /etc/nginx/sites-available/default
+    - /var/www/html
 
 - name: Register certbot
   command:
