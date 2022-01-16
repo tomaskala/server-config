@@ -12,7 +12,10 @@ src3='https://winhelp2002.mvps.org/hosts.txt'
 # My file with shitty Czech news sites
 src4='https://raw.githubusercontent.com/tomaskala/dotfiles/master/.local/share/dns-blacklist'
 
-/usr/bin/curl "${src1}" "${src2}" "${src3}" "${src4}" \
+# NoCoin filter
+src5='https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
+
+/usr/bin/curl "${src1}" "${src2}" "${src3}" "${src4}" "${src5}" \
   | /usr/bin/awk '$1 == "0.0.0.0" && $2 != "0.0.0.0" {print $2}' \
   | /usr/bin/tr -d '\r' \
   | /usr/bin/tr '[:upper:]' '[:lower:]' \
