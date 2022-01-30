@@ -35,6 +35,15 @@ server:
     # Chroot settings.
     chroot: ""
 
+    # Allow this domain and its subdomains to contain private addresses.
+    private-domain: {{ web_address }}.
+
+    # Use local data for this domain and its subdomains.
+    local-zone: "{{ web_address }}." redirect
+
+    # Resolve the domain locally.
+    local-data: "{{ web_address }}. A {{ vpn_server }}"
+
     # -------------------------------------------------------------------------
     # Logging settings.
     # -------------------------------------------------------------------------
