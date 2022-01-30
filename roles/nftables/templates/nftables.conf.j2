@@ -89,6 +89,9 @@ table inet firewall {
 
         # Allow VPN traffic to access the internet via wan.
         iifname $vpn_if oifname $wan_if ct state new accept
+
+        # Allow the VPN peers to communicate with each other.
+        iifname $vpn_if oifname $vpn_if ct state new accept
     }
 
     chain output {

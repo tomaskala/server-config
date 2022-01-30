@@ -87,6 +87,14 @@ $ ansible-playbook -t services -e "git_password=<git-user-password>" main.yml
   ```
 
 
+### Client, allow access to the other peers
+
+* Replace the `AllowedIPs` clause by
+  ```
+  AllowedIPs = <vpn-subnet>
+  ```
+
+
 ### Client, full tunneling
 
 * Assumes that a DNS resolver is running on the server.
