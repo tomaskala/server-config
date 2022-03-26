@@ -1,0 +1,35 @@
+---
+
+- name: Install certbot
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Register certbot
+  command:
+    cmd: "{{ item }}"
+    creates:
+      /etc/letsencrypt/.registered
+  loop:
+    - /usr/bin/certbot register --non-interactive --agree-tos --email {{ email | quote }}
+    - /usr/bin/touch /etc/letsencrypt/.registered
+
+- name: Generate a TLS certificate
+  command:
+    cmd: >
+      /usr/bin/certbot certonly
+        --nginx
+        --non-interactive
+        --key-type ecdsa
+        --domain {{ web_address }}
+    creates: "/etc/letsencrypt/live/{{ web_address }}"
+
+- name: Enable the certbot timer
+  systemd:
+    name: certbot.timer
+    enabled: yes
+    state: started

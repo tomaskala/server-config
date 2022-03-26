@@ -1,0 +1,21 @@
+---
+
+- name: Set up sites available
+  vars:
+    sites:
+      website.conf.j2: "{{ web_address }}"
+  template:
+    src: "{{ item.key }}"
+    dest: "/etc/nginx/sites-available/{{ item.value }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  loop: "{{ sites | dict2items }}"
+
+- name: Link sites available to sites enabled
+  shell:
+    cmd: /usr/bin/ln -sf /etc/nginx/sites-available/*.conf /etc/nginx/sites-enabled/ 
+
+- name: Validate nginx config
+  command:
+    cmd: /usr/sbin/nginx -t

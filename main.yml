@@ -29,6 +29,10 @@
       tags: [ services, unbound ]
     - role: nginx
       tags: [ services, nginx ]
+    - role: tls
+      tags: [ services, tls ]
+    - role: website
+      tags: [ services, website ]
     - role: git
       tags: [ services, git ]
     - role: rsync
