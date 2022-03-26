@@ -4,8 +4,6 @@ admin_username: tomas
 web_address: tomaskala.com
 email: public@tomaskala.com
 
-ssh_port: 10022
-
 wan_interface: venet0
 
 vpn_interface: wg0

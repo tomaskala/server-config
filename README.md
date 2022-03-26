@@ -35,20 +35,21 @@ address must be overriden to its public address. This is done by specifying a
 new inventory (note the trailing comma) and setting the `target` variable.
 
 
-### Initialize the server
+### Initialize and secure the server
 
 The SSH key is explicitly given, because my SSH alias is set with the VPN
-address in mind.
+address in mind. Past this point, the VPN has been set up and the alias works
+correctly.
 
 ```
-$ ansible-playbook -t init -i <server-address>, -e "target=<server-address> ssh_port=22" --private-key <admin-ssh-key> main.yml
+$ ansible-playbook -t init -i <server-address>, -e "target=<server-address>" --private-key <admin-ssh-key> main.yml
 ```
 
 
 ### Setup security
 
 ```
-$ ansible-playbook -t security -i <server-address>, -e "target=<server-address> old_ssh_port=22 vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" main.yml
+$ ansible-playbook -t security -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" --private-key <admin-ssh-key> main.yml
 ```
 
 
