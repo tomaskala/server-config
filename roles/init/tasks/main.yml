@@ -7,18 +7,22 @@
     autoclean: yes
     autoremove: yes
 
-- name: Install the necessary packages
-  apt:
-    name:
-      - unattended-upgrades
-    state: latest
+- name: Setup unattended upgrades
+  block:
+    - name: Install unattended upgrades
+      apt:
+        name:
+          - unattended-upgrades
+        state: latest
+        update_cache: yes
+        cache_valid_time: 600
 
-- name: Enable unattended updates
-  copy:
-    content: |
-      APT::Periodic::Update-Package-Lists "1";
-      APT::Periodic::Unattended-Upgrade "1";
-    dest: /etc/apt/apt.conf.d/20auto-upgrades
-    owner: root
-    group: root
-    mode: 0644
+    - name: Enable unattended upgrades
+      copy:
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        owner: root
+        group: root
+        mode: 0644
