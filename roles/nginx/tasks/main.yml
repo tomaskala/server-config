@@ -69,7 +69,7 @@
   systemd:
     name: nginx.service
     enabled: yes
-    state: restarted
+    state: started
 
 - name: Enable the certbot timer
   systemd:
