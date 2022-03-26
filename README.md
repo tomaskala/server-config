@@ -14,21 +14,16 @@ $ python -m pip install -r requirements.txt
 
 ## First login
 
-The first login is to be performed manually under the `root` user. The main
-user is created and python is installed, so that ansible can be run afterwards.
+The first login is done under the `root` user. The main user is created and
+python is installed, so that ansible can be run afterwards.
 ```
 # apt install sudo python3
 # useradd -s /bin/bash -G sudo <admin-username>
 # passwd <admin-username>
 ```
 
-Next, copy the main user's SSH key to the remote machine.
-```
-$ ssh-copy-id -i <admin-ssh-pubkey> <admin-username>@<server-address>
-```
 
-
-## Initial configuration
+## Server configuration
 
 Before the VPN is set up and the SSH config alias can be used, the server
 address must be overriden to its public address. This is done by specifying a
@@ -37,12 +32,10 @@ new inventory (note the trailing comma) and setting the `target` variable.
 
 ### Initialize and secure the server
 
-The SSH key is explicitly given, because my SSH alias is set with the VPN
-address in mind. Past this point, the VPN has been set up and the alias works
-correctly.
-
+At this point, the login is done using a password, as the SSH keys have not
+been copied yet.
 ```
-$ ansible-playbook -t init,security -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" --private-key <admin-ssh-key> main.yml
+$ ansible-playbook -t init,security -k -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" main.yml
 ```
 
 

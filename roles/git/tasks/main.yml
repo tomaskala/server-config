@@ -42,7 +42,4 @@
     path: "/home/git/.ssh/authorized_keys"
     line: "{{ item }}"
     state: present
-  loop:
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBaTcR5f4bbzG6JmuyFfMAEuQYRmWzt518BlBIbyr1MK Git key for the VPS
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCmYsyCuOmqW1utcZvBWYIzZnDEXUjmg/YpdcOWudF5 Android key
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQQQ7zAwXCpFVWNGnhOck8GqOELWAHCy5NrH9nyxjzU home_git
+  loop: "{{ ssh_keys_git }}"

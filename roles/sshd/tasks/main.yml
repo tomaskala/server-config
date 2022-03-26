@@ -20,6 +20,4 @@
     path: "/home/{{ admin_username | quote }}/.ssh/authorized_keys"
     line: "{{ item }}"
     state: present
-  loop:
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrK/gGoC5nX+u82z2N/8u+gd/yMJrb6pMln/zJJjG4w Access key for the VPS
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDXh5D6Rhl/ORiXXW+BYZN3+/OcyMdPKTI+BM7HQI8MN home
+  loop: "{{ ssh_keys_admin }}"
