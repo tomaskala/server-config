@@ -42,14 +42,7 @@ address in mind. Past this point, the VPN has been set up and the alias works
 correctly.
 
 ```
-$ ansible-playbook -t init -i <server-address>, -e "target=<server-address>" --private-key <admin-ssh-key> main.yml
-```
-
-
-### Setup security
-
-```
-$ ansible-playbook -t security -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" --private-key <admin-ssh-key> main.yml
+$ ansible-playbook -t init,security -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" --private-key <admin-ssh-key> main.yml
 ```
 
 
