@@ -5,13 +5,26 @@ Configuration for my server. Assumes Debian 11.
 
 ## Ansible setup
 
-Because the first login uses a password instead of an SSH key, we install
-`paramiko` as well. Otherwise, `sshpass` would have to be installed, but that
-cannot be limited to a virtual environment.
 ```
 $ python -m venv ./venv
 $ source ./venv/bin/activate
 $ python -m pip install -r requirements.txt
+```
+
+
+## First login
+
+The first login is to be performed manually under the `root` user. The main
+user is created and python is installed, so that ansible can be run afterwards.
+```
+# apt install sudo python3
+# useradd -s /bin/bash -G sudo <admin-username>
+# passwd <admin-username>
+```
+
+Next, copy the main user's SSH key to the remote machine.
+```
+$ ssh-copy-id -i <admin-ssh-pubkey> <admin-username>@<server-address>
 ```
 
 
@@ -24,22 +37,16 @@ new inventory (note the trailing comma) and setting the `target` variable.
 
 ### Initialize the server
 
-The initial configuration assumes that there is a `root` account without an SSH
-key, so a password login must be used. The user is prompted for the `root`
-password.
+The SSH key is explicitly given, because my SSH alias is set with the VPN
+address in mind.
 
-The command performs a basic server initialization, and creates an admin user
-with the specified password. The password is immediately expired, forcing the
-admin user to change it upon the first login.
 ```
-$ ansible-playbook -t init -k -i <server-address>, -c paramiko -e "target=<server-address> user=root ssh_port=22 admin_password=<admin-password>" main.yml
+$ ansible-playbook -t init -i <server-address>, -e "target=<server-address> ssh_port=22" --private-key <admin-ssh-key> main.yml
 ```
 
 
 ### Setup security
 
-First, login as the admin user and change the password. Next, run the
-following:
 ```
 $ ansible-playbook -t security -i <server-address>, -e "target=<server-address> old_ssh_port=22 vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" main.yml
 ```

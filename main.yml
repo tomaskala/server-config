@@ -13,7 +13,7 @@
   become: yes
   become_user: root
   become_method: su
-  remote_user: "{{ user | default(admin_username) }}"
+  remote_user: "{{ admin_username }}"
   port: "{{ old_ssh_port | default(ssh_port) }}"
   roles:
     - role: init
