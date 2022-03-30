@@ -48,13 +48,8 @@ $ ansible-playbook -t init,security -i <server-address>, -e "target=<server-addr
 
 ### Setup services
 
-The `git` user password variable only needs to be specified on the first run.
-As the user is never accessed directly and his shell is set to `git-shell`,
-this is more of a good practice, and we don't mind potentially leaking the
-password in the local bash history. This is better than being prompted for the
-password every time the playbook is run, or carrying an ansible vault around.
 ```
-$ ansible-playbook -t services -e "git_password=<git-user-password>" main.yml
+$ ansible-playbook -t services main.yml
 ```
 
 

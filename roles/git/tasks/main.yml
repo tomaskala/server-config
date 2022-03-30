@@ -22,10 +22,9 @@
 - name: Create the git user if it does not exist
   user:
     name: git
-    password: "{{ git_password | password_hash('sha512') }}"
-    update_password: on_create
     comment: The git user
     state: present
+    create_home: yes
     shell: /usr/bin/git-shell
     system: yes
   when: git_user_exists.rc != 0
@@ -38,8 +37,26 @@
     append: yes
 
 - name: Add access keys
-  lineinfile:
-    path: "/home/git/.ssh/authorized_keys"
-    line: "{{ item }}"
-    state: present
-  loop: "{{ ssh_keys_git }}"
+  block:
+    - name: Make sure /home/git/.ssh exists
+      file:
+        path: /home/git/.ssh
+        state: directory
+        owner: git
+        group: git
+        mode: 0755
+
+    - name: Make sure /home/git/.ssh/authorized_keys exists
+      file:
+        path: /home/git/.ssh/authorized_keys
+        state: touch
+        owner: git
+        group: git
+        mode: 0600
+
+    - name: Copy keys
+      lineinfile:
+        path: "/home/git/.ssh/authorized_keys"
+        line: "{{ item }}"
+        state: present
+      loop: "{{ ssh_keys_git }}"
