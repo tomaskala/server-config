@@ -32,7 +32,8 @@
   when: wg_conf is not defined or not wg_conf.stat.exists
 
 - name: Register the server key
-  command: "/usr/bin/cat /etc/wireguard/keys/{{ vpn_interface | quote }}_private.key"
+  command:
+    cmd: "/usr/bin/cat /etc/wireguard/keys/{{ vpn_interface | quote }}_private.key"
   register: vpn_private_key
   when: wg_conf is not defined or not wg_conf.stat.exists
 

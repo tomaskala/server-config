@@ -76,10 +76,10 @@
 - name: Change the feed ownership to the correct user
   vars:
     paths:
-      - path: /home/{{ admin_username | quote }}/.local/share/sfeed/feeds
+      - path: /home/{{ admin_username }}/.local/share/sfeed/feeds
         state: directory
         recurse: yes
-      - path: /var/www/{{ web_address | quote }}/reader/index.html
+      - path: /var/www/{{ web_address }}/reader/index.html
         state: file
         recurse: no
   file:

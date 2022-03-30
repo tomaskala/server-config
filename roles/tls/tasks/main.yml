@@ -25,7 +25,7 @@
         --nginx
         --non-interactive
         --key-type ecdsa
-        --domain {{ web_address }}
+        --domain {{ web_address | quote }}
     creates: "/etc/letsencrypt/live/{{ web_address }}"
 
 - name: Enable the certbot timer
