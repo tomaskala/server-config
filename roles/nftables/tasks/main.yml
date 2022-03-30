@@ -20,9 +20,3 @@
     validate: /usr/sbin/nft -c -f %s
   notify:
     - Reload nftables
-
-- name: Enable the nftables service
-  systemd:
-    name: nftables.service
-    enabled: yes
-    state: started

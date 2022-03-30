@@ -7,12 +7,12 @@
     - vars.yml
   vars_prompt:
     - name: ansible_become_pass
-      prompt: Enter the root user password
+      prompt: "Enter the {{ admin_username }} user password"
       private: yes
       unsafe: yes
   become: yes
   become_user: root
-  become_method: su
+  become_method: sudo
   remote_user: "{{ admin_username }}"
   roles:
     - role: init

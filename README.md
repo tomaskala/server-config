@@ -18,8 +18,15 @@ The first login is done under the `root` user. The main user is created and
 python is installed, so that ansible can be run afterwards.
 ```
 # apt install sudo python3
-# useradd -s /bin/bash -G sudo <admin-username>
+# useradd -m -s /bin/bash -G sudo <admin-username>
 # passwd <admin-username>
+```
+
+
+## Copy the main user public key
+
+```
+$ ssh-copy-id -i <admin-user-public-key> <server-address>
 ```
 
 
@@ -35,7 +42,7 @@ new inventory (note the trailing comma) and setting the `target` variable.
 At this point, the login is done using a password, as the SSH keys have not
 been copied yet.
 ```
-$ ansible-playbook -t init,security -k -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" main.yml
+$ ansible-playbook -t init,security -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key> vpn_client=<vpn-client-address>" main.yml
 ```
 
 

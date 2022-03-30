@@ -3,9 +3,11 @@
 - name: Restart nftables
   systemd:
     name: nftables.service
+    enabled: yes
     state: restarted
 
 - name: Reload nftables
   systemd:
     name: nftables.service
+    enabled: yes
     state: reloaded
