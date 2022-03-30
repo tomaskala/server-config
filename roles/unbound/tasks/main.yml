@@ -28,7 +28,8 @@
 # an update was made.
 - name: Download the initial root trust anchor for DNSSEC validation
   command: /usr/sbin/unbound-anchor -a /etc/unbound/trusted-key.key
-  ignore_errors: yes
+  register: download_anchor
+  failed_when: "download_anchor.rc != 0 and download_anchor.rc != 1"
   notify:
     - Reload unbound
 
