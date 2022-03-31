@@ -96,3 +96,9 @@
   notify:
     - Restart sshd
     - Reload daemons
+
+- name: Remove the generated keys
+  file:
+    path: /etc/wireguard/keys
+    state: absent
+  when: wg_conf is not defined or not wg_conf.stat.exists
