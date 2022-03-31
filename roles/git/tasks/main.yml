@@ -14,12 +14,7 @@
     line: /usr/bin/git-shell
     state: present
 
-- name: Check if the git user exists
-  command: /usr/bin/getent passwd git
-  register: git_user_exists
-  ignore_errors: yes
-
-- name: Create the git user if it does not exist
+- name: Create the git user
   user:
     name: git
     comment: The git user
@@ -27,7 +22,6 @@
     create_home: yes
     shell: /usr/bin/git-shell
     system: yes
-  when: git_user_exists.rc != 0
 
 - name: Allow the main user to access the git directory
   user:
