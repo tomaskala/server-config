@@ -20,10 +20,10 @@
 
     - role: sshd
       tags: [ security, sshd ]
-    - role: nftables
-      tags: [ security, nftables ]
     - role: wireguard
       tags: [ security, wireguard ]
+    - role: nftables
+      tags: [ security, nftables ]
 
     - role: unbound
       tags: [ services, unbound ]
