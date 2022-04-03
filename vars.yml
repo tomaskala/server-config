@@ -1,7 +1,7 @@
 ---
 
 admin_username: tomas
-web_address: tomaskala.com
+domain: tomaskala.com
 email: public@tomaskala.com
 
 wan_interface: venet0

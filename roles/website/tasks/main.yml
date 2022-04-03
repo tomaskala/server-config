@@ -3,7 +3,7 @@
 - name: Set up sites available
   vars:
     sites:
-      website.conf.j2: "{{ web_address }}"
+      website.conf.j2: "{{ domain }}"
   template:
     src: "{{ item.key }}"
     dest: "/etc/nginx/sites-available/{{ item.value }}.conf"
@@ -19,3 +19,8 @@
 - name: Validate nginx config
   command:
     cmd: /usr/sbin/nginx -t
+
+- name: Reload nginx
+  systemd:
+    name: nginx.service
+    state: reloaded
