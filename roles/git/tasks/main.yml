@@ -22,6 +22,7 @@
     create_home: yes
     shell: /usr/bin/git-shell
     system: yes
+    password_lock: no
 
 - name: Allow the main user to access the git directory
   user:
