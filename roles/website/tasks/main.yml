@@ -24,3 +24,11 @@
   systemd:
     name: nginx.service
     state: reloaded
+
+- name: Create the webroot
+  file:
+    path: "/var/www/{{ domain }}"
+    state: directory
+    owner: "{{ admin_username }}"
+    group: "{{ admin_username }}"
+    mode: 0755
