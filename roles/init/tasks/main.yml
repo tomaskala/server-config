@@ -7,6 +7,10 @@
     autoclean: yes
     autoremove: yes
 
+- name: Set the timezone
+  command:
+    cmd: "timedatectl set-timezone {{ timezone | quote }}"
+
 - name: Setup unattended upgrades
   block:
     - name: Install unattended upgrades
