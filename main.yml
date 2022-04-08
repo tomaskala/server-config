@@ -35,7 +35,5 @@
       tags: [ services, website ]
     - role: git
       tags: [ services, git ]
-    - role: rsync
-      tags: [ services, rsync ]
     - role: rss
       tags: [ services, rss ]
