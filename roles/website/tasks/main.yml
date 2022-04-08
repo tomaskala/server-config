@@ -3,14 +3,15 @@
 - name: Set up sites available
   vars:
     sites:
-      website.conf.j2: "{{ domain }}"
+      - file: website.conf.j2
+        name: "{{ domain }}"
   template:
-    src: "{{ item.key }}"
-    dest: "/etc/nginx/sites-available/{{ item.value }}.conf"
+    src: "{{ item.file }}"
+    dest: "/etc/nginx/sites-available/{{ item.name }}.conf"
     owner: root
     group: root
     mode: 0644
-  loop: "{{ sites | dict2items }}"
+  loop: "{{ sites }}"
 
 - name: Link sites available to sites enabled
   shell:
