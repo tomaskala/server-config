@@ -4,6 +4,7 @@
   apt:
     name:
       - wireguard-tools
+      - qrencode
     state: latest
     update_cache: yes
     cache_valid_time: 600
@@ -70,6 +71,7 @@
     src: /etc/wireguard/keys/{{ vpn_interface }}_public.key
     dest: "{{ ansible_ssh_host }}/{{ vpn_interface }}_public.key"
     flat: yes
+  when: wg_conf is not defined or not wg_conf.stat.exists
 
 - name: Ensure the sshd service directory exists
   file:
@@ -102,3 +104,11 @@
     path: /etc/wireguard/keys
     state: absent
   when: wg_conf is not defined or not wg_conf.stat.exists
+
+- name: Copy the add-peer script
+  copy:
+    src: add-peer
+    dest: /usr/local/bin/add-peer
+    owner: root
+    group: root
+    mode: 0700

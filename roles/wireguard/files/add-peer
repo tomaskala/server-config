@@ -1,0 +1,153 @@
+#!/bin/sh
+set -euf
+
+usage="Usage: $(/usr/bin/basename "$0") OPTIONS
+
+Options:
+  -n TEXT     Name of the added peer, used to comment the configuration.
+  -i IP       IP address of the added peer within the VPN.
+  -e IP:PORT  Public IP address and WireGuard port of the current peer.
+  -c FILE     Path to the WireGuard config of the current peer.
+  -t TEXT     Tunneling type {access, full, full-resolved}.
+              - 'access': Only grant access to the current peer.
+              - 'full': Setup full tunneling and set the current peer as the
+                DNS server.
+              - 'full-resolved': Setup full tunneling, set the current peer as
+                the DNS server, assume systemd-resolved for the added peer.
+  -h          Show this message and exit."
+
+euid="$(/usr/bin/id -u)"
+name=''
+ipaddress=''
+endpoint=''
+config=''
+tunneling=''
+
+die() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+checkarg() {
+  if [ -z "$1" ]; then
+    die 'Missing value for the %s\n.' "$2"
+  fi
+}
+
+addtoconfig() {
+  name="$1"
+  ipaddress="$2"
+  publickey="$3"
+  presharedkey="$4"
+
+  printf '\n'
+  printf '# %s\n' "${name}"
+  printf '[Peer]\n'
+  printf 'PublicKey = %s\n' "${publickey}"
+  printf 'PresharedKey = %s\n' "${presharedkey}"
+  printf 'AllowedIPs = %s/32\n' "${ipaddress}"
+}
+
+genconfig() {
+  ipaddress="$1"
+  endpoint="$2"
+  tunneling="$3"
+  privatekey="$4"
+  presharedkey="$5"
+  serveripaddress="$6"
+  serverpublickey="$7"
+
+  printf '[Interface]\n'
+  printf 'Address = %s/32\n' "${ipaddress}"
+  printf 'PrivateKey = %s\n' "${privatekey}"
+
+  if [ "${tunneling}" = 'full' ]; then
+    printf 'DNS = %s\n' "${serveripaddress}"
+  elif [ "${tunneling}" = 'full-resolved' ]; then
+    printf 'DNS = %s\n' "${serveripaddress}"
+    printf 'PostUp = resolvectl dns %%i %s;' "${serveripaddress}"
+    printf 'resolvectl domain %%i "~.";'
+    printf 'resolvectl default-route %%i true\n'
+    printf 'PreDown = resolvectl revert %%i\n'
+  fi
+
+  printf '\n'
+  printf '[Peer]\n'
+  printf 'PublicKey = %s\n' "${serverpublickey}"
+  printf 'PresharedKey = %s\n' "${presharedkey}"
+  printf 'Endpoint = %s\n' "${endpoint}"
+
+  if [ "${tunneling}" = 'access' ]; then
+    printf 'AllowedIPs = %s/32\n' "${serveripaddress}"
+  else
+    printf 'AllowedIPs = 0.0.0.0/0, ::/0\n'
+  fi
+}
+
+main() {
+  if [ "${euid}" != 0 ]; then
+    die 'Run the script as root.'
+  fi
+
+  while getopts 'hi:n:e:c:t:' arg; do
+    case "${arg}" in
+      h) printf '%s\n' "${usage}"; exit 0 ;;
+      n) name="${OPTARG}" ;;
+      i) ipaddress="${OPTARG}" ;;
+      e) endpoint="${OPTARG}" ;;
+      c) config="${OPTARG}" ;;
+      t) tunneling="${OPTARG}" ;;
+      *) printf '%s\n' "${usage}"; exit 1 ;;
+    esac
+  done
+
+  checkarg "${name}" 'added peer name'
+  checkarg "${ipaddress}" 'added peer IP address inside the VPN'
+  checkarg "${endpoint}" 'endpoint'
+  checkarg "${config}" 'current peer WireGuard config path'
+  checkarg "${tunneling}" 'tunneling type'
+
+  if [ "${tunneling}" != 'access' ] && [ "${tunneling}" != 'full' ] \
+    && [ "${tunneling}" != 'full-resolved' ]; then
+    die 'Invalid tunneling value.'
+  fi
+
+  if [ ! -f "${config}" ]; then
+    die 'The config file does not exist.'
+  fi
+
+  if /usr/bin/grep -q "#\s*${name}$" "${config}"; then
+    die 'A peer with this name already exists.'
+  fi
+
+  if /usr/bin/grep -q "AllowedIPs\s*=\s*${ipaddress}/32$" "${config}"; then
+    die 'A peer with this IP address already exists.'
+  fi
+
+  serveripaddress=$(/usr/bin/sed -n 's@^Address\s*=\s*\([^/]*\)/.*$@\1@p' \
+    "${config}")
+  serverpublickey=$(/usr/bin/sed -n 's/^PrivateKey\s*=\s*\(.*\)$/\1/p' \
+    "${config}" | /usr/bin/wg pubkey)
+
+  privatekey=$(/usr/bin/wg genkey)
+  publickey=$(printf '%s' "${privatekey}" | /usr/bin/wg pubkey)
+  presharedkey=$(/usr/bin/wg genpsk)
+
+  addtoconfig \
+    "${name}" \
+    "${ipaddress}" \
+    "${publickey}" \
+    "${presharedkey}" \
+    >> "${config}"
+
+  genconfig \
+    "${ipaddress}" \
+    "${endpoint}" \
+    "${tunneling}" \
+    "${privatekey}" \
+    "${presharedkey}" \
+    "${serveripaddress}" \
+    "${serverpublickey}"
+}
+
+main "$@"
