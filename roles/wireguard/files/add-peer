@@ -3,6 +3,8 @@ set -euf
 
 usage="Usage: $(/usr/bin/basename "$0") OPTIONS
 
+Add a new WireGuard peer.
+
 Options:
   -n TEXT     Name of the added peer, used to comment the configuration.
   -i IP       IP address of the added peer within the VPN.
