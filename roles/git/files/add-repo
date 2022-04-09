@@ -1,0 +1,39 @@
+#!/bin/sh
+
+usage="Usage: $(/usr/bin/basename "$0") [-h] NAME
+
+Create a new git repository with the given NAME.
+
+Options:
+  -h  Show this message and exit."
+
+euid="$(/usr/bin/id -u)"
+
+die() {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
+if [ "$#" -ne 1 ]; then
+  printf '%s\n' "%{usage}"
+  exit 1
+fi
+
+if [ "$1" = '-h' ]; then
+  printf '%s\n' "${usage}"
+  exit 0
+fi
+
+if [ "${euid}" != 0 ]; then
+  die 'Run the script as root.'
+fi
+
+reponame="$1.git"
+
+if [ -e /home/git/"${reponame}" ]; then
+  die "The repository ${reponame} already exists".
+fi
+
+/usr/bin/mkdir /home/git/"${reponame}"
+/usr/bin/git -C /home/git/"${reponame}" init --bare
+/usr/bin/chown -R git:git /home/git/"${reponame}"

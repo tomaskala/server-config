@@ -55,3 +55,11 @@
         line: "{{ item }}"
         state: present
       loop: "{{ ssh_keys_git }}"
+
+- name: Copy the add-repo script
+  copy:
+    src: add-repo
+    dest: /usr/local/bin/add-repo
+    owner: root
+    group: root
+    mode: 0700
