@@ -8,8 +8,13 @@ Options:
   -i IP       IP address of the added peer within the VPN.
   -e IP:PORT  Public IP address and WireGuard port of the current peer.
   -c FILE     Path to the WireGuard config of the current peer.
-  -t TEXT     Tunneling type {access, full, full-resolved}.
+  -t TEXT     Tunneling type:
               - 'access': Only grant access to the current peer.
+              - 'access-dns': Only grant access to the current peer and set the
+                current peer as the DNS server.
+              - 'access-dns-resolved': Only grant access to the current peer,
+                set the current peer as the DNS server, assume systemd-resolved
+                for the added peer.
               - 'full': Setup full tunneling and set the current peer as the
                 DNS server.
               - 'full-resolved': Setup full tunneling, set the current peer as
@@ -61,9 +66,10 @@ genconfig() {
   printf 'Address = %s/32\n' "${ipaddress}"
   printf 'PrivateKey = %s\n' "${privatekey}"
 
-  if [ "${tunneling}" = 'full' ]; then
+  if [ "${tunneling}" = 'access-dns' ] || [ "${tunneling}" = 'full' ]; then
     printf 'DNS = %s\n' "${serveripaddress}"
-  elif [ "${tunneling}" = 'full-resolved' ]; then
+  elif [ "${tunneling}" = 'access-dns-resolved' ] \
+    || [ "${tunneling}" = 'full-resolved' ]; then
     printf 'DNS = %s\n' "${serveripaddress}"
     printf 'PostUp = resolvectl dns %%i %s;' "${serveripaddress}"
     printf 'resolvectl domain %%i "~.";'
@@ -77,7 +83,9 @@ genconfig() {
   printf 'PresharedKey = %s\n' "${presharedkey}"
   printf 'Endpoint = %s\n' "${endpoint}"
 
-  if [ "${tunneling}" = 'access' ]; then
+  if [ "${tunneling}" = 'access' ] \
+    || [ "${tunneling}" = 'access-dns' ] \
+    || [ "${tunneling}" = 'access-dns-resolved' ]; then
     printf 'AllowedIPs = %s/32\n' "${serveripaddress}"
   else
     printf 'AllowedIPs = 0.0.0.0/0, ::/0\n'
@@ -107,7 +115,10 @@ main() {
   checkarg "${config}" 'current peer WireGuard config path'
   checkarg "${tunneling}" 'tunneling type'
 
-  if [ "${tunneling}" != 'access' ] && [ "${tunneling}" != 'full' ] \
+  if [ "${tunneling}" != 'access' ] \
+    && [ "${tunneling}" != 'access-dns' ] \
+    && [ "${tunneling}" != 'access-dns-resolved' ] \
+    && [ "${tunneling}" != 'full' ] \
     && [ "${tunneling}" != 'full-resolved' ]; then
     die 'Invalid tunneling value.'
   fi
