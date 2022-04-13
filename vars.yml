@@ -10,9 +10,12 @@ wan_interface: venet0
 
 vpn_interface: wg0
 vpn_port: 1194
-vpn_server: 10.200.200.1
-vpn_subnet: 10.200.200.0
-vpn_mask: 24
+vpn_server_ipv4: 10.200.200.1
+vpn_subnet_ipv4: 10.200.200.0
+vpn_mask_ipv4: 24
+vpn_server_ipv6: "fd25:06f6:0a9f::1"
+vpn_subnet_ipv6: "fd25:06f6:0a9f::"
+vpn_mask_ipv6: 64
 
 ssh_keys_admin:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrK/gGoC5nX+u82z2N/8u+gd/yMJrb6pMln/zJJjG4w Access key for the VPS

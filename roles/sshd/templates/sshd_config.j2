@@ -1,6 +1,7 @@
 # Listen on this address and port.
-ListenAddress {{ vpn_server }}
-AddressFamily inet
+ListenAddress {{ vpn_server_ipv4 }}
+ListenAddress {{ vpn_server_ipv6 }}
+AddressFamily any
 Port 22
 
 # Supported HostKey algorithms by order of preference.

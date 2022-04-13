@@ -2,7 +2,8 @@ flush ruleset
 
 define wan_if = {{ wan_interface }}
 define vpn_if = {{ vpn_interface }}
-define vpn_net = {{ vpn_subnet }}/{{ vpn_mask }}
+define vpn_net_ipv4 = {{ vpn_subnet_ipv4 }}/{{ vpn_mask_ipv4 }}
+define vpn_net_ipv6 = {{ vpn_subnet_ipv6 }}/{{ vpn_mask_ipv6 }}
 
 table inet firewall {
     set tcp_accepted_wan {
@@ -108,7 +109,8 @@ table inet router {
         type nat hook postrouting priority 100;
 
         # Masquerade VPN traffic.
-        oifname $wan_if ip saddr $vpn_net masquerade
+        oifname $wan_if ip saddr $vpn_net_ipv4 masquerade
+        oifname $wan_if ip6 saddr $vpn_net_ipv6 masquerade
     }
 }
 

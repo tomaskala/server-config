@@ -7,7 +7,8 @@ Add a new WireGuard peer.
 
 Options:
   -n TEXT     Name of the added peer, used to comment the configuration.
-  -i IP       IP address of the added peer within the VPN.
+  -4 IPv4     IPv4 address of the added peer within the VPN.
+  -6 IPv6     IPv6 address of the added peer within the VPN.
   -e IP:PORT  Public IP address and WireGuard port of the current peer.
   -c FILE     Path to the WireGuard config of the current peer.
   -t TEXT     Tunneling type:
@@ -25,7 +26,8 @@ Options:
 
 euid="$(/usr/bin/id -u)"
 name=''
-ipaddress=''
+clientipv4=''
+clientipv6=''
 endpoint=''
 config=''
 tunneling=''
@@ -43,37 +45,44 @@ checkarg() {
 
 addtoconfig() {
   name="$1"
-  ipaddress="$2"
-  publickey="$3"
-  presharedkey="$4"
+  clientipv4="$2"
+  clientipv6="$3"
+  publickey="$4"
+  presharedkey="$5"
 
   printf '\n'
   printf '# %s\n' "${name}"
   printf '[Peer]\n'
   printf 'PublicKey = %s\n' "${publickey}"
   printf 'PresharedKey = %s\n' "${presharedkey}"
-  printf 'AllowedIPs = %s/32\n' "${ipaddress}"
+  printf 'AllowedIPs = %s/32\n' "${clientipv4}"
+  printf 'AllowedIPs = %s/128\n' "${clientipv6}"
 }
 
 genconfig() {
-  ipaddress="$1"
-  endpoint="$2"
-  tunneling="$3"
-  privatekey="$4"
-  presharedkey="$5"
-  serveripaddress="$6"
-  serverpublickey="$7"
+  clientipv4="$1"
+  clientipv6="$2"
+  endpoint="$3"
+  tunneling="$4"
+  privatekey="$5"
+  presharedkey="$6"
+  serveripv4="$7"
+  serveripv6="$8"
+  serverpublickey="$9"
 
   printf '[Interface]\n'
-  printf 'Address = %s/32\n' "${ipaddress}"
+  printf 'Address = %s/32\n' "${clientipv4}"
+  printf 'Address = %s/128\n' "${clientipv6}"
   printf 'PrivateKey = %s\n' "${privatekey}"
 
   if [ "${tunneling}" = 'access-dns' ] || [ "${tunneling}" = 'full' ]; then
-    printf 'DNS = %s\n' "${serveripaddress}"
+    printf 'DNS = %s\n' "${serveripv4}"
+    printf 'DNS = %s\n' "${serveripv6}"
   elif [ "${tunneling}" = 'access-dns-resolved' ] \
     || [ "${tunneling}" = 'full-resolved' ]; then
-    printf 'DNS = %s\n' "${serveripaddress}"
-    printf 'PostUp = resolvectl dns %%i %s;' "${serveripaddress}"
+    printf 'DNS = %s\n' "${serveripv4}"
+    printf 'DNS = %s\n' "${serveripv6}"
+    printf 'PostUp = resolvectl dns %%i %s %s;' "${serveripv4}" "${serveripv6}"
     printf 'resolvectl domain %%i "~.";'
     printf 'resolvectl default-route %%i true\n'
     printf 'PreDown = resolvectl revert %%i\n'
@@ -88,9 +97,11 @@ genconfig() {
   if [ "${tunneling}" = 'access' ] \
     || [ "${tunneling}" = 'access-dns' ] \
     || [ "${tunneling}" = 'access-dns-resolved' ]; then
-    printf 'AllowedIPs = %s/32\n' "${serveripaddress}"
+    printf 'AllowedIPs = %s/32\n' "${serveripv4}"
+    printf 'AllowedIPs = %s/128\n' "${serveripv6}"
   else
-    printf 'AllowedIPs = 0.0.0.0/0, ::/0\n'
+    printf 'AllowedIPs = 0.0.0.0/0\n'
+    printf 'AllowedIPs = ::/0\n'
   fi
 }
 
@@ -99,11 +110,12 @@ main() {
     die 'Run the script as root.'
   fi
 
-  while getopts 'hi:n:e:c:t:' arg; do
+  while getopts 'h4:6:n:e:c:t:' arg; do
     case "${arg}" in
       h) printf '%s\n' "${usage}"; exit 0 ;;
       n) name="${OPTARG}" ;;
-      i) ipaddress="${OPTARG}" ;;
+      4) clientipv4="${OPTARG}" ;;
+      6) clientipv6="${OPTARG}" ;;
       e) endpoint="${OPTARG}" ;;
       c) config="${OPTARG}" ;;
       t) tunneling="${OPTARG}" ;;
@@ -112,7 +124,8 @@ main() {
   done
 
   checkarg "${name}" 'added peer name'
-  checkarg "${ipaddress}" 'added peer IP address inside the VPN'
+  checkarg "${clientipv4}" 'added peer IPv4 address inside the VPN'
+  checkarg "${clientipv6}" 'added peer IPv6 address inside the VPN'
   checkarg "${endpoint}" 'endpoint'
   checkarg "${config}" 'current peer WireGuard config path'
   checkarg "${tunneling}" 'tunneling type'
@@ -133,12 +146,21 @@ main() {
     die 'A peer with this name already exists.'
   fi
 
-  if /usr/bin/grep -q "AllowedIPs\s*=\s*${ipaddress}/32$" "${config}"; then
-    die 'A peer with this IP address already exists.'
+  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv4}/32$" "${config}"; then
+    die 'A peer with this IPv4 address already exists.'
   fi
 
-  serveripaddress=$(/usr/bin/sed -n 's@^Address\s*=\s*\([^/]*\)/.*$@\1@p' \
-    "${config}")
+  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv6}/128$" "${config}"; then
+    die 'A peer with this IPv6 address already exists.'
+  fi
+
+  serveripv4=$(/usr/sbin/ip -4 addr show dev wg0 \
+    | /usr/bin/awk '/inet/ {print $2}' \
+    | /usr/bin/cut -d/ -f1)
+  serveripv6=$(/usr/sbin/ip -6 addr show dev wg0 \
+    | /usr/bin/awk '/inet6/ {print $2}' \
+    | /usr/bin/cut -d/ -f1)
+
   serverpublickey=$(/usr/bin/sed -n 's/^PrivateKey\s*=\s*\(.*\)$/\1/p' \
     "${config}" | /usr/bin/wg pubkey)
 
@@ -148,18 +170,21 @@ main() {
 
   addtoconfig \
     "${name}" \
-    "${ipaddress}" \
+    "${clientipv4}" \
+    "${clientipv6}" \
     "${publickey}" \
     "${presharedkey}" \
     >> "${config}"
 
   genconfig \
-    "${ipaddress}" \
+    "${clientipv4}" \
+    "${clientipv6}" \
     "${endpoint}" \
     "${tunneling}" \
     "${privatekey}" \
     "${presharedkey}" \
-    "${serveripaddress}" \
+    "${serveripv4}" \
+    "${serveripv6}" \
     "${serverpublickey}"
 }
 

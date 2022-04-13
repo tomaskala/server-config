@@ -20,11 +20,13 @@ server:
     edns-buffer-size: 1472
 
     # Listen for queries on this IP address and port.
-    interface: {{ vpn_server }}
+    interface: {{ vpn_server_ipv4 }}
+    interface: {{ vpn_server_ipv6 }}
     port: 53
 
     # Respond to queries originating on this subnet.
-    access-control: {{ vpn_subnet }}/{{ vpn_mask }} allow
+    access-control: {{ vpn_subnet_ipv4 }}/{{ vpn_mask_ipv4 }} allow
+    access-control: {{ vpn_subnet_ipv6 }}/{{ vpn_mask_ipv6 }} allow
 
     # Set the working directory.
     directory: "/etc/unbound"
@@ -42,7 +44,8 @@ server:
     local-zone: "{{ domain }}." redirect
 
     # Resolve the domain locally.
-    local-data: "{{ domain }}. A {{ vpn_server }}"
+    local-data: "{{ domain }}. A {{ vpn_server_ipv4 }}"
+    local-data: "{{ domain }}. AAAA {{ vpn_server_ipv6 }}"
 
     # -------------------------------------------------------------------------
     # Logging settings.

@@ -1,9 +1,11 @@
 [Interface]
-Address = {{ vpn_server }}/{{ vpn_mask }}
+Address = {{ vpn_server_ipv4 }}/{{ vpn_mask_ipv4 }}
+Address = {{ vpn_server_ipv6 }}/{{ vpn_mask_ipv6 }}
 PrivateKey = {{ vpn_private_key.stdout }}
 ListenPort = {{ vpn_port }}
 
 [Peer]
 PublicKey = {{ vpn_client_public_key }}
 PresharedKey = {{ vpn_client_preshared_key }}
-AllowedIPs = {{ vpn_client }}/32
+AllowedIPs = {{ vpn_client_ipv4 }}/32
+AllowedIPs = {{ vpn_client_ipv6 }}/128
