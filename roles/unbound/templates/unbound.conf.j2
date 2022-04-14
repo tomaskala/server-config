@@ -192,6 +192,19 @@ server:
     # Include additional configuration files.
     include: "/etc/unbound/unbound.conf.d/*.conf"
 
+forward-zone:
+    # Forward all queries, unless they can be answered from the cache.
+    name: "."
+
+    # Use the DNS over TLS forwarder.
+    forward-tls-upstream: yes
+
+    # Upstream resolver IP@port#SNI.
+    forward-addr: 9.9.9.9@853#dns.quad9.net
+    forward-addr: 149.112.112.112@853#dns.quad9.net
+    forward-addr: 2620:fe::fe@853#dns.quad9.net
+    forward-addr: 2620:fe::9@853#dns.quad9.net
+
 remote-control:
     # Enable remote control with unbound-control(8).
     control-enable: yes
