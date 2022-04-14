@@ -8,7 +8,6 @@ timezone: Europe/Prague
 
 wan_interface: venet0
 
-vpn_interface: wg0
 vpn_port: 1194
 
 vpn_subnet_ipv4: 10.200.200.0

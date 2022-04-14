@@ -2,7 +2,7 @@
 
 - name: Restart wireguard
   systemd:
-    name: "wg-quick@{{ vpn_interface }}.service"
+    name: "wg-quick@wg0.service"
     enabled: yes
     state: restarted
 

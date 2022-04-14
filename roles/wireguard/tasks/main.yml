@@ -13,7 +13,7 @@
 
 - name: Check if configuration exists
   stat:
-    path: "/etc/wireguard/{{ vpn_interface }}.conf"
+    path: "/etc/wireguard/wg0.conf"
   register:
     wg_conf
 
@@ -25,23 +25,23 @@
       /usr/bin/mkdir -p /etc/wireguard/keys
 
       /usr/bin/wg genkey \
-        | tee /etc/wireguard/keys/{{ vpn_interface | quote }}_private.key \
+        | tee /etc/wireguard/keys/wg0_private.key \
         | /usr/bin/wg pubkey \
-        > /etc/wireguard/keys/{{ vpn_interface | quote }}_public.key
+        > /etc/wireguard/keys/wg0_public.key
 
       umask 0022
   when: wg_conf is not defined or not wg_conf.stat.exists
 
 - name: Register the server key
   command:
-    cmd: "/usr/bin/cat /etc/wireguard/keys/{{ vpn_interface | quote }}_private.key"
+    cmd: "/usr/bin/cat /etc/wireguard/keys/wg0_private.key"
   register: vpn_private_key
   when: wg_conf is not defined or not wg_conf.stat.exists
 
 - name: Copy the wireguard config
   template:
     src: wg.conf.j2
-    dest: "/etc/wireguard/{{ vpn_interface }}.conf"
+    dest: "/etc/wireguard/wg0.conf"
     owner: root
     group: root
     mode: 0600
@@ -49,7 +49,7 @@
 
 - name: Enable the wireguard service
   systemd:
-    name: "wg-quick@{{ vpn_interface }}.service"
+    name: "wg-quick@wg0.service"
     enabled: yes
     state: started
 
@@ -68,8 +68,8 @@
 
 - name: Fetch the server public key
   fetch:
-    src: /etc/wireguard/keys/{{ vpn_interface }}_public.key
-    dest: "{{ ansible_ssh_host }}/{{ vpn_interface }}_public.key"
+    src: /etc/wireguard/keys/wg0_public.key
+    dest: "{{ ansible_ssh_host }}/wg0_public.key"
     flat: yes
   when: wg_conf is not defined or not wg_conf.stat.exists
 
@@ -88,9 +88,9 @@
     content: |
       [Unit]
       After=
-      After=network.target auditd.service wg-quick@{{ vpn_interface }}.service
+      After=network.target auditd.service wg-quick@wg0.service
       Requires=
-      Requires=wg-quick@{{ vpn_interface }}.service
+      Requires=wg-quick@wg0.service
     dest: /etc/systemd/system/ssh.service.d/override.conf
     owner: root
     group: root
