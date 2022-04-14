@@ -10,11 +10,15 @@ wan_interface: venet0
 
 vpn_interface: wg0
 vpn_port: 1194
-vpn_server_ipv4: 10.200.200.1
+
 vpn_subnet_ipv4: 10.200.200.0
+vpn_server_ipv4: 10.200.200.1
+vpn_client_ipv4: 10.200.200.2
 vpn_mask_ipv4: 24
-vpn_server_ipv6: "fd25:06f6:0a9f::1"
+
 vpn_subnet_ipv6: "fd25:06f6:0a9f::"
+vpn_server_ipv6: "fd25:06f6:0a9f::1"
+vpn_client_ipv6: "fd25:06f6:0a9f::2"
 vpn_mask_ipv6: 64
 
 ssh_keys_admin:
