@@ -36,7 +36,7 @@
             --days 30
             --email "{{ email | quote }}"
         chdir: /usr/local/src/acme.sh
-        creates: ~/.acme.sh/acme.sh
+        creates: /root/.acme.sh/acme.sh
 
 - name: Check whether the website config exists
   stat:
@@ -85,7 +85,7 @@
         --webroot /var/www/acme-root
         --server letsencrypt
         --domain {{ domain | quote }}
-    chdir: ~/.acme.sh
+    chdir: /root/.acme.sh
   register: issue_certificates
   # Return code 2 means that the current certificate is still valid.
   failed_when: issue_certificates.rc != 0 and issue_certificates.rc != 2
@@ -111,7 +111,7 @@
             --fullchain-file /etc/nginx/ssl/{{ domain | quote }}.crt
             --reloadcmd 'service nginx force-reload'
             --ecc
-        chdir: ~/.acme.sh
+        chdir: /root/.acme.sh
 
     - name: Set the certificate permissions
       vars:
