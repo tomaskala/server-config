@@ -32,6 +32,7 @@
       umask 0022
   when: wg_conf is not defined or not wg_conf.stat.exists
 
+# Needed for the server config template.
 - name: Register the server key
   command:
     cmd: "/usr/bin/cat /etc/wireguard/keys/wg0_private.key"
@@ -47,11 +48,51 @@
     mode: 0600
   when: wg_conf is not defined or not wg_conf.stat.exists
 
+- name: Copy the add-peer script
+  copy:
+    src: add-peer
+    dest: /usr/local/bin/add-peer
+    owner: root
+    group: root
+    mode: 0700
+
 - name: Enable the wireguard service
   systemd:
     name: "wg-quick@wg0.service"
     enabled: yes
     state: started
+
+- name: Create a peer
+  shell:
+    cmd: |
+      endpoint=$(/usr/sbin/ip -4 addr show dev {{ wan_interface | quote }} \
+        | /usr/bin/awk '/inet/ {print $2}' \
+        | /usr/bin/cut -d/ -f1)
+
+      /usr/local/bin/add-peer \
+        -n First \
+        -4 {{ vpn_client_ipv4 | quote }} \
+        -6 {{ vpn_client_ipv6 | quote }} \
+        -e "$endpoint":{{ vpn_port | quote }} \
+        -c /etc/wireguard/wg0.conf \
+        -t access \
+        > /etc/wireguard/peer.conf
+  when: wg_conf is not defined or not wg_conf.stat.exists
+  notify:
+    - Reload wireguard
+
+- name: Fetch the peer config
+  fetch:
+    src: /etc/wireguard/peer.conf
+    dest: "{{ ansible_ssh_host }}/peer.conf"
+    flat: yes
+  when: wg_conf is not defined or not wg_conf.stat.exists
+
+- name: Remove the peer config
+  file:
+    path: /etc/wireguard/peer.conf
+    state: absent
+  when: wg_conf is not defined or not wg_conf.stat.exists
 
 - name: Enable IP forwarding
   vars:
@@ -65,13 +106,6 @@
     sysctl_set: yes
     reload: yes
   loop: "{{ sysctl_config | dict2items }}"
-
-- name: Fetch the server public key
-  fetch:
-    src: /etc/wireguard/keys/wg0_public.key
-    dest: "{{ ansible_ssh_host }}/wg0_public.key"
-    flat: yes
-  when: wg_conf is not defined or not wg_conf.stat.exists
 
 - name: Ensure the sshd service directory exists
   file:
@@ -104,11 +138,3 @@
     path: /etc/wireguard/keys
     state: absent
   when: wg_conf is not defined or not wg_conf.stat.exists
-
-- name: Copy the add-peer script
-  copy:
-    src: add-peer
-    dest: /usr/local/bin/add-peer
-    owner: root
-    group: root
-    mode: 0700

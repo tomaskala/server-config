@@ -6,6 +6,12 @@
     enabled: yes
     state: restarted
 
+- name: Reload wireguard
+  systemd:
+    name: "wg-quick@wg0.service"
+    enabled: yes
+    state: reloaded
+
 - name: Reload daemons
   systemd:
     daemon_reload: yes

@@ -40,7 +40,7 @@ new inventory (note the trailing comma) and setting the `target` variable.
 ### Initialize and secure the server
 
 ```
-$ ansible-playbook -t init,security -i <server-address>, -e "target=<server-address> vpn_client_public_key=<vpn-client-public-key> vpn_client_preshared_key=<vpn-client-preshared-key>" main.yml
+$ ansible-playbook -t init,security -i <server-address>, -e "target=<server-address>" main.yml
 ```
 
 
