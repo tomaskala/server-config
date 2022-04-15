@@ -38,6 +38,12 @@
         chdir: /usr/local/src/acme.sh
         creates: ~/.acme.sh/acme.sh
 
+- name: Check whether the website config exists
+  stat:
+    path: "/etc/nginx/sites-available/{{ domain }}.conf"
+  register:
+    website_conf
+
 - name: Prepare the ACME challenge webroot
   block:
     - name: Create the webroot directory
@@ -56,15 +62,18 @@
         owner: root
         group: root
         mode: 0644
+      when: website_conf is not defined or not website_conf.stat.exists
 
     - name: Link sites available to sites enabled
       shell:
         cmd: /usr/bin/ln -sf /etc/nginx/sites-available/{{ domain | quote }}.conf /etc/nginx/sites-enabled/
+      when: website_conf is not defined or not website_conf.stat.exists
 
     - name: Reload nginx
       systemd:
         name: nginx.service
         state: reloaded
+      when: website_conf is not defined or not website_conf.stat.exists
 
 - name: Issue a TLS certificate
   command:
@@ -108,9 +117,9 @@
       vars:
         certfiles:
           - path: "/etc/nginx/ssl/{{ domain | quote }}.key"
-            mode: 0600
+            mode: "0600"
           - path: "/etc/nginx/ssl/{{ domain | quote }}.crt"
-            mode: 0644
+            mode: "0644"
       file:
         path: "{{ item.path }}"
         state: file
