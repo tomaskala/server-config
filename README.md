@@ -34,13 +34,13 @@ $ ssh-copy-id -i <admin-user-public-key> <server-address>
 
 Before the VPN is set up and the SSH config alias can be used, the server
 address must be overriden to its public address. This is done by specifying a
-new inventory (note the trailing comma) and setting the `target` variable.
+new inventory (note the trailing comma).
 
 
 ### Initialize and secure the server
 
 ```
-$ ansible-playbook -t init,security -i <server-address>, -e "target=<server-address>" main.yml
+$ ansible-playbook -t init,security -i <server-address>, main.yml
 ```
 
 
