@@ -4,6 +4,7 @@ admin_username: tomas
 domain: tomaskala.com
 email: public@tomaskala.com
 
+hostname: dale
 timezone: Europe/Prague
 
 wan_interface: venet0

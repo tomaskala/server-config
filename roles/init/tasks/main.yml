@@ -7,6 +7,11 @@
     autoclean: yes
     autoremove: yes
 
+- name: Set the hostname
+  hostname:
+    name: "{{ hostname }}"
+    use: systemd
+
 - name: Set the timezone
   command:
     cmd: "timedatectl set-timezone {{ timezone | quote }}"
