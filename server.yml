@@ -24,6 +24,8 @@
 
     - role: unbound
       tags: [ services, unbound ]
+    - role: unbound_blocking
+      tags: [ services, unbound_blocking ]
     - role: nginx
       tags: [ services, nginx ]
     - role: tls

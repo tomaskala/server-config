@@ -1,0 +1,49 @@
+---
+
+- name: Install curl
+  apt:
+    name:
+      - curl
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Enable unbound remote control
+  command: /usr/sbin/unbound-control-setup -d /etc/unbound
+
+- name: Copy the unbound remote control config
+  block:
+    - name: Copy the config
+      copy:
+        src: unbound-remote-control.conf
+        dest: /etc/unbound/unbound.conf.d/unbound-remote-control.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Validate the main unbound config
+      command:
+        cmd: /usr/sbin/unbound-checkconf
+
+- name: Copy the blocklist fetching script
+  copy:
+    src: fetch-blocklists
+    dest: /usr/local/bin/fetch-blocklists
+    owner: root
+    group: root
+    mode: 0700
+
+- name: Set up a blocklist-filling cronjob
+  cron:
+    user: root
+    minute: 0
+    hour: 5
+    day: "*"
+    month: "*"
+    dow: 0
+    name: Fetch unbound blocklist
+    job: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
+
+- name: Fill the blocklist for the first time
+  shell:
+    cmd: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload

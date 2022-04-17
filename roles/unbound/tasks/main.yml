@@ -4,7 +4,6 @@
   apt:
     name:
       - unbound
-      - curl
     state: latest
     update_cache: yes
     cache_valid_time: 600
@@ -43,9 +42,6 @@
     - /etc/unbound
     - /etc/unbound/trusted-key.key
 
-- name: Enable unbound remote control
-  command: /usr/sbin/unbound-control-setup -d /etc/unbound
-
 - name: Copy the unbound config
   template:
     src: unbound.conf.j2
@@ -56,29 +52,6 @@
     validate: /usr/sbin/unbound-checkconf %s
   notify:
     - Restart unbound
-
-- name: Copy the blocklist fetching script
-  copy:
-    src: fetch-blocklists
-    dest: /usr/local/bin/fetch-blocklists
-    owner: root
-    group: root
-    mode: 0700
-
-- name: Set up a blocklist filling cronjob
-  cron:
-    user: root
-    minute: 0
-    hour: 5
-    day: "*"
-    month: "*"
-    dow: 0
-    name: Fetch unbound blocklist
-    job: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
-
-- name: Fill the blocklist for the first time
-  shell:
-    cmd: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
 
 - name: Enable the unbound service
   systemd:

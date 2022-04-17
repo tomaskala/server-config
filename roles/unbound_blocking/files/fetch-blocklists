@@ -22,4 +22,4 @@ src5='https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hos
   | /usr/bin/sort \
   | /usr/bin/uniq \
   | /usr/bin/sort \
-  | /usr/bin/awk '{print "local-zone: \""$1".\" redirect\nlocal-data: \""$1". A 0.0.0.0\""}'
+  | /usr/bin/awk 'BEGIN {print "server:"} {print "  local-zone: \""$1".\" redirect\n  local-data: \""$1". A 0.0.0.0\""}'
