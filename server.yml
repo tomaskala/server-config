@@ -1,12 +1,10 @@
 ---
 
-- name: Server initialization
-  hosts: all
-  vars_files:
-    - vars.yml
+- name: Server config
+  hosts: server
   vars_prompt:
     - name: ansible_become_pass
-      prompt: "Enter the {{ admin_username }} user password"
+      prompt: "Enter the main user password"
       private: yes
       unsafe: yes
   become: yes

@@ -40,12 +40,12 @@ new inventory (note the trailing comma).
 ### Initialize and secure the server
 
 ```
-$ ansible-playbook -t init,security -i <server-address>, main.yml
+$ ansible-playbook -t init,security -i <server-address>, server.yml
 ```
 
 
 ### Setup services
 
 ```
-$ ansible-playbook -t services main.yml
+$ ansible-playbook -t services server.yml
 ```
