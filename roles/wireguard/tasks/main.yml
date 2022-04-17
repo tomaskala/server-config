@@ -13,7 +13,7 @@
 
 - name: Check if configuration exists
   stat:
-    path: "/etc/wireguard/wg0.conf"
+    path: /etc/wireguard/wg0.conf
   register:
     wg_conf
 
@@ -35,14 +35,14 @@
 # Needed for the server config template.
 - name: Register the server key
   command:
-    cmd: "/usr/bin/cat /etc/wireguard/keys/wg0_private.key"
+    cmd: /usr/bin/cat /etc/wireguard/keys/wg0_private.key
   register: vpn_private_key
   when: wg_conf is not defined or not wg_conf.stat.exists
 
 - name: Copy the wireguard config
   template:
     src: wg.conf.j2
-    dest: "/etc/wireguard/wg0.conf"
+    dest: /etc/wireguard/wg0.conf
     owner: root
     group: root
     mode: 0600
@@ -58,7 +58,7 @@
 
 - name: Enable the wireguard service
   systemd:
-    name: "wg-quick@wg0.service"
+    name: wg-quick@wg0.service
     enabled: yes
     state: started
 
