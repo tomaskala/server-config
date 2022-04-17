@@ -4,7 +4,7 @@
   hosts: server
   vars_prompt:
     - name: ansible_become_pass
-      prompt: "Enter the main user password"
+      prompt: "Enter the admin user password"
       private: yes
       unsafe: yes
   become: yes

@@ -24,7 +24,7 @@
     system: yes
     password: ""
 
-- name: Allow the main user to access the git directory
+- name: Allow the admin user to access the git directory
   user:
     name: "{{ admin_username }}"
     groups:

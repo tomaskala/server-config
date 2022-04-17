@@ -14,7 +14,7 @@ $ python -m pip install -r requirements.txt
 
 ## First login
 
-The first login is done under the `root` user. The main user is created and
+The first login is done under the `root` user. The admin user is created and
 python is installed, so that ansible can be run afterwards.
 ```
 # apt install sudo python3
@@ -23,7 +23,7 @@ python is installed, so that ansible can be run afterwards.
 ```
 
 
-## Copy the main user public key
+## Copy the admin user public key
 
 ```
 $ ssh-copy-id -i <admin-user-public-key> <server-address>
