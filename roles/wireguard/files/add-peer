@@ -186,6 +186,8 @@ main() {
     "${serveripv4}" \
     "${serveripv6}" \
     "${serverpublickey}"
+
+  /usr/bin/systemctl reload wg-quick@wg0.service
 }
 
 main "$@"
