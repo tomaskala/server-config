@@ -43,15 +43,25 @@
     - /etc/unbound/trusted-key.key
 
 - name: Copy the unbound config
-  template:
-    src: unbound.conf.j2
-    dest: /etc/unbound/unbound.conf
-    owner: root
-    group: root
-    mode: 0644
-    validate: /usr/sbin/unbound-checkconf %s
-  notify:
-    - Restart unbound
+  block:
+    - name: Copy the forward-zone config
+      copy:
+        src: unbound-forward-zone.conf
+        dest: /etc/unbound/unbound.conf.d/unbound-forward-zone.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Copy the main config
+      template:
+        src: unbound.conf.j2
+        dest: /etc/unbound/unbound.conf
+        owner: root
+        group: root
+        mode: 0644
+        validate: /usr/sbin/unbound-checkconf %s
+      notify:
+        - Restart unbound
 
 - name: Enable the unbound service
   systemd:
