@@ -33,7 +33,7 @@ $ ssh-copy-id -i <admin-user-public-key> <server-address>
 ## Server configuration
 
 Before the VPN is set up and the SSH config alias can be used, the server
-address must be overriden to its public address.
+address must be overridden to its public address.
 
 
 ### Initialize and secure the server
