@@ -1,2 +1,6 @@
 [server]
 dale ansible_python_interpreter=/usr/bin/python3
+
+[raspberry]
+bob ansible_python_interpreter=/usr/bin/python3
+mike ansible_python_interpreter=/usr/bin/python3

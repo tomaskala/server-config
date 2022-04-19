@@ -1,0 +1,10 @@
+---
+
+domain: bob.home.arpa
+
+hostname: bob
+
+private_address_ipv4: 192.168.0.171
+
+ssh_keys_admin:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILY99UBDJC0Xv4ilS72Tp6JqxcWolfJjAQG6cpB6T092 laptop2bob

@@ -1,0 +1,10 @@
+---
+
+domain: mike.home.arpa
+
+hostname: mike
+
+private_address_ipv4: 192.168.0.168
+
+ssh_keys_admin:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEsEmRXOZZpKfBDwTPZ79sdDDKnQBxVY0yZQkpdxLln9 laptop2mike
