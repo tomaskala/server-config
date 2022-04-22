@@ -22,3 +22,5 @@
 
     - role: unbound
       tags: [ services, unbound ]
+    - role: nginx
+      tags: [ services, nginx ]
