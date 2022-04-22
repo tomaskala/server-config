@@ -20,6 +20,14 @@ server {
     root /var/www/{{ domain | quote }};
     index index.html;
 
+    # Allowed protocols and ciphers.
+    ssl_protocols TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    # Setup OCSP stapling.
+    ssl_stapling on;
+    ssl_stapling_verify on;
+
     # Setup the TLS certificate.
     ssl_certificate /etc/nginx/ssl/{{ domain | quote }}.crt;
     ssl_certificate_key /etc/nginx/ssl/{{ domain | quote }}.key;
