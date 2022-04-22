@@ -48,6 +48,8 @@
         owner: git
         group: git
         mode: 0600
+        access_time: preserve
+        modification_time: preserve
 
     - name: Copy keys
       lineinfile:
