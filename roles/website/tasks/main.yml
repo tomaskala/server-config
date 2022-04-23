@@ -1,6 +1,6 @@
 ---
 
-- name: Set up sites available
+- name: Set up the site
   vars:
     sites:
       - file: website.conf.j2
@@ -13,9 +13,11 @@
     mode: 0644
   loop: "{{ sites }}"
 
-- name: Link sites available to sites enabled
-  shell:
-    cmd: /usr/bin/ln -sf /etc/nginx/sites-available/*.conf /etc/nginx/sites-enabled/ 
+- name: Enable the site
+  file:
+    path: /etc/nginx/sites-enabled/{{ domain }}.conf
+    src: /etc/nginx/sites-available/{{ domain }}.conf
+    state: link
 
 - name: Validate nginx config
   command:

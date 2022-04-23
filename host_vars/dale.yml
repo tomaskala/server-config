@@ -19,6 +19,22 @@ private_address_ipv6: "fd25:06f6:0a9f::1"
 private_subnet_ipv6: "fd25:06f6:0a9f::"
 private_mask_ipv6: 64
 
+unbound:
+  port: 53
+  listen_addresses:
+    - 10.200.200.2
+    - "fd25:06f6:0a9f::1"
+  allowed_subnets:
+    - 10.200.200.0/24
+    - "fd25:06f6:0a9f::/64"
+  local_domains:
+    - domain: tomaskala.com
+      addresses:
+        - address: 10.200.200.1
+          record_type: A
+        - address: "fd25:06f6:0a9f::1"
+          record_type: AAAA
+
 ssh_keys_admin:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrK/gGoC5nX+u82z2N/8u+gd/yMJrb6pMln/zJJjG4w laptop2dale
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDXh5D6Rhl/ORiXXW+BYZN3+/OcyMdPKTI+BM7HQI8MN home2dale

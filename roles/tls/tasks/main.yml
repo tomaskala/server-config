@@ -64,9 +64,11 @@
         mode: 0644
       when: website_conf is not defined or not website_conf.stat.exists
 
-    - name: Link sites available to sites enabled
-      shell:
-        cmd: /usr/bin/ln -sf /etc/nginx/sites-available/{{ domain | quote }}.conf /etc/nginx/sites-enabled/
+    - name: Enable the site
+      file:
+        path: /etc/nginx/sites-enabled/{{ domain }}.conf
+        src: /etc/nginx/sites-available/{{ domain }}.conf
+        state: link
       when: website_conf is not defined or not website_conf.stat.exists
 
     - name: Reload nginx

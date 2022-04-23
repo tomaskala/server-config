@@ -1,7 +1,11 @@
 # Listen on this address and port.
 ListenAddress {{ private_address_ipv4 }}
+{% if private_address_ipv6 is defined %}
 ListenAddress {{ private_address_ipv6 }}
 AddressFamily any
+{% else %}
+AddressFamily inet
+{% endif %}
 Port 22
 
 # Supported HostKey algorithms by order of preference.

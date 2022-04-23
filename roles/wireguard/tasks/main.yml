@@ -107,31 +107,33 @@
     reload: yes
   loop: "{{ sysctl_config | dict2items }}"
 
-- name: Ensure the sshd service directory exists
-  file:
-    # Debian-based systems name the sshd service directory 'ssh.service.d'.
-    path: /etc/systemd/system/ssh.service.d
-    state: directory
-    recurse: yes
-    owner: root
-    group: root
-    mode: 0755
-
 - name: Start sshd after Wireguard
-  copy:
-    content: |
-      [Unit]
-      After=
-      After=network.target auditd.service wg-quick@wg0.service
-      Requires=
-      Requires=wg-quick@wg0.service
-    dest: /etc/systemd/system/ssh.service.d/override.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify:
-    - Restart sshd
-    - Reload daemons
+  block:
+  - name: Ensure the sshd service directory exists
+    file:
+      # Debian-based systems name the sshd service directory 'ssh.service.d'.
+      path: /etc/systemd/system/ssh.service.d
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Add a systemd override
+    copy:
+      content: |
+        [Unit]
+        After=
+        After=network.target auditd.service wg-quick@wg0.service
+        Requires=
+        Requires=wg-quick@wg0.service
+      dest: /etc/systemd/system/ssh.service.d/override.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      - Restart sshd
+      - Reload daemons
 
 - name: Remove the generated keys
   file:

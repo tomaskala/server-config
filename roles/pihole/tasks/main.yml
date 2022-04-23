@@ -1,0 +1,71 @@
+---
+
+- name: Create the configuration
+  block:
+    - name: Create the pihole configuration directory
+      file:
+        path: /etc/pihole
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Copy the setupVars.conf file
+      template:
+        src: setupVars.conf.j2
+        dest: /etc/pihole/setupVars.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Copy the pihole-FTL.conf file
+      copy:
+        src: pihole-FTL.conf
+        dest: /etc/pihole/pihole-FTL.conf
+        owner: root
+        group: root
+        mode: 0644
+
+- name: Check if pihole is installed
+  command:
+    cmd: pihole version
+  changed_when: no
+  failed_when: no
+  ignore_errors: yes
+  register: pihole_installed
+
+- name: Install pihole
+  block:
+    - name: Fetch the installation script
+      get_url:
+        url: https://install.pi-hole.net
+        dest: /root/pihole-installer.sh
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Install pihole
+      command:
+        cmd: /root/pihole-installer.sh --unattended
+
+    - name: Remove the installation script
+      file:
+        path: /root/pihole-installer.sh
+        state: absent
+
+    - name: Change file ownership
+      file:
+        path: /etc/pihole/pihole-FTL.conf
+        owner: pihole
+        group: root
+  when: pihole_installed.rc != 0
+
+- name: Copy the lighttpd config overrides
+  template:
+    src: lighttpd-external.conf.j2
+    dest: /etc/lighttpd/external.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - Restart lighttpd

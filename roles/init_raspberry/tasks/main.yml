@@ -1,0 +1,35 @@
+---
+
+- name: Start sshd after network-online
+  block:
+  - name: Ensure the sshd service directory exists
+    file:
+      # Debian-based systems name the sshd service directory 'ssh.service.d'.
+      path: /etc/systemd/system/ssh.service.d
+      state: directory
+      recurse: yes
+      owner: root
+      group: root
+      mode: 0755
+
+  - name: Enable systemd-networkd-wait-online
+    systemd:
+      name: systemd-networkd-wait-online
+      enabled: yes
+      state: started
+
+  - name: Add a systemd override to the sshd service
+    copy:
+      content: |
+        [Unit]
+        After=
+        After=network.target auditd.service network-online.target
+        Requires=
+        Requires=network-online.target
+      dest: /etc/systemd/system/ssh.service.d/override.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify:
+      - Restart sshd
+      - Reload daemons

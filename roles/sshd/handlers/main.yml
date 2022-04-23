@@ -2,12 +2,12 @@
 
 - name: Restart sshd
   systemd:
-    name: sshd.service
+    name: ssh.service
     enabled: yes
     state: restarted
 
 - name: Reload sshd
   systemd:
-    name: sshd.service
+    name: ssh.service
     enabled: yes
     state: reloaded

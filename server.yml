@@ -12,7 +12,7 @@
   become_method: sudo
   remote_user: "{{ admin_username }}"
   roles:
-    - role: init
+    - role: init_common
       tags: [ init ]
 
     - role: sshd

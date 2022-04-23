@@ -63,8 +63,34 @@
       notify:
         - Restart unbound
 
-- name: Enable the unbound service
+- name: Check whether unbound-resolvconf exists
+  command:
+    cmd: systemctl status unbound-resolvconf.service
+  register: unbound_resolvconf_status
+  failed_when: unbound_resolvconf_status.rc != 3 and unbound_resolvconf_status.rc != 0
+
+- name: Disable unbound-resolvconf
+  block:
+    - name: Disable the unbound-resolvconf service
+      systemd:
+        name: unbound-resolvconf.service
+        enabled: no
+        masked: yes
+        state: stopped
+
+    - name: Restore the original nameservers
+      command:
+        cmd: /usr/sbin/resolvconf -d lo.unbound
+
+    - name: Remove the unbound-resolvconf configuration
+      file:
+        path: /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf
+        state: absent
+  when:
+    unbound_resolvconf_status.rc == 0
+
+- name: Restart and enable the unbound service
   systemd:
     name: unbound.service
     enabled: yes
-    state: started
+    state: restarted

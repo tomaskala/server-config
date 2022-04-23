@@ -20,13 +20,15 @@ server:
     edns-buffer-size: 1472
 
     # Listen for queries on this IP address and port.
-    interface: {{ private_address_ipv4 }}
-    interface: {{ private_address_ipv6 }}
-    port: 53
+    {% for address in unbound.listen_addresses %}
+    interface: {{ address }}
+    {% endfor %}
+    port: {{ unbound.port }}
 
     # Respond to queries originating on this subnet.
-    access-control: {{ private_subnet_ipv4 }}/{{ private_mask_ipv4 }} allow
-    access-control: {{ private_subnet_ipv6 }}/{{ private_mask_ipv6 }} allow
+    {% for subnet in unbound.allowed_subnets %}
+    access-control: {{ subnet }} allow
+    {% endfor %}
 
     # Set the working directory.
     directory: "/etc/unbound"
@@ -37,15 +39,18 @@ server:
     # Chroot settings.
     chroot: ""
 
+    {% for domain_info in unbound.local_domains %}
     # Allow this domain and its subdomains to contain private addresses.
-    private-domain: {{ domain }}.
+    private-domain: {{ domain_info.domain }}
 
     # Use local data for this domain and its subdomains.
-    local-zone: "{{ domain }}." redirect
+    local-zone: "{{ domain_info.domain }}." redirect
 
+    {% for address_info in domain_info.addresses %}
     # Resolve the domain locally.
-    local-data: "{{ domain }}. A {{ private_address_ipv4 }}"
-    local-data: "{{ domain }}. AAAA {{ private_address_ipv6 }}"
+    local-data: "{{ domain_info.domain }}. {{ address_info.record_type }} {{ address_info.address }}"
+    {% endfor %}
+    {% endfor %}
 
     # -------------------------------------------------------------------------
     # Logging settings.

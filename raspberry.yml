@@ -12,15 +12,19 @@
   become_method: sudo
   remote_user: "{{ admin_username }}"
   roles:
-    - role: init
-      tags: [ init ]
+    - role: init_common
+      tags: [ init, init_common ]
+    - role: init_raspberry
+      tags: [ init, init_raspberry ]
 
     - role: sshd
       tags: [ security, sshd ]
-    - role: nftables
-      tags: [ security, nftables ]
 
-    - role: unbound
-      tags: [ services, unbound ]
     - role: nginx
       tags: [ services, nginx ]
+    - role: unbound
+      tags: [ services, unbound ]
+    - role: pihole
+      tags: [ services, pihole ]
+    - role: pihole_proxy
+      tags: [ services, pihole_proxy ]
