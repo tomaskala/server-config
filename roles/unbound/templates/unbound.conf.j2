@@ -15,9 +15,8 @@ server:
     # Enable TCP.
     do-tcp: yes
 
-    # Number of bytes sent to advertise as the EDNS reassembly buffer size.
-    # This value has a reasonable chance to fit into a single ethernet frame.
-    edns-buffer-size: 1472
+    # Set EDNS reassembly buffer size.
+    edns-buffer-size: 1232
 
     # Listen for queries on this IP address and port.
     {% for address in unbound.listen_addresses %}
