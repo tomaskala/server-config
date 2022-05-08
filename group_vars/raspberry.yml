@@ -16,6 +16,10 @@ unbound:
   allowed_subnets:
     - 10.0.0.0/24
   local_domains:
+    - domain: router.home.arpa
+      addresses:
+        - address: 10.0.0.1
+          record_type: A
     - domain: bob.home.arpa
       addresses:
         - address: 10.0.0.2
@@ -23,4 +27,8 @@ unbound:
     - domain: mike.home.arpa
       addresses:
         - address: 10.0.0.3
+          record_type: A
+    - domain: nas.home.arpa
+      addresses:
+        - address: 10.0.0.10
           record_type: A
