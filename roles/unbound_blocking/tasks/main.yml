@@ -9,7 +9,8 @@
     cache_valid_time: 600
 
 - name: Enable unbound remote control
-  command: /usr/sbin/unbound-control-setup -d /etc/unbound
+  command:
+    cmd: /usr/sbin/unbound-control-setup -d /etc/unbound
 
 - name: Copy the unbound remote control config
   block:

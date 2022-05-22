@@ -26,7 +26,8 @@
 # The unbound-anchor command returns 0 if no update is necessary and 1 when
 # an update was made.
 - name: Download the initial root trust anchor for DNSSEC validation
-  command: /usr/sbin/unbound-anchor -a /etc/unbound/trusted-key.key
+  command:
+    cmd: /usr/sbin/unbound-anchor -a /etc/unbound/trusted-key.key
   register: download_anchor
   failed_when: "download_anchor.rc != 0 and download_anchor.rc != 1"
   notify:
