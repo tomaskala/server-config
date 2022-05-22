@@ -2,7 +2,6 @@
 
 wan_interface: eth0
 
-
 pihole_web_admin_port: 8081
 
 private_subnet_ipv4: 10.0.0.0
