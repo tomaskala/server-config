@@ -1,0 +1,89 @@
+---
+
+- name: Install packages
+  apt:
+    name:
+      - nfs-common
+      - ffmpeg
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Create the music user
+  user:
+    name: music
+    comment: The music user
+    state: present
+    create_home: yes
+    shell: /usr/bin/false
+    system: yes
+    password: ""
+
+- name: Ensure the destination directory exists
+  file:
+    path: "{{ navidrome.dest }}"
+    state: directory
+    owner: root
+    group: root
+
+- name: Add /etc/fstab entry
+  lineinfile:
+    path: /etc/fstab
+    line: "{{ navidrome.nas_address | quote }}:{{ navidrome.src | quote }} {{ navidrome.dest | quote }} nfs async,auto,noexec,soft 0 0"
+    state: present
+    backup: yes
+
+- name: Mount the music directory now
+  command:
+    cmd: "mount -t nfs -o async,auto,noexec,soft {{ navidrome.nas_address | quote }}:{{ navidrome.src | quote }} {{ navidrome.dest | quote }}"
+
+- name: Install navidrome
+  block:
+    - name: Create the navidrome directory structure
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: music
+        group: music
+        mode: 0755
+      loop:
+        - /opt/navidrome
+        - /var/lib/navidrome
+
+    - name: Fetch and unpack the navidrome tarball
+      unarchive:
+        src: https://github.com/navidrome/navidrome/releases/download/v0.47.5/navidrome_0.47.5_Linux_arm64.tar.gz
+        dest: /opt/navidrome
+        remote_src: yes
+        owner: music
+        group: music
+
+    - name: Copy the navidrome configuration
+      template:
+        src: navidrome.toml.j2
+        dest: /var/lib/navidrome/navidrome.toml
+        owner: music
+        group: music
+        mode: 0644
+
+    - name: Copy the navidrome service file
+      copy:
+        src: navidrome.service
+        dest: /etc/systemd/system/navidrome.service
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Enable the navidrome service
+      systemd:
+        name: navidrome.service
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+- include_role:
+    name: nginx_site
+  vars:
+    public: no
+    site_name: music
+    site_config: ./templates/music.conf.j2

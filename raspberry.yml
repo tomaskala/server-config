@@ -26,3 +26,7 @@
       tags: [ services, unbound ]
     - role: pihole
       tags: [ services, pihole ]
+
+    - role: navidrome
+      tags: [ services, navidrome ]
+      when: inventory_hostname == "mike"

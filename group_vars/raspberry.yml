@@ -31,3 +31,7 @@ unbound:
       addresses:
         - address: 10.0.0.10
           record_type: A
+    - domain: music.home.arpa
+      addresses:
+        - address: 10.0.0.3
+          record_type: A

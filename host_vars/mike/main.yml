@@ -6,6 +6,12 @@ hostname: mike
 
 private_address_ipv4: 10.0.0.3
 
+navidrome:
+  nas_address: 10.0.0.10
+  src: /volume1/Music
+  dest: /mnt/Music
+  port: 8082
+
 ssh_keys_admin:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEsEmRXOZZpKfBDwTPZ79sdDDKnQBxVY0yZQkpdxLln9 laptop2mike
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFiUsIVzmZ0ZBbPd5pHauYK6DhF1hVC88rv0M0t1EK65 home2mike
