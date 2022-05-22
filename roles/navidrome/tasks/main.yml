@@ -14,7 +14,7 @@
     name: music
     comment: The music user
     state: present
-    create_home: yes
+    create_home: no
     shell: /usr/bin/false
     system: yes
     password: ""
