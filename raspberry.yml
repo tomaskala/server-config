@@ -26,5 +26,3 @@
       tags: [ services, unbound ]
     - role: pihole
       tags: [ services, pihole ]
-    - role: pihole_proxy
-      tags: [ services, pihole_proxy ]

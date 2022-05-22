@@ -69,3 +69,10 @@
     mode: 0644
   notify:
     - Restart lighttpd
+
+- include_role:
+    name: nginx_site
+  vars:
+    public: no
+    site_name: "{{ domain }}"
+    site_config: ./templates/pihole.conf.j2

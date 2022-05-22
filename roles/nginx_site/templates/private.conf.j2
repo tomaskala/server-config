@@ -1,0 +1,10 @@
+server {
+    allow {{ private_subnet_ipv4 }}/{{ private_mask_ipv4 }};
+    allow 127.0.0.1;
+    deny all;
+
+    listen 80;
+    server_name {{ site_name }}.home.arpa;
+
+    include sites-config/{{ site_name }}.conf;
+}
