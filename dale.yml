@@ -1,7 +1,7 @@
 ---
 
 - name: Server config
-  hosts: server
+  hosts: dale
   vars_prompt:
     - name: ansible_become_pass
       prompt: "Enter the admin user password"

@@ -63,5 +63,6 @@ $ ssh-copy-id -i <admin-user-public-key> <raspberry-address>
   * Reboot.
 * Run the playbook.
   ```
-  $ ansible-playbook raspberry.yml
+  $ ansible-playbook bob.yml
+  $ ansible-playbook mike.yml
   ```

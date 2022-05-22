@@ -6,6 +6,12 @@ hostname: bob
 
 private_address_ipv4: 10.0.0.2
 
+navidrome:
+  nas_address: 10.0.0.10
+  src: /volume1/Music
+  dest: /mnt/Music
+  port: 8082
+
 ssh_keys_admin:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILY99UBDJC0Xv4ilS72Tp6JqxcWolfJjAQG6cpB6T092 laptop2bob
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBQz7ZiVM6vt8BO3aDfeZdiIwYhYcQJunhPTFkK/7vtc home2bob

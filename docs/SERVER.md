@@ -30,12 +30,12 @@ address must be overridden to its public address.
 ### Initialize and secure the server
 
 ```
-$ ansible-playbook -t init,security -e "ansible_host=<server-address>" server.yml
+$ ansible-playbook -t init,security -e "ansible_host=<server-address>" dale.yml
 ```
 
 
 ### Setup services
 
 ```
-$ ansible-playbook -t services server.yml
+$ ansible-playbook -t services dale.yml
 ```

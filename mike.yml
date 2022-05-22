@@ -1,7 +1,7 @@
 ---
 
 - name: Raspberry config
-  hosts: raspberry
+  hosts: mike
   vars_prompt:
     - name: ansible_become_pass
       prompt: "Enter the admin user password"
@@ -26,7 +26,3 @@
       tags: [ services, unbound ]
     - role: pihole
       tags: [ services, pihole ]
-
-    - role: navidrome
-      tags: [ services, navidrome ]
-      when: inventory_hostname == "mike"
