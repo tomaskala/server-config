@@ -19,6 +19,8 @@
 
     - role: sshd
       tags: [ security, sshd ]
+    - role: nftables
+      tags: [ security, nftables ]
 
     - role: nginx
       tags: [ services, nginx ]
