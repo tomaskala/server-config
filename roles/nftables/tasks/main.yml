@@ -12,7 +12,7 @@
 
 - name: Copy the nftables config
   template:
-    src: nftables.conf.j2
+    src: "nftables_{{ inventory_hostname }}.conf.j2"
     dest: /etc/nftables.conf
     owner: root
     group: root
