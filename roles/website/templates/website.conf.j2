@@ -1,93 +1,15 @@
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    server_name {{ domain }};
-
-    location /.well-known/acme-challenge/ {
-        root /var/www/acme-root;
-        try_files $uri =404;
+# Remove the .html suffix.
+location / {
+    if ($request_uri ~ ^/(.*)\.html) {
+        return 301 /$1$is_args$args;
     }
-
-    location / {
-        return 301 https://$host$request_uri;
-    }
+    try_files $uri $uri.html $uri/ =404;
 }
 
-server {
-    listen 443 ssl http2 default_server;
-    listen [::]:443 ssl http2 default_server;
-    server_name {{ domain }};
-    root /var/www/{{ domain | quote }};
-    index index.html;
-
-    # Allowed protocols and ciphers.
-    ssl_protocols TLSv1.3;
-    ssl_prefer_server_ciphers off;
-
-    # Setup OCSP stapling.
-    ssl_stapling on;
-    ssl_stapling_verify on;
-
-    # Setup the TLS certificate.
-    ssl_certificate /etc/nginx/ssl/{{ domain | quote }}.crt;
-    ssl_certificate_key /etc/nginx/ssl/{{ domain | quote }}.key;
-    ssl_session_timeout 1d;
-    ssl_session_cache shared:SSL:10m;
-    ssl_session_tickets off;
-
-    # Setup OCSP stapling.
-    ssl_trusted_certificate /etc/nginx/ssl/{{ domain | quote }}.crt;
-
-    # Tell browsers to only access this domain over HTTPS and store that
-    # information for the given number of seconds.
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains;" always;
-
-    # Disable most resources, allowing only images, styleshets and scripts.
-    # Even those are only allowed to load from the same origin. Also disables
-    # framing of this website.
-    add_header Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self';" always;
-
-    # Do not load scripts and stylesheets unless the server indicates the
-    # correct MIME type. Otherwise, the browser could incorrectly detect
-    # non-script or non-stylesheet files as scripts or stylesheets,
-    # respectively.
-    add_header X-Content-Type-Options "nosniff" always;
-
-    # Disable framing of this website. This is already disabled by the CSP
-    # header, but older browsers may not support it.
-    add_header X-Frame-Options "DENY" always;
-
-    # Stop loading the page if XSS attack is detected. Only implemented by
-    # some browsers, and largery unnecessary due to the way the CSP header
-    # is set up, but may be useful for older browsers.
-    add_header X-XSS-Protection "1; mode=block" always;
-
-    # Instruct the browser to never send the referer header with requests
-    # sent from the site.
-    add_header Referrer-Policy "no-referrer" always;
-
-    # Set the permission policy to disable all.
-    add_header Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()";
-
-    # Disable cookies. Sadly, this only works on the backend side, i.e., the
-    # frontend could still theoretically set cookies.
-    proxy_hide_header Set-Cookie;
-    proxy_ignore_headers Set-Cookie;
-    proxy_set_header Cookie "";
-
-    # Remove the .html suffix.
-    location / {
-        if ($request_uri ~ ^/(.*)\.html) {
-            return 301 /$1$is_args$args;
-        }
-        try_files $uri $uri.html $uri/ =404;
-    }
-
-    # Prevent image hotlinking.
-    location ~ .(gif|png|jpg|jpeg|ico)$ {
-        valid_referers none blocked {{ domain }};
-        if ($invalid_referer) {
-            return 403;
-        }
+# Prevent image hotlinking.
+location ~ .(gif|png|jpg|jpeg|ico)$ {
+    valid_referers none blocked {{ domain }};
+    if ($invalid_referer) {
+        return 403;
     }
 }

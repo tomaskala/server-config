@@ -1,32 +1,11 @@
 ---
 
-- name: Set up the site
+- include_role:
+    name: nginx_site
   vars:
-    sites:
-      - file: website.conf.j2
-        name: "{{ domain }}"
-  template:
-    src: "{{ item.file }}"
-    dest: "/etc/nginx/sites-available/{{ item.name }}.conf"
-    owner: root
-    group: root
-    mode: 0644
-  loop: "{{ sites }}"
-
-- name: Enable the site
-  file:
-    path: /etc/nginx/sites-enabled/{{ domain }}.conf
-    src: /etc/nginx/sites-available/{{ domain }}.conf
-    state: link
-
-- name: Validate nginx config
-  command:
-    cmd: /usr/sbin/nginx -t
-
-- name: Reload nginx
-  systemd:
-    name: nginx.service
-    state: reloaded
+    public: yes
+    site_name: "{{ domain }}"
+    site_config: ./templates/website.conf.j2
 
 - name: Create the webroot
   file:
