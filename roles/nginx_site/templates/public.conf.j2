@@ -45,7 +45,7 @@ server {
     # Disable most resources, allowing only images, styleshets and scripts.
     # Even those are only allowed to load from the same origin. Also disables
     # framing of this website.
-    add_header Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self';" always;
+    add_header Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; require-trusted-types-for 'script';" always;
 
     # Do not load scripts and stylesheets unless the server indicates the
     # correct MIME type. Otherwise, the browser could incorrectly detect
