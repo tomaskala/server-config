@@ -7,7 +7,7 @@ location / {
 }
 
 # Prevent image hotlinking.
-location ~ .(gif|png|jpg|jpeg|ico)$ {
+location ~ \.(gif|png|jpg|jpeg|ico)$ {
     valid_referers none blocked {{ domain }};
     if ($invalid_referer) {
         return 403;
