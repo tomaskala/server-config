@@ -4,7 +4,7 @@ server {
     deny all;
 
     listen 80;
-    server_name {{ site_name }}.home.arpa;
+    server_name {{ site_name }};
 
     include sites-config/{{ site_name }}.conf;
 }

@@ -74,5 +74,5 @@
     name: nginx_site
   vars:
     public: no
-    site_name: "{{ domain }}"
+    site_name: "{{ hostname }}.home.arpa"
     site_config: ./templates/pihole.conf.j2

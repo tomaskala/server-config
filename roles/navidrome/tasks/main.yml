@@ -85,5 +85,5 @@
     name: nginx_site
   vars:
     public: no
-    site_name: music
+    site_name: music.home.arpa
     site_config: ./templates/music.conf.j2
