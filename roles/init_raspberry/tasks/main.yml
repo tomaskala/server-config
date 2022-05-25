@@ -33,3 +33,10 @@
     notify:
       - Restart sshd
       - Reload daemons
+
+- name: Disable the avahi-daemon service
+  systemd:
+    name: avahi-daemon.service
+    enabled: no
+    masked: yes
+    state: stopped
