@@ -73,13 +73,18 @@
         owner: root
         group: root
         mode: 0644
+      register: navidrome_service
+
+    - name: Reload daemons
+      systemd:
+        daemon_reload: yes
+      when: navidrome_service.changed
 
     - name: Enable the navidrome service
       systemd:
         name: navidrome.service
         enabled: yes
         state: started
-        daemon_reload: yes
 
 - include_role:
     name: nginx_site

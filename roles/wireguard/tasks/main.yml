@@ -132,8 +132,8 @@
       group: root
       mode: 0644
     notify:
-      - Restart sshd
       - Reload daemons
+      - Restart sshd
 
 - name: Remove the generated keys
   file:
