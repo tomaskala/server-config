@@ -1,131 +1,41 @@
 ---
 
-- name: Install acme.sh
+- name: Install certbot
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Register certbot
   block:
-    - name: Install dependencies
-      apt:
-        name:
-          - cron
-          - curl
-          - git
-          - openssl
-        state: latest
-        update_cache: yes
-        cache_valid_time: 600
-
-    - name: Create the clone path
-      file:
-        path: /usr/local/src/acme.sh
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-
-    - name: Clone acme.sh
-      git:
-        repo: https://github.com/acmesh-official/acme.sh
-        dest: /usr/local/src/acme.sh
-        clone: yes
-
-    - name: Install acme.sh
+    - name: Register certbot
       command:
-        cmd: >
-          ./acme.sh
-            --install
-            --log
-            --days 30
-            --email "{{ email | quote }}"
-        chdir: /usr/local/src/acme.sh
-        creates: /root/.acme.sh/acme.sh
+        cmd: "/usr/bin/certbot register --non-interactive --agree-tos --email {{ email | quote }}"
+        creates: /etc/letsencrypt/.registered
 
-- name: Check whether the website config exists
-  stat:
-    path: "/etc/nginx/sites-available/{{ domain }}.conf"
-  register:
-    website_conf
-
-- name: Prepare the ACME challenge webroot
-  block:
-    - name: Create the webroot directory
+    - name: Create the .registered file
       file:
-        path: /var/www/acme-root/.well-known/acme-challenge
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
-        recurse: yes
-
-    - name: Copy the temporary website config
-      template:
-        src: website-temp.conf.j2
-        dest: "/etc/nginx/sites-available/{{ domain }}.conf"
+        path: /etc/letsencrypt/.registered
+        state: touch
         owner: root
         group: root
         mode: 0644
-      when: website_conf is not defined or not website_conf.stat.exists
 
-    - name: Enable the site
-      file:
-        path: /etc/nginx/sites-enabled/{{ domain }}.conf
-        src: /etc/nginx/sites-available/{{ domain }}.conf
-        state: link
-      when: website_conf is not defined or not website_conf.stat.exists
-
-    - name: Reload nginx
-      systemd:
-        name: nginx.service
-        state: reloaded
-      when: website_conf is not defined or not website_conf.stat.exists
-
-- name: Issue a TLS certificate
+- name: Generate a TLS certificate
   command:
     cmd: >
-      ./acme.sh
-        --issue
-        --ocsp
-        --keylength ec-384
-        --webroot /var/www/acme-root
-        --server letsencrypt
-        --domain {{ domain | quote }}
-    chdir: /root/.acme.sh
-  register: issue_certificates
-  # Return code 2 means that the current certificate is still valid.
-  failed_when: issue_certificates.rc != 0 and issue_certificates.rc != 2
-  changed_when: issue_certificates.rc == 0
+      /usr/bin/certbot certonly
+        --nginx
+        --non-interactive
+        --key-type ecdsa
+        --domain *.{{ domain | quote }}
+    creates: "/etc/letsencrypt/live/{{ domain }}"
 
-- name: Install the generated TLS certificate
-  block:
-    - name: Create the certificate directory
-      file:
-        path: /etc/nginx/ssl
-        state: directory
-        owner: root
-        group: root
-        mode: 0700
-
-    - name: Install the certificate
-      command:
-        cmd: >
-          ./acme.sh
-            --install-cert
-            --domain {{ domain | quote }}
-            --key-file /etc/nginx/ssl/{{ domain | quote }}.key
-            --fullchain-file /etc/nginx/ssl/{{ domain | quote }}.crt
-            --reloadcmd 'service nginx force-reload'
-            --ecc
-        chdir: /root/.acme.sh
-
-    - name: Set the certificate permissions
-      vars:
-        certfiles:
-          - path: "/etc/nginx/ssl/{{ domain | quote }}.key"
-            mode: "0600"
-          - path: "/etc/nginx/ssl/{{ domain | quote }}.crt"
-            mode: "0644"
-      file:
-        path: "{{ item.path }}"
-        state: file
-        owner: root
-        group: root
-        mode: "{{ item.mode }}"
-      loop: "{{ certfiles }}"
+- name: Enable the certbot timer
+  systemd:
+    name: certbot.timer
+    enabled: yes
+    state: started

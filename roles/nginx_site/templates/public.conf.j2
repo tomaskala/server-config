@@ -2,15 +2,7 @@ server {
     listen 80;
     listen [::]:80;
     server_name {{ site_name }};
-
-    location /.well-known/acme-challenge/ {
-        root /var/www/acme-root;
-        try_files $uri =404;
-    }
-
-    location / {
-        return 301 https://$host$request_uri;
-    }
+    return 301 https://$host$request_uri;
 }
 
 server {
@@ -27,16 +19,14 @@ server {
     # Setup OCSP stapling.
     ssl_stapling on;
     ssl_stapling_verify on;
+    ssl_trusted_certificate /etc/letsencrypt/live/{{ site_name | quote }}/chain.pem;
 
     # Setup the TLS certificate.
-    ssl_certificate /etc/nginx/ssl/{{ site_name | quote }}.crt;
-    ssl_certificate_key /etc/nginx/ssl/{{ site_name | quote }}.key;
+    ssl_certificate /etc/letsencrypt/live/{{ site_name | quote }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ site_name | quote }}/privkey.pem;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:10m;
     ssl_session_tickets off;
-
-    # Setup OCSP stapling.
-    ssl_trusted_certificate /etc/nginx/ssl/{{ site_name | quote }}.crt;
 
     # Tell browsers to only access this domain over HTTPS and store that
     # information for the given number of seconds.
