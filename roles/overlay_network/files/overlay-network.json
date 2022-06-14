@@ -1,0 +1,86 @@
+{
+  "server": {
+    "address": {
+      "ipv4": "10.100.0.1",
+      "ipv6": "fd25:6f6:a9f:10::1"
+    }
+  },
+  "locations": {
+    "home": {
+      "subnet": {
+        "ipv4": "10.0.0.0/16",
+        "ipv6": "fd25:6f6:a9f:100::/56"
+      },
+      "gateway": {
+        "ipv4": "10.100.0.10",
+        "ipv6": "fd25:6f6:a9f:10::10"
+      },
+      "dns": [
+        {
+          "name": "router.home.arpa",
+          "type": "A",
+          "value": "10.0.0.1"
+        },
+        {
+          "name": "router.home.arpa",
+          "type": "AAAA",
+          "value": "fd25:6f6:a9f:100::1"
+        },
+        {
+          "name": "bob.home.arpa",
+          "type": "A",
+          "value": "10.0.0.2"
+        },
+        {
+          "name": "bob.home.arpa",
+          "type": "AAAA",
+          "value": "fd25:6f6:a9f:100::2"
+        },
+        {
+          "name": "mike.home.arpa",
+          "type": "A",
+          "value": "10.0.0.3"
+        },
+        {
+          "name": "mike.home.arpa",
+          "type": "AAAA",
+          "value": "fd25:6f6:a9f:100::3"
+        },
+        {
+          "name": "nas.home.arpa",
+          "type": "A",
+          "value": "10.0.0.10"
+        },
+        {
+          "name": "nas.home.arpa",
+          "type": "AAAA",
+          "value": "fd25:6f6:a9f:100::a"
+        },
+        {
+          "name": "music.home.arpa",
+          "type": "A",
+          "value": "10.0.0.2"
+        },
+        {
+          "name": "music.home.arpa",
+          "type": "AAAA",
+          "value": "fd25:6f6:a9f:100::2"
+        }
+      ]
+    }
+  },
+  "networks": {
+    "internal": {
+      "subnet": {
+        "ipv4": "10.100.100.0/24",
+        "ipv6": "fd25:6f6:a9f:20::/64"
+      }
+    },
+    "isolated": {
+      "subnet": {
+        "ipv4": "10.100.104.0/24",
+        "ipv6": "fd25:6f6:a9f:21::/64"
+      }
+    }
+  }
+}

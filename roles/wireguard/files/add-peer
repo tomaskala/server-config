@@ -3,7 +3,8 @@ set -euf
 
 usage="Usage: $(/usr/bin/basename "$0") OPTIONS
 
-Add a new WireGuard peer.
+Add a new WireGuard peer. Its configuration is written to the standard output,
+which can be piped to 'qrencode -t ansiutf8' if adding a mobile phone peer.
 
 Options:
   -n TEXT     Name of the added peer, used to comment the configuration.
@@ -22,6 +23,9 @@ Options:
                 DNS server.
               - 'full-resolved': Setup full tunneling, set the current peer as
                 the DNS server, assume systemd-resolved for the added peer.
+  -k INT      Send keepalive packets every k seconds (disabled by default).
+              Allows to keep the connection alive if the peer is behind a NAT.
+              The WireGuard documentation suggests a value of 25 (seconds).
   -h          Show this message and exit."
 
 euid="$(/usr/bin/id -u)"
@@ -31,6 +35,7 @@ clientipv6=''
 endpoint=''
 config=''
 tunneling=''
+keepalive=0
 
 die() {
   printf '%s\n' "$1" >&2
@@ -60,15 +65,16 @@ addtoconfig() {
 }
 
 genconfig() {
-  clientipv4="$1"
-  clientipv6="$2"
-  endpoint="$3"
-  tunneling="$4"
-  privatekey="$5"
-  presharedkey="$6"
-  serveripv4="$7"
-  serveripv6="$8"
-  serverpublickey="$9"
+  clientipv4="${1}"
+  clientipv6="${2}"
+  endpoint="${3}"
+  tunneling="${4}"
+  privatekey="${5}"
+  presharedkey="${6}"
+  serveripv4="${7}"
+  serveripv6="${8}"
+  serverpublickey="${9}"
+  keepalive="${10}"
 
   printf '[Interface]\n'
   printf 'Address = %s/32\n' "${clientipv4}"
@@ -103,6 +109,10 @@ genconfig() {
     printf 'AllowedIPs = 0.0.0.0/0\n'
     printf 'AllowedIPs = ::/0\n'
   fi
+
+  if [ "${keepalive}" -gt 0 ]; then
+    printf 'PersistentKeepalive = %d\n' "${keepalive}"
+  fi
 }
 
 main() {
@@ -110,7 +120,7 @@ main() {
     die 'Run the script as root.'
   fi
 
-  while getopts 'h4:6:n:e:c:t:' arg; do
+  while getopts 'h4:6:n:e:c:t:k:' arg; do
     case "${arg}" in
       h) printf '%s\n' "${usage}"; exit 0 ;;
       n) name="${OPTARG}" ;;
@@ -119,6 +129,7 @@ main() {
       e) endpoint="${OPTARG}" ;;
       c) config="${OPTARG}" ;;
       t) tunneling="${OPTARG}" ;;
+      k) keepalive="${OPTARG}" ;;
       *) printf '%s\n' "${usage}"; exit 1 ;;
     esac
   done
@@ -185,7 +196,8 @@ main() {
     "${presharedkey}" \
     "${serveripv4}" \
     "${serveripv6}" \
-    "${serverpublickey}"
+    "${serverpublickey}" \
+    "${keepalive}"
 
   /usr/bin/systemctl reload wg-quick@wg0.service
 }

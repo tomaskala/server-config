@@ -23,6 +23,8 @@
         owner: root
         group: root
         mode: 0644
+        access_time: preserve
+        modification_time: preserve
 
 - name: Generate a TLS certificate
   command:
@@ -31,7 +33,7 @@
         --nginx
         --non-interactive
         --key-type ecdsa
-        --domain *.{{ domain | quote }}
+        --domain {{ domain | quote }}
     creates: "/etc/letsencrypt/live/{{ domain }}"
 
 - name: Enable the certbot timer

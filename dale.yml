@@ -26,6 +26,8 @@
       tags: [ services, unbound ]
     - role: unbound_blocking
       tags: [ services, unbound_blocking ]
+    - role: overlay_network
+      tags: [ services, overlay_network ]
     - role: nginx
       tags: [ services, nginx ]
     - role: tls

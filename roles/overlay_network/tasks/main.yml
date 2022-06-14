@@ -1,0 +1,55 @@
+---
+
+- name: Install the necessary packages
+  apt:
+    name:
+      - jq
+    state: latest
+    update_cache: yes
+    cache_valid_time: 600
+
+- name: Copy the overlay network configuration and scripts
+  block:
+    - name: Make sure the containing directory exists
+      file:
+        path: /opt/overlay-network
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Copy the configuration file
+      copy:
+        src: overlay-network.json
+        dest: /opt/overlay-network/overlay-network.json
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Copy the script
+      copy:
+        src: overlay-network
+        dest: /opt/overlay-network/overlay-network
+        owner: root
+        group: root
+        mode: 0744
+
+    - name: Copy the service file
+      copy:
+        src: overlay-network.service
+        dest: /etc/systemd/system/overlay-network.service
+        owner: root
+        group: root
+        mode: 0644
+      register: overlay_network_service
+
+- name: Reload daemons
+  systemd:
+    daemon_reload: yes
+  when: overlay_network_service.changed
+
+- name: Enable and start the overlay-network service
+  systemd:
+    name: overlay-network.service
+    enabled: yes
+    state: started
