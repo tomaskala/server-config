@@ -40,6 +40,18 @@ unbound:
           record_type: A
         - address: "fd25:6f6:a9f:10::1"
           record_type: AAAA
+    - domain: bob.home.arpa
+      addresses:
+        - address: 10.0.0.2
+          record_type: A
+    - domain: mike.home.arpa
+      addresses:
+        - address: 10.0.0.3
+          record_type: A
+    - domain: music.home.arpa
+      addresses:
+        - address: 10.0.0.2
+          record_type: A
 
 ssh_keys_admin:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrK/gGoC5nX+u82z2N/8u+gd/yMJrb6pMln/zJJjG4w laptop2dale
