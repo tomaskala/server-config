@@ -2,8 +2,6 @@
 
 hostname: mike
 
-private_address_ipv4: 10.0.0.3
-
 sshd:
   port: 22
   listen_addresses:

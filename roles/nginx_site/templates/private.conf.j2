@@ -1,5 +1,5 @@
 server {
-    allow {{ private_subnet_ipv4 }}/{{ private_mask_ipv4 }};
+    allow {{ vpn_subnet_ipv4 }}/{{ vpn_mask_ipv4 }};
     allow 127.0.0.1;
     deny all;
 

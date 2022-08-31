@@ -1,5 +1,5 @@
 [Interface]
-Address = {{ private_address_ipv4 }}/{{ private_mask_ipv4 }}
-Address = {{ private_address_ipv6 }}/{{ private_mask_ipv6 }}
+Address = {{ vpn_address_ipv4 }}/{{ vpn_mask_ipv4 }}
+Address = {{ vpn_address_ipv6 }}/{{ vpn_mask_ipv6 }}
 PrivateKey = {{ vpn_private_key.stdout }}
 ListenPort = {{ vpn_port }}
