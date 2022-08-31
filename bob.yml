@@ -19,6 +19,8 @@
 
     - role: sshd
       tags: [ security, sshd ]
+    - role: wireguard
+      tags: [ security, wireguard ]
     - role: nftables
       tags: [ security, nftables ]
 
