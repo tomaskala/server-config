@@ -1,5 +1,15 @@
 server {
-    allow {{ vpn_subnet_ipv4 }}/{{ vpn_mask_ipv4 }};
+    allow {{ vpn_subnet_ipv4 }}/{{ vpn_mask_ipv4 }}
+    allow {{ vpn_subnet_ipv6 }}/{{ vpn_mask_ipv6 }}
+
+    {% if private_subnet_ipv4 is defined and private_mask_ipv4 is defined %}
+    allow {{ private_subnet_ipv4 }}/{{ private_mask_ipv4 }}
+    %{ endif %}
+
+    {% if private_subnet_ipv6 is defined and private_mask_ipv6 is defined %}
+    allow {{ private_subnet_ipv6 }}/{{ private_mask_ipv6 }}
+    %{ endif %}
+
     allow 127.0.0.1;
     deny all;
 
