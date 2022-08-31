@@ -1,12 +1,9 @@
 # Listen on this address and port.
-ListenAddress {{ private_address_ipv4 }}
-{% if private_address_ipv6 is defined %}
-ListenAddress {{ private_address_ipv6 }}
+{% for address in sshd.listen_addresses %}
+ListenAddress {{ address }}
+{% endfor %}
 AddressFamily any
-{% else %}
-AddressFamily inet
-{% endif %}
-Port 22
+Port {{ sshd.port }}
 
 # Supported HostKey algorithms by order of preference.
 HostKey /etc/ssh/ssh_host_ed25519_key

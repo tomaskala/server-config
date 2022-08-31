@@ -14,7 +14,7 @@ table inet firewall {
     set tcp_accepted_wan {
         type inet_service
         elements = {
-            22,
+            {{ sshd.port }},
             53,
             80,
             443,

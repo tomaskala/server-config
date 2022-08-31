@@ -19,6 +19,12 @@ private_address_ipv6: "fd25:6f6:a9f:10::1"
 private_subnet_ipv6: "fd25:6f6:a9f::"
 private_mask_ipv6: 48
 
+sshd:
+  port: 22
+  listen_addresses:
+    - 10.100.0.1
+    - "fd25:6f6:a9f:10::1"
+
 unbound:
   port: 53
   listen_addresses:

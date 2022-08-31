@@ -4,6 +4,11 @@ hostname: bob
 
 private_address_ipv4: 10.0.0.2
 
+sshd:
+  port: 22
+  listen_addresses:
+    - 10.0.0.2
+
 navidrome:
   nas_address: 10.0.0.10
   src: /volume1/Music

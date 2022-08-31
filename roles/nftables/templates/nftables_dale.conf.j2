@@ -19,7 +19,7 @@ table inet firewall {
     set tcp_accepted_vpn {
         type inet_service
         elements = {
-            22,
+            {{ sshd.port }},
             53,
         }
     }
