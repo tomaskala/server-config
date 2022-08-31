@@ -164,9 +164,13 @@ table inet router {
     chain postrouting {
         type nat hook postrouting priority 100;
 
-        # Masquerade VPN traffic.
+        # Masquerade VPN traffic to WAN.
         oifname $wan_if ip saddr $vpn_net_ipv4 masquerade
         oifname $wan_if ip6 saddr $vpn_net_ipv6 masquerade
+
+        # Masquerade VPN traffic to VPN.
+        oifname $vpn_if ip saddr $vpn_net_ipv4 masquerade
+        oifname $vpn_if ip6 saddr $vpn_net_ipv6 masquerade
     }
 }
 
