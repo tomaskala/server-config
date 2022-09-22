@@ -2,6 +2,8 @@ flush ruleset
 
 define wan_if = {{ wan_interface }}
 define vpn_if = wg0
+define vpn_net_ipv4 = {{ vpn_subnet_ipv4 }}/{{ vpn_mask_ipv4 }}
+define vpn_net_ipv6 = {{ vpn_subnet_ipv6 }}/{{ vpn_mask_ipv6 }}
 
 table inet firewall {
     set private_subnet_ipv4 {
@@ -78,6 +80,9 @@ table inet firewall {
 
         # Allow all established and related traffic.
         ct state established,related accept
+
+        # Allow VPN peers to access the internal subnet.
+        iifname $vpn_if oifname $wan_if ct state new accept
     }
 
     chain output {
@@ -86,6 +91,16 @@ table inet firewall {
         # Explicitly allow outgoing traffic; ICMPv6 must be set manually.
         ip6 nexthdr ipv6-icmp accept
         ct state new,established,related accept
+    }
+}
+
+table inet router {
+    chain postrouting {
+        type nat hook postrouting priority 100;
+
+        # Masquerade VPN traffic to the internal subnet.
+        oifname $wan_if ip saddr $vpn_net_ipv4 masquerade
+        oifname $wan_if ip6 saddr $vpn_net_ipv6 masquerade
     }
 }
 

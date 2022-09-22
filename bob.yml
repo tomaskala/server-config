@@ -32,3 +32,5 @@
       tags: [ services, pihole ]
     - role: navidrome
       tags: [ services, navidrome ]
+    - role: ip_forwarding
+      tags: [ services, ip_forwarding ]
