@@ -9,8 +9,8 @@ Options:
   -h  Show this message and exit.
 
 Commands:
-  start   Set up the overlay network.
-  stop    Tear down the overlay network."
+  start  Set up the overlay network.
+  stop   Tear down the overlay network."
 
 network_config='/opt/overlay-network/overlay-network.json'
 unbound_config='/etc/unbound/unbound.conf.d/overlay-network.conf'
