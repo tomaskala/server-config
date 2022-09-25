@@ -9,31 +9,31 @@ wan_interface: venet0
 
 vpn_port: 1194
 vpn_client_ipv4: 10.100.100.1
-vpn_client_ipv6: "fd25:6f6:a9f:20::1"
+vpn_client_ipv6: "fd25:6f6:a9f:1100::1"
 
 vpn_address_ipv4: 10.100.0.1
-vpn_address_ipv6: "fd25:6f6:a9f:10::1"
+vpn_address_ipv6: "fd25:6f6:a9f:1000::1"
 
 sshd:
   port: 22
   listen_addresses:
     - 10.100.0.1
-    - "fd25:6f6:a9f:10::1"
+    - "fd25:6f6:a9f:1000::1"
 
 unbound:
   port: 53
   listen_addresses:
     - 10.100.0.1
-    - "fd25:6f6:a9f:10::1"
+    - "fd25:6f6:a9f:1000::1"
   allowed_subnets:
     - 10.100.0.0/16
-    - "fd25:6f6:a9f::/48"
+    - "fd25:6f6:a9f:1000::/52"
   local_domains:
     - domain: tomaskala.com
       addresses:
         - address: 10.100.0.1
           record_type: A
-        - address: "fd25:6f6:a9f:10::1"
+        - address: "fd25:6f6:a9f:1000::1"
           record_type: AAAA
     - domain: bob.home.arpa
       addresses:

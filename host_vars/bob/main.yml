@@ -3,14 +3,14 @@
 hostname: bob
 
 vpn_address_ipv4: 10.100.0.10
-vpn_address_ipv6: fd25:6f6:a9f:10::10
+vpn_address_ipv6: fd25:6f6:a9f:1000::10
 
 sshd:
   port: 22
   listen_addresses:
     - 10.0.0.2
     - 10.100.0.10
-    - "fd25:6f6:a9f:10::10"
+    - "fd25:6f6:a9f:1000::10"
 
 navidrome:
   nas_address: 10.0.0.10
