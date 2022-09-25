@@ -52,35 +52,9 @@ start() {
   # Start IP forwarding.
   /sbin/sysctl -w net.ipv4.ip_forward=1
   /sbin/sysctl -w net.ipv6.conf.all.forwarding=1
-
-  # Add IP routes.
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv4, .gateway.ipv4] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
-    /usr/sbin/ip -4 route add "${subnet}" via "${gateway}"
-  done
-
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv6, .gateway.ipv6] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
-    /usr/sbin/ip -6 route add "${subnet}" via "${gateway}"
-  done
 }
 
 stop() {
-  # Remove IP routes.
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv4, .gateway.ipv4] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
-    /usr/sbin/ip -4 route del "${subnet}" via "${gateway}"
-  done
-
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv6, .gateway.ipv6] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
-    /usr/sbin/ip -6 route del "${subnet}" via "${gateway}"
-  done
-
   # Stop IP forwarding.
   /sbin/sysctl -w net.ipv4.ip_forward=0
   /sbin/sysctl -w net.ipv6.conf.all.forwarding=0
