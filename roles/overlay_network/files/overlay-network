@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euf
+set -eufx
 
 usage="Usage: $(basename "$0") [OPTIONS] COMMAND
 
