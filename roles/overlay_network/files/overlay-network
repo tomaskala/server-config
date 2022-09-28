@@ -55,7 +55,9 @@ start() {
   /sbin/sysctl -w net.ipv6.conf.all.forwarding=1
 
   # Add the gateway WireGuard configuration.
-  /usr/bin/wg addconf wg0 "${gateway_config}"
+  if [ -f "${gateway_config}" ]; then
+    /usr/bin/wg addconf wg0 "${gateway_config}"
+  fi
 
 	# Add IP routes.
   /usr/bin/jq -r '.locations[] | .subnet.ipv4' "${network_config}" \
