@@ -34,7 +34,7 @@ Options:
               with the overlay-network service.
   -h          Show this message and exit."
 
-gateway_config='/etc/wireguard/wg_gateway.conf'
+gateway_config='/etc/wireguard/wg-gateway.conf'
 
 die() {
   printf '%s\n' "$1" >&2
