@@ -41,13 +41,13 @@ die() {
   exit 1
 }
 
-checkarg() {
+check_arg() {
   if [ -z "$1" ]; then
     die 'Missing value for the %s\n.' "$2"
   fi
 }
 
-checkunique() {
+check_unique() {
   name="$1"
   clientipv4="$2"
   clientipv6="$3"
@@ -174,12 +174,12 @@ main() {
     esac
   done
 
-  checkarg "${name}" 'client name'
-  checkarg "${clientipv4}" 'client IPv4 address inside the VPN'
-  checkarg "${clientipv6}" 'client IPv6 address inside the VPN'
-  checkarg "${endpoint}" 'endpoint'
-  checkarg "${config}" 'server WireGuard config path'
-  checkarg "${tunneling}" 'tunneling type'
+  check_arg "${name}" 'client name'
+  check_arg "${clientipv4}" 'client IPv4 address inside the VPN'
+  check_arg "${clientipv6}" 'client IPv6 address inside the VPN'
+  check_arg "${endpoint}" 'endpoint'
+  check_arg "${config}" 'server WireGuard config path'
+  check_arg "${tunneling}" 'tunneling type'
 
   if [ "${tunneling}" != 'access' ] \
     && [ "${tunneling}" != 'access-dns' ] \
@@ -193,10 +193,10 @@ main() {
     die 'The config file does not exist.'
   fi
 
-  checkunique "${name}" "${clientipv4}" "${clientipv6}" "${config}"
+  check_unique "${name}" "${clientipv4}" "${clientipv6}" "${config}"
 
   if [ -f "${gateway_config}" ]; then
-    checkunique "${name}" "${clientipv4}" "${clientipv6}" "${gateway_config}"
+    check_unique "${name}" "${clientipv4}" "${clientipv6}" "${gateway_config}"
   fi
 
   serveripv4=$(/usr/sbin/ip -4 addr show dev wg0 \
