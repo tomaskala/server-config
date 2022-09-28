@@ -58,19 +58,16 @@ start() {
   /usr/bin/wg addconf wg0 "${gateway_config}"
 
 	# Add IP routes.
-  # TODO: The `gateway` variable (holding the gateway IP) can be removed.
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv4, .gateway.ipv4] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
+  /usr/bin/jq -r '.locations[] | .subnet.ipv4' "${network_config}" \
+    | while read -r subnet; do
 			route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
 			if [ -z "${route}" ]; then
 				/usr/sbin/ip -4 route add "${subnet}" dev wg0
 			fi
 		done
 
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv6, .gateway.ipv6] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
+  /usr/bin/jq -r '.locations[] | .subnet.ipv6' "${network_config}" \
+    | while read -r subnet; do
 			route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
 			if [ -z "${route}" ]; then
 				/usr/sbin/ip -6 route add "${subnet}" dev wg0
@@ -80,18 +77,16 @@ start() {
 
 stop() {
 	# Remove IP routes.
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv4, .gateway.ipv4] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
+  /usr/bin/jq -r '.locations[] | .subnet.ipv4' "${network_config}" \
+    | while read -r subnet; do
 			route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
 			if [ -n "${route}" ]; then
 				/usr/sbin/ip -4 route del "${subnet}" dev wg0
 			fi
 		done
 
-  /usr/bin/jq -r \
-    '.locations[] | [.subnet.ipv6, .gateway.ipv6] | join(" ")' \
-    "${network_config}" | while read -r subnet gateway; do
+  /usr/bin/jq -r '.locations[] | .subnet.ipv6' "${network_config}" \
+    | while read -r subnet; do
 			route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
 			if [ -n "${route}" ]; then
 				/usr/sbin/ip -6 route del "${subnet}" dev wg0
