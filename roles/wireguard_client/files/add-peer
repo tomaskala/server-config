@@ -11,6 +11,8 @@ Options:
   -n TEXT     Name of the client, used to comment the configuration.
   -4 IPv4     IPv4 address of the client within the VPN.
   -6 IPv6     IPv6 address of the client within the VPN.
+  -a SUBNET   Additional values for the AllowedIPs clause in the [Peer] section
+              of the client in the server configuration. Can be repeated.
   -e IP:PORT  Public IP address and WireGuard port of the server.
   -c FILE     Path to the WireGuard config of the server.
   -t TEXT     Tunneling type:
@@ -27,9 +29,9 @@ Options:
   -k INT      Send keepalive packets every k seconds (disabled by default).
               Allows to keep the connection alive if the client is behind a NAT.
               The WireGuard documentation suggests a value of 25 (seconds).
-  -g          Assume the added client is a gateway and add its [Peer] clause to
-              a file separate from the server WireGuard config. To be used with
-              the overlay-network service.
+  -g          Assume the added client is a gateway and add its [Peer] section
+              to a file separate from the server WireGuard config. To be used
+              with the overlay-network service.
   -h          Show this message and exit."
 
 gateway_config='/etc/wireguard/wg_gateway.conf'
@@ -68,8 +70,9 @@ generate_peer_clause() {
   name="$1"
   clientipv4="$2"
   clientipv6="$3"
-  publickey="$4"
-  presharedkey="$5"
+  allowedips="$4"
+  publickey="$5"
+  presharedkey="$6"
 
   printf '\n'
   printf '# %s\n' "${name}"
@@ -78,6 +81,14 @@ generate_peer_clause() {
   printf 'PresharedKey = %s\n' "${presharedkey}"
   printf 'AllowedIPs = %s/32\n' "${clientipv4}"
   printf 'AllowedIPs = %s/128\n' "${clientipv6}"
+
+  if [ -n "${allowedips}" ]; then
+    printf '%s\n' "${allowedips}" \
+      | /usr/bin/tr ',' '\n' \
+      | while read -r subnet; do
+      printf 'AllowedIPs = %s\n' "${subnet}"
+    done
+  fi
 }
 
 generate_client_config() {
@@ -136,6 +147,7 @@ main() {
   name=''
   clientipv4=''
   clientipv6=''
+  allowedips=''
   endpoint=''
   config=''
   tunneling=''
@@ -146,12 +158,13 @@ main() {
     die 'Run the script as root.'
   fi
 
-  while getopts 'h4:6:n:e:c:t:k:g' arg; do
+  while getopts 'h4:6:a:n:e:c:t:k:g' arg; do
     case "${arg}" in
       h) printf '%s\n' "${usage}"; exit 0 ;;
       n) name="${OPTARG}" ;;
       4) clientipv4="${OPTARG}" ;;
       6) clientipv6="${OPTARG}" ;;
+      a) allowedips="${allowedips:+${allowedips},}${OPTARG}" ;;
       e) endpoint="${OPTARG}" ;;
       c) config="${OPTARG}" ;;
       t) tunneling="${OPTARG}" ;;
@@ -212,6 +225,7 @@ main() {
       "${name}" \
       "${clientipv4}" \
       "${clientipv6}" \
+      "${allowedips}" \
       "${publickey}" \
       "${presharedkey}" \
       >> "${target}"
