@@ -3,28 +3,29 @@ set -euf
 
 usage="Usage: $(/usr/bin/basename "$0") OPTIONS
 
-Add a new WireGuard peer. Its configuration is written to the standard output,
-which can be piped to 'qrencode -t ansiutf8' if adding a mobile phone peer.
+Add a new WireGuard client. Its configuration is written to the standard
+output, which can be piped to 'qrencode -t ansiutf8' if adding a mobile phone
+client.
 
 Options:
-  -n TEXT     Name of the added peer, used to comment the configuration.
-  -4 IPv4     IPv4 address of the added peer within the VPN.
-  -6 IPv6     IPv6 address of the added peer within the VPN.
-  -e IP:PORT  Public IP address and WireGuard port of the current peer.
-  -c FILE     Path to the WireGuard config of the current peer.
+  -n TEXT     Name of the client, used to comment the configuration.
+  -4 IPv4     IPv4 address of the client within the VPN.
+  -6 IPv6     IPv6 address of the client within the VPN.
+  -e IP:PORT  Public IP address and WireGuard port of the server.
+  -c FILE     Path to the WireGuard config of the server.
   -t TEXT     Tunneling type:
-              - 'access': Only grant access to the current peer.
-              - 'access-dns': Only grant access to the current peer and set the
-                current peer as the DNS server.
-              - 'access-dns-resolved': Only grant access to the current peer,
-                set the current peer as the DNS server, assume systemd-resolved
-                for the added peer.
-              - 'full': Setup full tunneling and set the current peer as the
-                DNS server.
-              - 'full-resolved': Setup full tunneling, set the current peer as
-                the DNS server, assume systemd-resolved for the added peer.
+              - 'access': Only grant access to the server.
+              - 'access-dns': Only grant access to the server and set the
+                server as the client DNS resolver.
+              - 'access-dns-resolved': Only grant access to the server, set the
+                server as the client DNS resolver, assume systemd-resolved for
+                the client.
+              - 'full': Setup full tunneling and set the server as the client
+                DNS resolver.
+              - 'full-resolved': Setup full tunneling, set the server as the
+                client DNS resolver, assume systemd-resolved for the client.
   -k INT      Send keepalive packets every k seconds (disabled by default).
-              Allows to keep the connection alive if the peer is behind a NAT.
+              Allows to keep the connection alive if the client is behind a NAT.
               The WireGuard documentation suggests a value of 25 (seconds).
   -h          Show this message and exit."
 
@@ -134,11 +135,11 @@ main() {
     esac
   done
 
-  checkarg "${name}" 'added peer name'
-  checkarg "${clientipv4}" 'added peer IPv4 address inside the VPN'
-  checkarg "${clientipv6}" 'added peer IPv6 address inside the VPN'
+  checkarg "${name}" 'client name'
+  checkarg "${clientipv4}" 'client IPv4 address inside the VPN'
+  checkarg "${clientipv6}" 'client IPv6 address inside the VPN'
   checkarg "${endpoint}" 'endpoint'
-  checkarg "${config}" 'current peer WireGuard config path'
+  checkarg "${config}" 'server WireGuard config path'
   checkarg "${tunneling}" 'tunneling type'
 
   if [ "${tunneling}" != 'access' ] \
@@ -154,15 +155,15 @@ main() {
   fi
 
   if /usr/bin/grep -q "#\s*${name}$" "${config}"; then
-    die 'A peer with this name already exists.'
+    die 'A client with this name already exists.'
   fi
 
   if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv4}/32$" "${config}"; then
-    die 'A peer with this IPv4 address already exists.'
+    die 'A client with this IPv4 address already exists.'
   fi
 
   if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv6}/128$" "${config}"; then
-    die 'A peer with this IPv6 address already exists.'
+    die 'A client with this IPv6 address already exists.'
   fi
 
   serveripv4=$(/usr/sbin/ip -4 addr show dev wg0 \
