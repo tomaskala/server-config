@@ -35,10 +35,10 @@ start() {
   isolated_subnet_ipv6=$(/usr/bin/jq -r '.networks.isolated.subnet.ipv6' "${network_config}")
   /usr/sbin/nft "add element inet firewall vpn_isolated_ipv6 { ${isolated_subnet_ipv6} }"
 
-  accessible_subnets_ipv4=$(/usr/bin/jq -r '[.locations[].subnet.ipv4] | join(",")' "${network_config}")
+  accessible_subnets_ipv4=$(/usr/bin/jq -r '[.locations[].gateway.ipv4, .locations[].subnet.ipv4] | join(",")' "${network_config}")
   /usr/sbin/nft "add element inet firewall vpn_accessible_ipv4 { ${accessible_subnets_ipv4} }"
 
-  accessible_subnets_ipv6=$(/usr/bin/jq -r '[.locations[].subnet.ipv6] | join(",")' "${network_config}")
+  accessible_subnets_ipv6=$(/usr/bin/jq -r '[.locations[].gateway.ipv6, .locations[].subnet.ipv6] | join(",")' "${network_config}")
   /usr/sbin/nft "add element inet firewall vpn_accessible_ipv6 { ${accessible_subnets_ipv6} }"
 
   # Add local DNS records.
