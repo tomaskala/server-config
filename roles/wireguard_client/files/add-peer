@@ -27,10 +27,12 @@ Options:
   -k INT      Send keepalive packets every k seconds (disabled by default).
               Allows to keep the connection alive if the client is behind a NAT.
               The WireGuard documentation suggests a value of 25 (seconds).
-  -p FILE     Filename to which the client [Peer] configuration block should be
-              saved. If not provided, it will be appended to the server
-              configuration. If provided, the FILE must not exist.
+  -g          Assume the added client is a gateway and add its [Peer] clause to
+              a file separate from the server WireGuard config. To be used with
+              the overlay-network service.
   -h          Show this message and exit."
+
+gateway_config='/etc/wireguard/wg_gateway.conf'
 
 die() {
   printf '%s\n' "$1" >&2
@@ -40,6 +42,25 @@ die() {
 checkarg() {
   if [ -z "$1" ]; then
     die 'Missing value for the %s\n.' "$2"
+  fi
+}
+
+checkunique() {
+  name="$1"
+  clientipv4="$2"
+  clientipv6="$3"
+  config="$4"
+
+  if /usr/bin/grep -q "#\s*${name}$" "${config}"; then
+    die 'A client with this name already exists.'
+  fi
+
+  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv4}/32$" "${config}"; then
+    die 'A client with this IPv4 address already exists.'
+  fi
+
+  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv6}/128$" "${config}"; then
+    die 'A client with this IPv6 address already exists.'
   fi
 }
 
@@ -119,13 +140,13 @@ main() {
   config=''
   tunneling=''
   keepalive=0
-  peerfile=''
+  gateway=false
 
   if [ "${euid}" != 0 ]; then
     die 'Run the script as root.'
   fi
 
-  while getopts 'h4:6:n:e:c:t:k:p:' arg; do
+  while getopts 'h4:6:n:e:c:t:k:g' arg; do
     case "${arg}" in
       h) printf '%s\n' "${usage}"; exit 0 ;;
       n) name="${OPTARG}" ;;
@@ -135,7 +156,7 @@ main() {
       c) config="${OPTARG}" ;;
       t) tunneling="${OPTARG}" ;;
       k) keepalive="${OPTARG}" ;;
-      p) peerfile="${OPTARG}" ;;
+      g) gateway=true ;;
       *) printf '%s\n' "${usage}"; exit 1 ;;
     esac
   done
@@ -159,20 +180,10 @@ main() {
     die 'The config file does not exist.'
   fi
 
-  if /usr/bin/grep -q "#\s*${name}$" "${config}"; then
-    die 'A client with this name already exists.'
-  fi
+  checkunique "${name}" "${clientipv4}" "${clientipv6}" "${config}"
 
-  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv4}/32$" "${config}"; then
-    die 'A client with this IPv4 address already exists.'
-  fi
-
-  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv6}/128$" "${config}"; then
-    die 'A client with this IPv6 address already exists.'
-  fi
-
-  if [ -n "${peerfile}" ] && [ -e "${peerfile}" ]; then
-    die 'The specified peer file already exists.'
+  if [ -f "${gateway_config}" ]; then
+    checkunique "${name}" "${clientipv4}" "${clientipv6}" "${gateway_config}"
   fi
 
   serveripv4=$(/usr/sbin/ip -4 addr show dev wg0 \
@@ -189,26 +200,22 @@ main() {
   publickey=$(printf '%s' "${privatekey}" | /usr/bin/wg pubkey)
   presharedkey=$(/usr/bin/wg genpsk)
 
-  if [ -z "${peerfile}" ]; then
+  if "${gateway}"; then
+    target="${gateway_config}"
+  else
+    target="${config}"
+  fi
+
+  (
+    umask 0077
     generate_peer_clause \
       "${name}" \
       "${clientipv4}" \
       "${clientipv6}" \
       "${publickey}" \
       "${presharedkey}" \
-      >> "${config}"
-  else 
-    (
-      umask 0077
-      generate_peer_clause \
-        "${name}" \
-        "${clientipv4}" \
-        "${clientipv6}" \
-        "${publickey}" \
-        "${presharedkey}" \
-        > "${peerfile}"
-    )
-  fi
+      >> "${target}"
+  )
 
   generate_client_config \
     "${clientipv4}" \
