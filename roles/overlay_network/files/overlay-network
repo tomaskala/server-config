@@ -96,7 +96,12 @@ stop() {
 		done
 
   # Restore WireGuard configuration.
-  /usr/bin/wg setconf wg0 /etc/wireguard/wg0.conf
+  (
+    /usr/bin/mkfifo -m 0600 /etc/wireguard/wg.fifo
+    /usr/bin/wg-quick strip wg0 > /etc/wireguard/wg.fifo &
+    /usr/bin/wg setconf wg0 /etc/wireguard/wg.fifo
+    /usr/bin/rm -f /etc/wireguard/wg.fifo
+  )
 
   # Stop IP forwarding.
   /sbin/sysctl -w net.ipv4.ip_forward=0
