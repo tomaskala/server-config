@@ -12,6 +12,7 @@ Commands:
   start  Set up the overlay network.
   stop   Tear down the overlay network."
 
+gateway_config='/etc/wireguard/wg-gateway.conf'
 network_config='/opt/overlay-network/overlay-network.json'
 unbound_config='/etc/unbound/unbound.conf.d/overlay-network.conf'
 
@@ -52,9 +53,54 @@ start() {
   # Start IP forwarding.
   /sbin/sysctl -w net.ipv4.ip_forward=1
   /sbin/sysctl -w net.ipv6.conf.all.forwarding=1
+
+  # Add the gateway WireGuard configuration.
+  /usr/bin/wg addconf wg0 "${gateway_config}"
+
+	# Add IP routes.
+  # TODO: The `gateway` variable (holding the gateway IP) can be removed.
+  /usr/bin/jq -r \
+    '.locations[] | [.subnet.ipv4, .gateway.ipv4] | join(" ")' \
+    "${network_config}" | while read -r subnet gateway; do
+			route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
+			if [ -z "${route}" ]; then
+				/usr/sbin/ip -4 route add "${subnet}" dev wg0
+			fi
+		done
+
+  /usr/bin/jq -r \
+    '.locations[] | [.subnet.ipv6, .gateway.ipv6] | join(" ")' \
+    "${network_config}" | while read -r subnet gateway; do
+			route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
+			if [ -z "${route}" ]; then
+				/usr/sbin/ip -6 route add "${subnet}" dev wg0
+			fi
+		done
 }
 
 stop() {
+	# Remove IP routes.
+  /usr/bin/jq -r \
+    '.locations[] | [.subnet.ipv4, .gateway.ipv4] | join(" ")' \
+    "${network_config}" | while read -r subnet gateway; do
+			route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
+			if [ -n "${route}" ]; then
+				/usr/sbin/ip -4 route del "${subnet}" dev wg0
+			fi
+		done
+
+  /usr/bin/jq -r \
+    '.locations[] | [.subnet.ipv6, .gateway.ipv6] | join(" ")' \
+    "${network_config}" | while read -r subnet gateway; do
+			route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
+			if [ -n "${route}" ]; then
+				/usr/sbin/ip -6 route del "${subnet}" dev wg0
+			fi
+		done
+
+  # Restore WireGuard configuration.
+  /usr/bin/wg setconf wg0 /etc/wireguard/wg0.conf
+
   # Stop IP forwarding.
   /sbin/sysctl -w net.ipv4.ip_forward=0
   /sbin/sysctl -w net.ipv6.conf.all.forwarding=0
