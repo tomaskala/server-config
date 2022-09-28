@@ -32,16 +32,6 @@ Options:
               configuration. If provided, the FILE must not exist.
   -h          Show this message and exit."
 
-euid="$(/usr/bin/id -u)"
-name=''
-clientipv4=''
-clientipv6=''
-endpoint=''
-config=''
-tunneling=''
-keepalive=0
-peerfile=''
-
 die() {
   printf '%s\n' "$1" >&2
   exit 1
@@ -121,6 +111,16 @@ generate_client_config() {
 }
 
 main() {
+  euid="$(/usr/bin/id -u)"
+  name=''
+  clientipv4=''
+  clientipv6=''
+  endpoint=''
+  config=''
+  tunneling=''
+  keepalive=0
+  peerfile=''
+
   if [ "${euid}" != 0 ]; then
     die 'Run the script as root.'
   fi
