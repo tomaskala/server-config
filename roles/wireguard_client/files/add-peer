@@ -198,13 +198,16 @@ main() {
       "${presharedkey}" \
       >> "${config}"
   else 
-    generate_peer_clause \
-      "${name}" \
-      "${clientipv4}" \
-      "${clientipv6}" \
-      "${publickey}" \
-      "${presharedkey}" \
-      > "${peerfile}"
+    (
+      umask 0077
+      generate_peer_clause \
+        "${name}" \
+        "${clientipv4}" \
+        "${clientipv6}" \
+        "${publickey}" \
+        "${presharedkey}" \
+        > "${peerfile}"
+    )
   fi
 
   generate_client_config \
