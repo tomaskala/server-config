@@ -27,6 +27,9 @@ Options:
   -k INT      Send keepalive packets every k seconds (disabled by default).
               Allows to keep the connection alive if the client is behind a NAT.
               The WireGuard documentation suggests a value of 25 (seconds).
+  -p FILE     Filename to which the client [Peer] configuration block should be
+              saved. If not provided, it will be appended to the server
+              configuration. If provided, the FILE must not exist.
   -h          Show this message and exit."
 
 euid="$(/usr/bin/id -u)"
@@ -37,6 +40,7 @@ endpoint=''
 config=''
 tunneling=''
 keepalive=0
+peerfile=''
 
 die() {
   printf '%s\n' "$1" >&2
@@ -49,7 +53,7 @@ checkarg() {
   fi
 }
 
-addtoconfig() {
+generate_peer_clause() {
   name="$1"
   clientipv4="$2"
   clientipv6="$3"
@@ -65,7 +69,7 @@ addtoconfig() {
   printf 'AllowedIPs = %s/128\n' "${clientipv6}"
 }
 
-genconfig() {
+generate_client_config() {
   clientipv4="${1}"
   clientipv6="${2}"
   endpoint="${3}"
@@ -121,7 +125,7 @@ main() {
     die 'Run the script as root.'
   fi
 
-  while getopts 'h4:6:n:e:c:t:k:' arg; do
+  while getopts 'h4:6:n:e:c:t:k:p:' arg; do
     case "${arg}" in
       h) printf '%s\n' "${usage}"; exit 0 ;;
       n) name="${OPTARG}" ;;
@@ -131,6 +135,7 @@ main() {
       c) config="${OPTARG}" ;;
       t) tunneling="${OPTARG}" ;;
       k) keepalive="${OPTARG}" ;;
+      p) peerfile="${OPTARG}" ;;
       *) printf '%s\n' "${usage}"; exit 1 ;;
     esac
   done
@@ -166,6 +171,10 @@ main() {
     die 'A client with this IPv6 address already exists.'
   fi
 
+  if [ -n "${peerfile}" ] && [ -e "${peerfile}" ]; then
+    die 'The specified peer file already exists.'
+  fi
+
   serveripv4=$(/usr/sbin/ip -4 addr show dev wg0 \
     | /usr/bin/awk '/inet/ {print $2}' \
     | /usr/bin/cut -d/ -f1)
@@ -180,15 +189,25 @@ main() {
   publickey=$(printf '%s' "${privatekey}" | /usr/bin/wg pubkey)
   presharedkey=$(/usr/bin/wg genpsk)
 
-  addtoconfig \
-    "${name}" \
-    "${clientipv4}" \
-    "${clientipv6}" \
-    "${publickey}" \
-    "${presharedkey}" \
-    >> "${config}"
+  if [ -z "${peerfile}" ]; then
+    generate_peer_clause \
+      "${name}" \
+      "${clientipv4}" \
+      "${clientipv6}" \
+      "${publickey}" \
+      "${presharedkey}" \
+      >> "${config}"
+  else 
+    generate_peer_clause \
+      "${name}" \
+      "${clientipv4}" \
+      "${clientipv6}" \
+      "${publickey}" \
+      "${presharedkey}" \
+      > "${peerfile}"
+  fi
 
-  genconfig \
+  generate_client_config \
     "${clientipv4}" \
     "${clientipv6}" \
     "${endpoint}" \
