@@ -15,17 +15,16 @@ Options:
               of the client in the server configuration. Can be repeated.
   -e IP:PORT  Public IP address and WireGuard port of the server.
   -c FILE     Path to the WireGuard config of the server.
-  -t TEXT     Tunneling type:
-              - 'access': Only grant access to the server.
-              - 'access-dns': Only grant access to the server and set the
-                server as the client DNS resolver.
-              - 'access-dns-resolved': Only grant access to the server, set the
-                server as the client DNS resolver, assume systemd-resolved for
-                the client.
-              - 'full': Setup full tunneling and set the server as the client
-                DNS resolver.
-              - 'full-resolved': Setup full tunneling, set the server as the
-                client DNS resolver, assume systemd-resolved for the client.
+  -t TEXT     Tunneling type. Either 'full' for full tunneling of all client
+              traffic, or a subnet to be tunneled through the server. In the
+              latter case, the option can be repeated.
+              When omitted or not 'full', access to the server is granted
+              automatically.
+              Setting 'full' requires '-d' to be set; an error is raised
+              otherwise.
+  -d          Set the server as the client's DNS resolver.
+  -r          Assume the client is using systemd-resolved. Only makes sense
+              if '-d' is set; an error is raised otherwise.
   -k INT      Send keepalive packets every k seconds (disabled by default).
               Allows to keep the connection alive if the client is behind a NAT.
               The WireGuard documentation suggests a value of 25 (seconds).
@@ -96,25 +95,26 @@ generate_client_config() {
   clientipv6="${2}"
   endpoint="${3}"
   tunneling="${4}"
-  privatekey="${5}"
-  presharedkey="${6}"
-  serveripv4="${7}"
-  serveripv6="${8}"
-  serverpublickey="${9}"
-  keepalive="${10}"
+  dns="${5}"
+  resolved="${6}"
+  privatekey="${7}"
+  presharedkey="${8}"
+  serveripv4="${9}"
+  serveripv6="${10}"
+  serverpublickey="${11}"
+  keepalive="${12}"
 
   printf '[Interface]\n'
   printf 'Address = %s/32\n' "${clientipv4}"
   printf 'Address = %s/128\n' "${clientipv6}"
   printf 'PrivateKey = %s\n' "${privatekey}"
 
-  if [ "${tunneling}" = 'access-dns' ] || [ "${tunneling}" = 'full' ]; then
+  if "${dns}"; then
     printf 'DNS = %s\n' "${serveripv4}"
     printf 'DNS = %s\n' "${serveripv6}"
-  elif [ "${tunneling}" = 'access-dns-resolved' ] \
-    || [ "${tunneling}" = 'full-resolved' ]; then
-    printf 'DNS = %s\n' "${serveripv4}"
-    printf 'DNS = %s\n' "${serveripv6}"
+  fi
+
+  if "${resolved}"; then
     printf 'PostUp = resolvectl dns %%i %s %s;' "${serveripv4}" "${serveripv6}"
     printf 'resolvectl domain %%i "~.";'
     printf 'resolvectl default-route %%i true\n'
@@ -127,14 +127,20 @@ generate_client_config() {
   printf 'PresharedKey = %s\n' "${presharedkey}"
   printf 'Endpoint = %s\n' "${endpoint}"
 
-  if [ "${tunneling}" = 'access' ] \
-    || [ "${tunneling}" = 'access-dns' ] \
-    || [ "${tunneling}" = 'access-dns-resolved' ]; then
-    printf 'AllowedIPs = %s/32\n' "${serveripv4}"
-    printf 'AllowedIPs = %s/128\n' "${serveripv6}"
-  else
+  if [ "${tunneling}" = 'full' ]; then
     printf 'AllowedIPs = 0.0.0.0/0\n'
     printf 'AllowedIPs = ::/0\n'
+  else
+    printf 'AllowedIPs = %s/32\n' "${serveripv4}"
+    printf 'AllowedIPs = %s/128\n' "${serveripv6}"
+
+    if [ -n "${tunneling}" ]; then
+      printf '%s\n' "${tunneling}" \
+        | /usr/bin/tr ',' '\n' \
+        | while read -r subnet; do
+        printf 'AllowedIPs = %s\n' "${subnet}"
+      done
+    fi
   fi
 
   if [ "${keepalive}" -gt 0 ]; then
@@ -151,14 +157,18 @@ main() {
   endpoint=''
   config=''
   tunneling=''
+  dns=false
+  resolved=false
   keepalive=0
   gateway=false
+
+  full_tunnel=false
 
   if [ "${euid}" != 0 ]; then
     die 'Run the script as root.'
   fi
 
-  while getopts 'h4:6:a:n:e:c:t:k:g' arg; do
+  while getopts 'h4:6:a:n:e:c:t:drk:g' arg; do
     case "${arg}" in
       h) printf '%s\n' "${usage}"; exit 0 ;;
       n) name="${OPTARG}" ;;
@@ -167,7 +177,12 @@ main() {
       a) allowedips="${allowedips:+${allowedips},}${OPTARG}" ;;
       e) endpoint="${OPTARG}" ;;
       c) config="${OPTARG}" ;;
-      t) tunneling="${OPTARG}" ;;
+      t)
+        tunneling="${tunneling:+${tunneling},}${OPTARG}"
+        [ "${OPTARG}" = 'full' ] && full_tunnel=true
+        ;;
+      d) dns=true ;;
+      r) resolved=true ;;
       k) keepalive="${OPTARG}" ;;
       g) gateway=true ;;
       *) printf '%s\n' "${usage}"; exit 1 ;;
@@ -179,15 +194,6 @@ main() {
   check_arg "${clientipv6}" 'client IPv6 address inside the VPN'
   check_arg "${endpoint}" 'endpoint'
   check_arg "${config}" 'server WireGuard config path'
-  check_arg "${tunneling}" 'tunneling type'
-
-  if [ "${tunneling}" != 'access' ] \
-    && [ "${tunneling}" != 'access-dns' ] \
-    && [ "${tunneling}" != 'access-dns-resolved' ] \
-    && [ "${tunneling}" != 'full' ] \
-    && [ "${tunneling}" != 'full-resolved' ]; then
-    die 'Invalid tunneling value.'
-  fi
 
   if [ ! -f "${config}" ]; then
     die 'The config file does not exist.'
@@ -197,6 +203,20 @@ main() {
 
   if [ -f "${gateway_config}" ]; then
     check_unique "${name}" "${clientipv4}" "${clientipv6}" "${gateway_config}"
+  fi
+
+  if ! "${dns}" && "${resolved}"; then
+    die 'Assuming systemd-resolved does not make sense without setting dns.'
+  fi
+
+  if "${full_tunnel}" && [ "${tunneling}" != 'full' ]; then
+    die 'If using full tunneling, specifying additional subnets to be \
+      tunneled does not make sense.'
+  fi
+
+  if ! "${dns}" && "${full_tunnel}"; then
+    die 'If using full tunneling, set also dns and double check \
+      whether systemd-resolved is used on the client.'
   fi
 
   serveripv4=$(/usr/sbin/ip -4 addr show dev wg0 \
@@ -236,6 +256,8 @@ main() {
     "${clientipv6}" \
     "${endpoint}" \
     "${tunneling}" \
+    "${dns}" \
+    "${resolved}" \
     "${privatekey}" \
     "${presharedkey}" \
     "${serveripv4}" \

@@ -38,7 +38,6 @@
         -6 {{ vpn_client_ipv6 | quote }} \
         -e "$endpoint":{{ vpn_port | quote }} \
         -c /etc/wireguard/wg0.conf \
-        -t access \
         > /etc/wireguard/peer.conf
   when: not wg_client.found
   notify:
