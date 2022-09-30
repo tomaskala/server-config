@@ -47,20 +47,15 @@ check_arg() {
 }
 
 check_unique() {
-  name="$1"
-  clientipv4="$2"
-  clientipv6="$3"
-  config="$4"
-
-  if /usr/bin/grep -q "#\s*${name}$" "${config}"; then
+  if /usr/bin/grep -q "#\s*$1$" "$4"; then
     die 'A client with this name already exists.'
   fi
 
-  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv4}/32$" "${config}"; then
+  if /usr/bin/grep -q "AllowedIPs\s*=\s*$2/32$" "$4"; then
     die 'A client with this IPv4 address already exists.'
   fi
 
-  if /usr/bin/grep -q "AllowedIPs\s*=\s*${clientipv6}/128$" "${config}"; then
+  if /usr/bin/grep -q "AllowedIPs\s*=\s*$3/128$" "$4"; then
     die 'A client with this IPv6 address already exists.'
   fi
 }
