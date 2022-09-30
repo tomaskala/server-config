@@ -205,13 +205,11 @@ main() {
   fi
 
   if "${full_tunnel}" && [ "${tunneling}" != 'full' ]; then
-    die 'If using full tunneling, specifying additional subnets to be \
-      tunneled does not make sense.'
+    die 'If using full tunneling, specifying additional subnets to be tunneled does not make sense.'
   fi
 
   if ! "${dns}" && "${full_tunnel}"; then
-    die 'If using full tunneling, set also dns and double check \
-      whether systemd-resolved is used on the client.'
+    die 'If using full tunneling, set also dns and double check whether systemd-resolved is used on the client.'
   fi
 
   serveripv4=$(/usr/sbin/ip -4 addr show dev wg0 \
