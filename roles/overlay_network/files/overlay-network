@@ -59,41 +59,41 @@ start() {
     /usr/bin/wg addconf wg0 "${gateway_config}"
   fi
 
-	# Add IP routes.
+  # Add IP routes.
   /usr/bin/jq -r '.locations[] | .subnet.ipv4' "${network_config}" \
     | while read -r subnet; do
-			route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
-			if [ -z "${route}" ]; then
-				/usr/sbin/ip -4 route add "${subnet}" dev wg0
-			fi
-		done
+      route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
+      if [ -z "${route}" ]; then
+        /usr/sbin/ip -4 route add "${subnet}" dev wg0
+      fi
+    done
 
   /usr/bin/jq -r '.locations[] | .subnet.ipv6' "${network_config}" \
     | while read -r subnet; do
-			route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
-			if [ -z "${route}" ]; then
-				/usr/sbin/ip -6 route add "${subnet}" dev wg0
-			fi
-		done
+      route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
+      if [ -z "${route}" ]; then
+        /usr/sbin/ip -6 route add "${subnet}" dev wg0
+      fi
+    done
 }
 
 stop() {
-	# Remove IP routes.
+  # Remove IP routes.
   /usr/bin/jq -r '.locations[] | .subnet.ipv4' "${network_config}" \
     | while read -r subnet; do
-			route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
-			if [ -n "${route}" ]; then
-				/usr/sbin/ip -4 route del "${subnet}" dev wg0
-			fi
-		done
+      route="$(/usr/sbin/ip -4 route show dev wg0 match "${subnet}" 2> /dev/null)"
+      if [ -n "${route}" ]; then
+        /usr/sbin/ip -4 route del "${subnet}" dev wg0
+      fi
+    done
 
   /usr/bin/jq -r '.locations[] | .subnet.ipv6' "${network_config}" \
     | while read -r subnet; do
-			route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
-			if [ -n "${route}" ]; then
-				/usr/sbin/ip -6 route del "${subnet}" dev wg0
-			fi
-		done
+      route="$(/usr/sbin/ip -6 route show dev wg0 match "${subnet}" 2> /dev/null)"
+      if [ -n "${route}" ]; then
+        /usr/sbin/ip -6 route del "${subnet}" dev wg0
+      fi
+    done
 
   # Restore WireGuard configuration.
   (
