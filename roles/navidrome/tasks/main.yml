@@ -39,6 +39,17 @@
 
 - name: Install navidrome
   block:
+    - name: Stop the navidrome service if it exists
+      systemd:
+        name: navidrome.service
+        state: stopped
+      ignore_errors: yes
+
+    - name: Remove the navidrome installation directory
+      file:
+        path: /opt/navidrome
+        state: absent
+
     - name: Create the navidrome directory structure
       file:
         path: "{{ item }}"
@@ -52,7 +63,7 @@
 
     - name: Fetch and unpack the navidrome tarball
       unarchive:
-        src: https://github.com/navidrome/navidrome/releases/download/v0.47.5/navidrome_0.47.5_Linux_arm64.tar.gz
+        src: "{{ navidrome.tarball }}"
         dest: /opt/navidrome
         remote_src: yes
         owner: music

@@ -13,6 +13,7 @@ sshd:
     - "fd25:6f6:a9f:1000::10"
 
 navidrome:
+  tarball: https://github.com/navidrome/navidrome/releases/download/v0.48.0/navidrome_0.48.0_Linux_arm64.tar.gz
   nas_address: 10.0.0.10
   src: /volume1/Music
   dest: /mnt/Music
