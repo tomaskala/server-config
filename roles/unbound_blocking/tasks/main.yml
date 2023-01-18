@@ -1,9 +1,9 @@
 ---
 
-- name: Install curl
+- name: Install python3-venv
   apt:
     name:
-      - curl
+      - python3-venv
     state: latest
     update_cache: yes
     cache_valid_time: 600
@@ -26,13 +26,19 @@
       command:
         cmd: /usr/sbin/unbound-checkconf
 
-- name: Copy the blocklist fetching script
+- name: Copy the DNS blocklist
   copy:
-    src: fetch-blocklists
-    dest: /usr/local/bin/fetch-blocklists
+    src: dns-blocklist
+    dest: /opt
     owner: root
     group: root
     mode: 0700
+
+- name: Define a virtual environment for running the script
+  pip:
+    name: requests
+    virtualenv: /opt/dns-blocklist/venv
+    virtualenv_command: /usr/bin/python3 -m venv
 
 - name: Set up a blocklist-filling cronjob
   cron:
@@ -43,8 +49,9 @@
     month: "*"
     dow: 0
     name: Fetch unbound blocklist
-    job: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
+    job: /opt/dns-blocklist/venv/bin/python3 /opt/dns-blocklist/fetch-blocklist.py -s /opt/dns-blocklist/blocklist-sources.txt -w /opt/dns-blocklist/whitelist.txt -l /opt/dns-blocklist/fetch-blocklist.log
 
 - name: Fill the blocklist for the first time
   shell:
-    cmd: /usr/local/bin/fetch-blocklists > /etc/unbound/unbound.conf.d/blocklist.conf && /usr/sbin/unbound-control reload
+    cmd: /opt/dns-blocklist/venv/bin/python3 /opt/dns-blocklist/fetch-blocklist.py -s /opt/dns-blocklist/blocklist-sources.txt -w /opt/dns-blocklist/whitelist.txt -l /opt/dns-blocklist/fetch-blocklist.log
+
