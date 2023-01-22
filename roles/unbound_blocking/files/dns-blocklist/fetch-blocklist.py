@@ -109,9 +109,8 @@ def clear_blocklist():
             text=True,
             encoding="utf-8",
         )
-
-    LOGGER.info("unbound-control stdout:\n%s", p.stdout)
-    LOGGER.info("unbound-control stderr:\n%s", p.stderr)
+        LOGGER.info("unbound-control stdout:\n%s", p.stdout)
+        LOGGER.info("unbound-control stderr:\n%s", p.stderr)
 
     if p.returncode != 0:
         LOGGER.critical("unbound-control exitted with code %d", p.returncode)
@@ -131,9 +130,8 @@ def load_blocklist(blocklist):
             text=True,
             encoding="utf-8",
         )
-
-    LOGGER.info("unbound-control stdout:\n%s", p.stdout)
-    LOGGER.info("unbound-control stderr:\n%s", p.stderr)
+        LOGGER.info("unbound-control stdout:\n%s", p.stdout)
+        LOGGER.info("unbound-control stderr:\n%s", p.stderr)
 
     if p.returncode != 0:
         LOGGER.critical("unbound-control exitted with code %d", p.returncode)
