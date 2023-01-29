@@ -12,6 +12,7 @@ LOGGER = logging.getLogger(__name__)
 COMMENT = re.compile(r"\s*#.*$")
 TRAILING_DOTS = re.compile(r"\.+$")
 REQUEST_TIMEOUT = 10
+UNBOUND_CONTROL = "/usr/sbin/unbound-control"
 
 
 def all_lines(source):
@@ -73,17 +74,17 @@ def clear_blocklist():
     LOGGER.info("Obtaining current local zones")
 
     p = run(
-        ["unbound-control", "list_local_zones"],
+        [UNBOUND_CONTROL, "list_local_zones"],
         bufsize=1,
         capture_output=True,
         text=True,
         encoding="utf-8",
     )
 
-    LOGGER.info("unbound-control stderr:\n%s", p.stderr)
+    LOGGER.info("%s stderr:\n%s", UNBOUND_CONTROL, p.stderr)
 
     if p.returncode != 0:
-        LOGGER.critical("unbound-control exitted with code %d", p.returncode)
+        LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
         sys.exit(1)
 
     blocklist = []
@@ -102,18 +103,18 @@ def clear_blocklist():
 
     if blocklist:
         p = run(
-            ["unbound-control", "local_zones_remove"],
+            [UNBOUND_CONTROL, "local_zones_remove"],
             input="\n".join(blocklist) + "\n",
             bufsize=1,
             capture_output=True,
             text=True,
             encoding="utf-8",
         )
-        LOGGER.info("unbound-control stdout:\n%s", p.stdout)
-        LOGGER.info("unbound-control stderr:\n%s", p.stderr)
+        LOGGER.info("%s stdout:\n%s", UNBOUND_CONTROL, p.stdout)
+        LOGGER.info("%s stderr:\n%s", UNBOUND_CONTROL, p.stderr)
 
     if p.returncode != 0:
-        LOGGER.critical("unbound-control exitted with code %d", p.returncode)
+        LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
         sys.exit(1)
 
 
@@ -123,18 +124,18 @@ def load_blocklist(blocklist):
 
     if local_zones:
         p = run(
-            ["/usr/sbin/unbound-control", "local_zones"],
+            [UNBOUND_CONTROL, "local_zones"],
             input="\n".join(local_zones) + "\n",
             bufsize=1,
             capture_output=True,
             text=True,
             encoding="utf-8",
         )
-        LOGGER.info("unbound-control stdout:\n%s", p.stdout)
-        LOGGER.info("unbound-control stderr:\n%s", p.stderr)
+        LOGGER.info("%s stdout:\n%s", UNBOUND_CONTROL, p.stdout)
+        LOGGER.info("%s stderr:\n%s", UNBOUND_CONTROL, p.stderr)
 
     if p.returncode != 0:
-        LOGGER.critical("unbound-control exitted with code %d", p.returncode)
+        LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
         sys.exit(1)
 
 
