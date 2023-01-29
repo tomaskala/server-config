@@ -138,6 +138,8 @@ def load_blocklist(blocklist):
         LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
         sys.exit(1)
 
+    LOGGER.info("Success")
+
 
 def main():
     parser = argparse.ArgumentParser()
