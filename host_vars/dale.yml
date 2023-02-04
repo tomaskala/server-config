@@ -47,6 +47,16 @@ unbound:
       addresses:
         - address: 10.0.0.2
           record_type: A
+    - domain: rss.home.arpa
+      addresses:
+        - address: 10.100.0.1
+          record_type: A
+        - address: "fd25:6f6:a9f:1000::1"
+          record_type: AAAA
+
+yarr:
+  archive: https://github.com/nkanaev/yarr/releases/download/v2.3/yarr-v2.3-linux64.zip
+  port: 7070
 
 ssh_keys_admin:
   - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrK/gGoC5nX+u82z2N/8u+gd/yMJrb6pMln/zJJjG4w laptop2dale

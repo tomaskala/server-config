@@ -38,3 +38,5 @@
       tags: [ services, website ]
     - role: git
       tags: [ services, git ]
+    - role: rss
+      tags: [ services, rss ]

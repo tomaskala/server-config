@@ -1,91 +1,69 @@
 ---
 
-- name: Install the necessary packages
+- name: Install packages
   apt:
     name:
-      - git
-      - gcc
-      - make
+      - unzip
     state: latest
     update_cache: yes
     cache_valid_time: 600
 
-- name: Make sure the web directory exists
-  file:
-    path: "/var/www/{{ domain }}/reader"
-    state: directory
-    owner: "{{ admin_username }}"
-    group: "{{ admin_username }}"
-    mode: 0755
-    recurse: yes
+- name: Create the rss user
+  user:
+    name: rss
+    comment: The RSS user
+    state: present
+    create_home: no
+    shell: /usr/bin/false
+    system: yes
 
-- name: Move the stylesheet
-  copy:
-    src: style.css
-    dest: "/var/www/{{ domain }}/reader/style.css"
-    owner: "{{ admin_username }}"
-    group: "{{ admin_username }}"
-    mode: 0644
+- name: Install yarr
+  block:
+    - name: Stop the yarr service if it exists
+      systemd:
+        name: yarr.service
+        state: stopped
+      ignore_errors: yes
 
-- name: Clone the RSS reader
-  git:
-    repo: git://git.codemadness.org/sfeed
-    dest: "/home/{{ admin_username }}/sfeed"
-    clone: yes
-
-- name: Install the RSS reader
-  command:
-    chdir: "/home/{{ admin_username }}/sfeed"
-    cmd: /usr/bin/make BIN='sfeed sfeed_html sfeed_xmlenc' SCRIPTS=sfeed_update clean install
-
-- name: Make sure the config directory exists
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "{{ admin_username }}"
-    group: "{{ admin_username }}"
-    mode: 0755
-    recurse: yes
-  loop:
-    - "/home/{{ admin_username }}/.config/sfeed"
-    - "/home/{{ admin_username }}/.local/share/sfeed/feeds"
-
-- name: Copy the sfeed config
-  template:
-    src: sfeedrc.j2
-    dest: "/home/{{ admin_username }}/.config/sfeed/sfeedrc"
-    owner: "{{ admin_username }}"
-    group: "{{ admin_username }}"
-    mode: 0644
-
-- name: Set up a feed updating cronjob
-  cron:
-    user: "{{ admin_username }}"
-    minute: 0
-    hour: "*/4"
-    day: "*"
-    month: "*"
-    dow: "*"
-    name: Update RSS feeds
-    job: PATH="$PATH:/usr/local/bin" /usr/local/bin/sfeed_update /home/{{ admin_username | quote }}/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/{{ admin_username | quote }}/.local/share/sfeed/feeds/* > /var/www/{{ domain | quote }}/reader/index.html
-
-- name: Update the feed manually
-  shell:
-    cmd: PATH="$PATH:/usr/local/bin" /usr/local/bin/sfeed_update /home/{{ admin_username | quote }}/.config/sfeed/sfeedrc && /usr/local/bin/sfeed_html /home/{{ admin_username | quote }}/.local/share/sfeed/feeds/* > /var/www/{{ domain | quote }}/reader/index.html
-
-- name: Change the feed ownership to the correct user
-  vars:
-    paths:
-      - path: /home/{{ admin_username }}/.local/share/sfeed/feeds
+    - name: Create the yarr directory
+      file:
+        path: /opt/yarr
         state: directory
-        recurse: yes
-      - path: /var/www/{{ domain }}/reader/index.html
-        state: file
-        recurse: no
-  file:
-    path: "{{ item.path }}"
-    state: "{{ item.state }}"
-    owner: "{{ admin_username }}"
-    group: "{{ admin_username }}"
-    recurse: "{{ item.recurse }}"
-  loop: "{{ paths }}"
+        owner: rss
+        group: rss
+        mode: 0755
+
+    - name: Fetch and unpack yarr
+      unarchive:
+        src: "{{ yarr.archive }}"
+        dest: /opt/yarr
+        remote_src: yes
+        owner: rss
+        group: rss
+
+    - name: Copy the yarr service file
+      template:
+        src: yarr.service.j2
+        dest: /etc/systemd/system/yarr.service
+        owner: root
+        group: root
+        mode: 0644
+      register: yarr_service
+
+    - name: Reload daemons
+      systemd:
+        daemon_reload: yes
+      when: yarr_service.changed
+
+    - name: Enable the yarr service
+      systemd:
+        name: yarr.service
+        enabled: yes
+        state: started
+
+- include_role:
+    name: nginx_site
+  vars:
+    public: no
+    site_name: rss.home.arpa
+    site_config: ./templates/rss.conf.j2
