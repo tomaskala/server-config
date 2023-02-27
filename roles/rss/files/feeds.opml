@@ -24,17 +24,14 @@
   <outline text="security">
     <outline type="rss" text="Educated Guesswork" xmlUrl="https://educatedguesswork.org/feed/feed.xml" htmlUrl="https://educatedguesswork.org"/>
     <outline type="rss" text="Krebs on Security" xmlUrl="https://krebsonsecurity.com/feed/atom/" htmlUrl="https://krebsonsecurity.com"/>
-    <outline type="rss" text="Schneier on Security" xmlUrl="https://www.schneier.com/feed/atom/" htmlUrl="https://www.schneier.com"/>
   </outline>
   <outline text="tech">
     <outline type="rss" text="Drew DeVault&#39;s blog" xmlUrl="https://drewdevault.com/blog/index.xml" htmlUrl="https://drewdevault.com/blog/index.xml"/>
     <outline type="rss" text="fabiensanglard.net" xmlUrl="https://fabiensanglard.net/rss.xml" htmlUrl="https://fabiensanglard.net"/>
-    <outline type="rss" text="LWN.net" xmlUrl="https://lwn.net/headlines/newrss" htmlUrl="https://lwn.net"/>
     <outline type="rss" text="Michael Stapelbergs Website" xmlUrl="https://michael.stapelberg.ch/feed.xml" htmlUrl="https://michael.stapelberg.ch/"/>
     <outline type="rss" text="Susam Pal" xmlUrl="https://susam.net/blog/feed.xml" htmlUrl="https://susam.net/blog/feed.xml"/>
   </outline>
   <outline text="youtube@gaming">
-    <outline type="rss" text="GamesczTV" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCS6nbOke9DAME3_5BzwVVUA" htmlUrl="https://www.youtube.com/channel/UCS6nbOke9DAME3_5BzwVVUA"/>
     <outline type="rss" text="Retro Nation" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCj06o0LOFU-lFLwGaEOSM7g" htmlUrl="https://www.youtube.com/channel/UCj06o0LOFU-lFLwGaEOSM7g"/>
   </outline>
   <outline text="youtube@misc">
