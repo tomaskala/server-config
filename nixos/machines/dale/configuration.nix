@@ -1,8 +1,13 @@
 { config, pkgs, ... }:
 
+# TODO: Make per-host values such as listening addresses configurable.
+# This should be done by making each service accept an option with that
+# address and configuring those.
 {
   imports = [
     ../common.nix
+    ../services/openssh.nix
+    ../services/unbound.nix
   ];
 
   users.users.tomas = {
@@ -16,7 +21,7 @@
   };
 
   time.timezone = "Europe/Prague";
-  wanInterface = "venet0";
+  wanInterface = "venet0";  # TODO: Should this be here?
 
   environment.systemPackages = with pkgs; [
     git
@@ -25,25 +30,23 @@
     vim
   ];
 
-  services.openssh = {
-    enable = true;
-    listenAddresses = [
-      { addr = config.intranet.server.ipv4; port = 22; }
-      { addr = config.intranet.server.ipv6; port = 22; }
-    ];
-    openFirewall = false;
-    passwordAuthentication = false;
-    permitRootLogin = false;
-    forwardX11 = false;
-    gatewayPorts = false;
-  };
-
   networking.hostName = "dale";
   networking.firewall.enable = false;
   networking.nftables = {
     enabled = true;
     rulesetFile = ./nftables-ruleset.nix { inherit config pkgs; };
   };
+
+  # TODO
+  # * wireguard
+  # * wireguard client
+  # * unbound blocking
+  # * overlay network
+  # * nginx
+  # * tls certificate
+  # * website
+  # * git
+  # * rss
 
   # TODO: https://nixos.org/manual/nixos/stable/index.html#module-security-acme
 }

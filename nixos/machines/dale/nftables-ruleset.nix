@@ -1,11 +1,9 @@
 { config, pkgs }:
 
+# TODO: This still contains dynamic sets for the overlay network script.
 let
   serverCfg = config.intranet.server;
-in
-
-# TODO: This still contains dynamic sets for the overlay network script.
-pkgs.writeTextFile {
+in pkgs.writeTextFile {
   name = "nftables-ruleset";
   text = ''
     flush ruleset
