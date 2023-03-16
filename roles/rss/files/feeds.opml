@@ -29,6 +29,7 @@
     <outline type="rss" text="Drew DeVault&#39;s blog" xmlUrl="https://drewdevault.com/blog/index.xml" htmlUrl="https://drewdevault.com/blog/index.xml"/>
     <outline type="rss" text="fabiensanglard.net" xmlUrl="https://fabiensanglard.net/rss.xml" htmlUrl="https://fabiensanglard.net"/>
     <outline type="rss" text="Michael Stapelbergs Website" xmlUrl="https://michael.stapelberg.ch/feed.xml" htmlUrl="https://michael.stapelberg.ch/"/>
+    <outline type="rss" text="sdomi&#39;s weblog" xmlUrl="https://sdomi.pl/weblog/atom/" htmlUrl="https://sdomi.pl/weblog/atom/"/>
     <outline type="rss" text="Susam Pal" xmlUrl="https://susam.net/blog/feed.xml" htmlUrl="https://susam.net/blog/feed.xml"/>
   </outline>
   <outline text="youtube@gaming">
