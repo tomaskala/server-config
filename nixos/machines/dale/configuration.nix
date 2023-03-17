@@ -39,6 +39,9 @@
 
   # TODO
   # * wireguard
+  #   * when configuring the system for the first time, manually generate
+  #     the server keys and the primary client's preshared key to the files
+  #     specified by the wireguard config. only then switch to the config
   # * wireguard client
   # * unbound blocking
   # * overlay network
