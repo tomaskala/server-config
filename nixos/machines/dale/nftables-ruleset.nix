@@ -121,8 +121,8 @@ in pkgs.writeTextFile {
             } accept
 
             # Allow the specified TCP and UDP ports from the outside.
-            iifname ${wanInterface} tcp dport @tcp_accepted_wan ct state new accept
-            iifname ${wanInterface} udp dport @udp_accepted_wan ct state new accept
+            iifname ${config.wanInterface} tcp dport @tcp_accepted_wan ct state new accept
+            iifname ${config.wanInterface} udp dport @udp_accepted_wan ct state new accept
 
             # Allow the specified TCP and UDP ports from the VPN.
             iifname ${serverConfig.interface} tcp dport @tcp_accepted_vpn ct state new accept
@@ -138,8 +138,8 @@ in pkgs.writeTextFile {
             ct state established,related accept
 
             # Allow internal VPN traffic to access the internet via wan.
-            iifname ${serverConfig.interface} ip saddr @vpn_internal_ipv4 oifname ${wanInterface} ct state new accept
-            iifname ${serverConfig.interface} ip6 saddr @vpn_internal_ipv6 oifname ${wanInterface} ct state new accept
+            iifname ${serverConfig.interface} ip saddr @vpn_internal_ipv4 oifname ${config.wanInterface} ct state new accept
+            iifname ${serverConfig.interface} ip6 saddr @vpn_internal_ipv6 oifname ${config.wanInterface} ct state new accept
 
             # Allow internal VPN peers to communicate with each other.
             iifname ${serverConfig.interface} ip saddr @vpn_internal_ipv4 oifname ${serverConfig.interface} ip daddr @vpn_internal_ipv4 ct state new accept
@@ -168,8 +168,8 @@ in pkgs.writeTextFile {
             type nat hook postrouting priority 100;
 
             # Masquerade VPN traffic to WAN.
-            oifname ${wanInterface} ip saddr ${config.maskedSubnet config.intranet.ipv4} masquerade
-            oifname ${wanInterface} ip6 saddr ${config.maskedSubnet config.intranet.ipv6} masquerade
+            oifname ${config.wanInterface} ip saddr ${config.maskedSubnet config.intranet.ipv4} masquerade
+            oifname ${config.wanInterface} ip6 saddr ${config.maskedSubnet config.intranet.ipv6} masquerade
 
             # Masquerade VPN traffic to VPN.
             oifname ${serverConfig.interface} ip saddr ${config.maskedSubnet config.intranet.ipv4} masquerade
@@ -203,7 +203,7 @@ in pkgs.writeTextFile {
         chain ingress {
             # The priority ensures that the chain will be evaluated before any
             # other registered on the ingress hook.
-            type filter hook ingress device ${wanInterface} priority -500;
+            type filter hook ingress device ${config.wanInterface} priority -500;
 
             # Drop IP fragments.
             ip frag-off & 0x1fff != 0 counter drop

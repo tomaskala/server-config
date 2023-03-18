@@ -3,8 +3,13 @@
 # TODO: Make per-host values such as listening addresses configurable.
 # This should be done by making each service accept an option with that
 # address and configuring those.
+
+# TODO: Enable services here, not in their definition files (like nginx is
+# but openssh and unbound aren't).
+
 {
   imports = [
+    ./constants.nix
     ../common.nix
     ../services/nginx.nix
     ../services/openssh.nix
@@ -35,7 +40,6 @@
   };
 
   time.timezone = "Europe/Prague";
-  wanInterface = "venet0";  # TODO: Should this be here?
 
   environment.systemPackages = with pkgs; [
     git

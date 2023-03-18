@@ -3,13 +3,13 @@
 let
   # TODO: The definitions should be moved once nginx is configured.
   localDomains = [
-    { domain = "tomaskala.com";
+    { domain = config.domain;
       ipv4 = config.intranet.server.ipv4;
       ipv6 = config.intranet.server.ipv6;
     }
     { domain = "rss.home.arpa";
-      ipv4 = "10.100.0.1";
-      ipv6 = "fd25:6f6:a9f:1000::1";
+      ipv4 = config.intranet.server.ipv4;
+      ipv6 = config.intranet.server.ipv6;
     }
   ];
 in {
