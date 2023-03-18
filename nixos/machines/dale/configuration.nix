@@ -20,6 +20,19 @@
     ];
   };
 
+  users.users.git = {
+    isSystemUser = true;
+    createHome = true;
+    home = "/home/git";
+    shell = "${pkgs.git}/bin/git-shell";
+    group = "git";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBaTcR5f4bbzG6JmuyFfMAEuQYRmWzt518BlBIbyr1MK laptop2dale-git"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCmYsyCuOmqW1utcZvBWYIzZnDEXUjmg/YpdcOWudF5 phone2dale-git"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQQQ7zAwXCpFVWNGnhOck8GqOELWAHCy5NrH9nyxjzU home2dale-git"
+    ];
+  };
+
   time.timezone = "Europe/Prague";
   wanInterface = "venet0";  # TODO: Should this be here?
 
@@ -48,7 +61,6 @@
   # * nginx
   # * tls certificate
   # * website
-  # * git
   # * rss
 
   # TODO: https://nixos.org/manual/nixos/stable/index.html#module-security-acme
