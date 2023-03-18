@@ -6,6 +6,7 @@
 {
   imports = [
     ../common.nix
+    ../services/nginx.nix
     ../services/openssh.nix
     ../services/unbound.nix
   ];
@@ -50,6 +51,8 @@
     rulesetFile = ./nftables-ruleset.nix { inherit config pkgs; };
   };
 
+  services.nginx.enable = true;
+
   # TODO
   # * wireguard
   #   * when configuring the system for the first time, manually generate
@@ -58,7 +61,6 @@
   # * wireguard client
   # * unbound blocking
   # * overlay network
-  # * nginx
   # * tls certificate
   # * website
   # * rss
