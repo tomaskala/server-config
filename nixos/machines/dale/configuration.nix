@@ -7,6 +7,10 @@
 # TODO: Enable services here, not in their definition files (like nginx is
 # but openssh and unbound aren't).
 
+# TODO: Make each service's configuration stand-alone? Meaning that the
+# RSS configuration file will configure the RSS reader as well as setup
+# nginx reverse proxy.
+
 {
   imports = [
     ./constants.nix
@@ -55,7 +59,36 @@
     rulesetFile = ./nftables-ruleset.nix { inherit config pkgs; };
   };
 
-  services.nginx.enable = true;
+  services.nginx = {
+    enable = true;
+    publicSites = {
+      ${config.domain} = {
+        root = "/var/www/${config.domain}";
+
+        locations."/" = {
+          index = "index.html";
+
+          extraOptions = ''
+            # Remove the .html suffix.
+            if ($request_uri ~ ^/(.*)\.html) {
+                return 301 /$1$is_args$args;
+            }
+            try_files $uri $uri.html $uri/ =404;
+          '';
+        }
+
+        extraConfig = ''
+          # Prevent image hotlinking.
+          location ~ \.(gif|png|jpg|jpeg|ico)$ {
+              valid_referers none blocked {{ domain }};
+              if ($invalid_referer) {
+                  return 403;
+              }
+          }
+        '';
+      };
+    };
+  }
 
   # TODO
   # * wireguard
@@ -66,7 +99,6 @@
   # * unbound blocking
   # * overlay network
   # * tls certificate
-  # * website
   # * rss
 
   # TODO: https://nixos.org/manual/nixos/stable/index.html#module-security-acme
