@@ -75,7 +75,7 @@
             }
             try_files $uri $uri.html $uri/ =404;
           '';
-        }
+        };
 
         extraConfig = ''
           # Prevent image hotlinking.
@@ -88,7 +88,7 @@
         '';
       };
     };
-  }
+  };
 
   # TODO
   # * wireguard

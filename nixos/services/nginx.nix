@@ -47,7 +47,7 @@ in {
         One virtual host configuration block per private domain.
       '';
     };
-  }
+  };
 
   services.nginx = {
     recommendedGzipSettings = true;
