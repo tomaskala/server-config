@@ -67,13 +67,13 @@ in {
     '';
 
     virtualHosts = let
-      mkPublic = domain: vhostConfig@{ extraConfig ? "", ... }:
+      mkPublic = _: vhostConfig@{ extraConfig ? "", ... }:
         vhostConfig // {
           forceSSL = true;
           enableACME = true;
           extraConfig = concatStringsSep "\n" [ extraConfig commonPublicConfig ];
         };
-      mkPrivate = domain: vhostConfig@{ extraConfig ? "", ... }:
+      mkPrivate = _: vhostConfig@{ extraConfig ? "", ... }:
         vhostConfig // {
           extraConfig = concatStringsSep "\n" [ extraConfig commonPrivateConfig ];
         };
