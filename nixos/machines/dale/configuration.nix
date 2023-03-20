@@ -44,6 +44,7 @@
   };
 
   time.timezone = "Europe/Prague";
+  services.timesyncd.enable = true;
 
   environment.systemPackages = with pkgs; [
     git
