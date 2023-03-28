@@ -1,7 +1,7 @@
 { ... }:
 
 {
-  maskedSubnet = { subnet, mask }: "${subnet}/${mask}";
+  maskedSubnet = { subnet, mask }: "${subnet}/${toString mask}";
 
   intranet = {
     ipv4 = { subnet = "10.100.0.0"; mask = 16; };
