@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 let
+  cfg = config.services.nginx;
+
   commonPublicConfig = ''
     # Add HSTS header with preloading to HTTPS requests.
     # Adding this header to HTTP requests is discouraged.
@@ -38,6 +40,13 @@ in {
       description = ''
         One virtual host configuration block per public-facing domain.
       '';
+      example = lib.literalExpression ''
+        "example.com" = {
+          locations."/" = {
+            proxyPass = "http://localhost:3000";
+          };
+        };
+      '';
     };
 
     privateSites = lib.mkOption {
@@ -45,6 +54,13 @@ in {
       type = pkgs.nginx.virtualHosts.type;
       description = ''
         One virtual host configuration block per private domain.
+      '';
+      example = lib.literalExpression ''
+        "example.com" = {
+          locations."/" = {
+            proxyPass = "http://localhost:3000";
+          };
+        };
       '';
     };
   };
@@ -77,6 +93,6 @@ in {
         vhostConfig // {
           extraConfig = concatStringsSep "\n" [ extraConfig commonPrivateConfig ];
         };
-    in (mapAttrs mkPublic publicSites) // (mapAttrs mkPrivate privateSites);
+    in (mapAttrs mkPublic cfg.publicSites) // (mapAttrs mkPrivate cfg.privateSites);
   };
 }

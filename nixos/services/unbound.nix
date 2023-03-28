@@ -1,19 +1,37 @@
-{ config, ... }:
+{ config, lib, ... }:
 
 let
-  # TODO: The definitions should be moved once nginx is configured.
-  localDomains = [
-    { domain = config.domain;
-      ipv4 = config.intranet.server.ipv4;
-      ipv6 = config.intranet.server.ipv6;
-    }
-    { domain = "rss.home.arpa";
-      ipv4 = config.intranet.server.ipv4;
-      ipv6 = config.intranet.server.ipv6;
-    }
-  ];
+  cfg = config.services.unbound;
 in {
-  services.unbound = {
+  options.services.unbound = {
+    localDomains = lib.mkOption {
+      default = [ ];
+      type = lib.types.listOf (types.submodule {
+        options = {
+          domain = lib.mkOption {
+            type = lib.types.str;
+            description = "Local domain";
+            example = "example.home.arpa";
+          };
+          ipv4 = lib.mkOption {
+            type = lib.types.str;
+            description = "IPv4 address of the local domain";
+            example = "192.168.0.10";
+          };
+          ipv6 = lib.mkOption {
+            type = lib.types.str;
+            description = "IPv6 address of the local domain";
+            example = "fd2b:4d9d:64af:1871::10";
+          };
+        };
+      });
+      description = ''
+        List of local domains and their addresses.
+      '';
+    };
+  };
+
+  config.services.unbound = {
     enableRootTrustAnchor = true;
     settings = {
       server = {
@@ -36,9 +54,9 @@ in {
         ];
 
         # Local zones.
-        private-domain = catAttrs "domain" localDomains;
-        local-zone = map (domain: "${domain}. redirect") (catAttrs "domain" localDomains);
-        local-data = concatMap ({ domain, ipv4, ipv6 }: [ "${domain}. A ${ipv4}" "${domain}. AAAA ${ipv6}" ]) localDomains;
+        private-domain = catAttrs "domain" cfg.localDomains;
+        local-zone = map (domain: "${domain}. redirect") (catAttrs "domain" cfg.localDomains);
+        local-data = concatMap ({ domain, ipv4, ipv6 }: [ "${domain}. A ${ipv4}" "${domain}. AAAA ${ipv6}" ]) cfg.localDomains;
 
         # Logging settings.
         verbosity = 1;

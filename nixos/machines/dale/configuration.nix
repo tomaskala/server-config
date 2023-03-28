@@ -1,9 +1,5 @@
 { config, pkgs, ... }:
 
-# TODO: Make per-host values such as listening addresses configurable.
-# This should be done by making each service accept an option with that
-# address and configuring those.
-
 # TODO: Make each service's configuration stand-alone? Meaning that the
 # RSS configuration file will configure the RSS reader as well as setup
 # nginx reverse proxy.
@@ -58,8 +54,27 @@
     rulesetFile = ./nftables-ruleset.nix { inherit config pkgs; };
   };
 
-  services.openssh.enable = true;
-  services.unbound.enable = true;
+  services.openssh = {
+    enable = true;
+    listenAddresses = [
+      { addr = config.intranet.server.ipv4; port = 22; }
+      { addr = config.intranet.server.ipv6; port = 22; }
+    ];
+  };
+
+  services.unbound = {
+    enable = true;
+    localDomains = [
+      { domain = config.domain;
+        ipv4 = config.intranet.server.ipv4;
+        ipv6 = config.intranet.server.ipv6;
+      }
+      { domain = "rss.home.arpa";
+        ipv4 = config.intranet.server.ipv4;
+        ipv6 = config.intranet.server.ipv6;
+      }
+    ];
+  };
 
   services.nginx = {
     enable = true;
