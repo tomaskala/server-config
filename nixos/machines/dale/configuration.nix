@@ -44,6 +44,7 @@
   };
 
   time.timezone = "Europe/Prague";
+  services.ntp.enable = false;
   services.timesyncd.enable = true;
 
   programs.vim.defaultEditor = true;
