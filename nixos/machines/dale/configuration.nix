@@ -46,11 +46,11 @@
   time.timezone = "Europe/Prague";
   services.timesyncd.enable = true;
 
+  programs.vim.defaultEditor = true;
   environment.systemPackages = with pkgs; [
     git
     rsync
     tmux
-    vim
   ];
 
   networking.hostName = "dale";
