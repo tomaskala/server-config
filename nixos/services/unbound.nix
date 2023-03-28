@@ -14,7 +14,6 @@ let
   ];
 in {
   services.unbound = {
-    enable = true;
     enableRootTrustAnchor = true;
     settings = {
       server = {

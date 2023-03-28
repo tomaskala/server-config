@@ -4,9 +4,6 @@
 # This should be done by making each service accept an option with that
 # address and configuring those.
 
-# TODO: Enable services here, not in their definition files (like nginx is
-# but openssh and unbound aren't).
-
 # TODO: Make each service's configuration stand-alone? Meaning that the
 # RSS configuration file will configure the RSS reader as well as setup
 # nginx reverse proxy.
@@ -60,6 +57,9 @@
     enabled = true;
     rulesetFile = ./nftables-ruleset.nix { inherit config pkgs; };
   };
+
+  services.openssh.enable = true;
+  services.unbound.enable = true;
 
   services.nginx = {
     enable = true;
