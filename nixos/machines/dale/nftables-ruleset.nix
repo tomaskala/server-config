@@ -2,7 +2,7 @@
 
 # TODO: This still contains dynamic sets for the overlay network script.
 let
-  serverConfig = config.intranet.server;
+  serverCfg = config.intranet.server;
 in pkgs.writeTextFile {
   name = "nftables-ruleset";
   text = ''
@@ -31,7 +31,7 @@ in pkgs.writeTextFile {
         set udp_accepted_wan {
             type inet_service
             elements = {
-                ${serverConfig.port},
+                ${serverCfg.port},
             }
         }
 
@@ -125,10 +125,10 @@ in pkgs.writeTextFile {
             iifname ${config.wanInterface} udp dport @udp_accepted_wan ct state new accept
 
             # Allow the specified TCP and UDP ports from the VPN.
-            iifname ${serverConfig.interface} tcp dport @tcp_accepted_vpn ct state new accept
-            iifname ${serverConfig.interface} udp dport @udp_accepted_vpn ct state new accept
-            iifname ${serverConfig.interface} tcp dport @tcp_accepted_wan ct state new accept
-            iifname ${serverConfig.interface} udp dport @udp_accepted_wan ct state new accept
+            iifname ${serverCfg.interface} tcp dport @tcp_accepted_vpn ct state new accept
+            iifname ${serverCfg.interface} udp dport @udp_accepted_vpn ct state new accept
+            iifname ${serverCfg.interface} tcp dport @tcp_accepted_wan ct state new accept
+            iifname ${serverCfg.interface} udp dport @udp_accepted_wan ct state new accept
         }
 
         chain forward {
@@ -138,20 +138,20 @@ in pkgs.writeTextFile {
             ct state established,related accept
 
             # Allow internal VPN traffic to access the internet via wan.
-            iifname ${serverConfig.interface} ip saddr @vpn_internal_ipv4 oifname ${config.wanInterface} ct state new accept
-            iifname ${serverConfig.interface} ip6 saddr @vpn_internal_ipv6 oifname ${config.wanInterface} ct state new accept
+            iifname ${serverCfg.interface} ip saddr @vpn_internal_ipv4 oifname ${config.wanInterface} ct state new accept
+            iifname ${serverCfg.interface} ip6 saddr @vpn_internal_ipv6 oifname ${config.wanInterface} ct state new accept
 
             # Allow internal VPN peers to communicate with each other.
-            iifname ${serverConfig.interface} ip saddr @vpn_internal_ipv4 oifname ${serverConfig.interface} ip daddr @vpn_internal_ipv4 ct state new accept
-            iifname ${serverConfig.interface} ip6 saddr @vpn_internal_ipv6 oifname ${serverConfig.interface} ip6 daddr @vpn_internal_ipv6 ct state new accept
+            iifname ${serverCfg.interface} ip saddr @vpn_internal_ipv4 oifname ${serverCfg.interface} ip daddr @vpn_internal_ipv4 ct state new accept
+            iifname ${serverCfg.interface} ip6 saddr @vpn_internal_ipv6 oifname ${serverCfg.interface} ip6 daddr @vpn_internal_ipv6 ct state new accept
 
             # Allow isolated VPN peers to communicate with each other.
-            iifname ${serverConfig.interface} ip saddr @vpn_isolated_ipv4 oifname ${serverConfig.interface} ip daddr @vpn_isolated_ipv4 ct state new accept
-            iifname ${serverConfig.interface} ip6 saddr @vpn_isolated_ipv6 oifname ${serverConfig.interface} ip6 daddr @vpn_isolated_ipv6 ct state new accept
+            iifname ${serverCfg.interface} ip saddr @vpn_isolated_ipv4 oifname ${serverCfg.interface} ip daddr @vpn_isolated_ipv4 ct state new accept
+            iifname ${serverCfg.interface} ip6 saddr @vpn_isolated_ipv6 oifname ${serverCfg.interface} ip6 daddr @vpn_isolated_ipv6 ct state new accept
 
             # Allow all VPN traffic to the accessible subnets.
-            iifname ${serverConfig.interface} ip daddr @vpn_accessible_ipv4 oifname ${serverConfig.interface} ct state new accept
-            iifname ${serverConfig.interface} ip6 daddr @vpn_accessible_ipv6 oifname ${serverConfig.interface} ct state new accept
+            iifname ${serverCfg.interface} ip daddr @vpn_accessible_ipv4 oifname ${serverCfg.interface} ct state new accept
+            iifname ${serverCfg.interface} ip6 daddr @vpn_accessible_ipv6 oifname ${serverCfg.interface} ct state new accept
         }
 
         chain output {
@@ -172,8 +172,8 @@ in pkgs.writeTextFile {
             oifname ${config.wanInterface} ip6 saddr ${config.maskedSubnet config.intranet.ipv6} masquerade
 
             # Masquerade VPN traffic to VPN.
-            oifname ${serverConfig.interface} ip saddr ${config.maskedSubnet config.intranet.ipv4} masquerade
-            oifname ${serverConfig.interface} ip6 saddr ${config.maskedSubnet config.intranet.ipv6} masquerade
+            oifname ${serverCfg.interface} ip saddr ${config.maskedSubnet config.intranet.ipv4} masquerade
+            oifname ${serverCfg.interface} ip6 saddr ${config.maskedSubnet config.intranet.ipv6} masquerade
         }
     }
 
