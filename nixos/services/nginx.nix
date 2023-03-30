@@ -40,13 +40,7 @@ in {
       description = ''
         One virtual host configuration block per public-facing domain.
       '';
-      example = lib.literalExpression ''
-        "example.com" = {
-          locations."/" = {
-            proxyPass = "http://localhost:3000";
-          };
-        };
-      '';
+      example = pkgs.nginx.virtualHosts.example;
     };
 
     privateSites = lib.mkOption {
@@ -55,13 +49,7 @@ in {
       description = ''
         One virtual host configuration block per private domain.
       '';
-      example = lib.literalExpression ''
-        "example.com" = {
-          locations."/" = {
-            proxyPass = "http://localhost:3000";
-          };
-        };
-      '';
+      example = pkgs.nginx.virtualHosts.example;
     };
   };
 
