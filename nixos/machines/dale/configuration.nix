@@ -51,7 +51,7 @@
   networking.firewall.enable = false;
   networking.nftables = {
     enabled = true;
-    rulesetFile = ./nftables-ruleset.nix { inherit config pkgs; };
+    rulesetFile = import ./nftables-ruleset.nix { inherit config pkgs; };
   };
 
   services.openssh = {
