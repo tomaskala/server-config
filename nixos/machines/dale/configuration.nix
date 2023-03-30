@@ -7,6 +7,7 @@
 {
   imports = [
     ./constants.nix
+    ./acme.nix
     ../common.nix
     ../services/nginx.nix
     ../services/openssh.nix
@@ -115,8 +116,5 @@
   # * wireguard client
   # * unbound blocking
   # * overlay network
-  # * tls certificate
   # * rss
-
-  # TODO: https://nixos.org/manual/nixos/stable/index.html#module-security-acme
 }
