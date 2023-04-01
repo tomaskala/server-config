@@ -3,7 +3,7 @@
 {
   security.acme = {
     acceptTerms = true;
-    certs.${config.domain} = {
+    certs.${config.domains.public} = {
       webroot = "/var/lib/acme/.challenges";
       email = config.email.acme;
       # The webserver must be able to read the generated certificates.
@@ -16,7 +16,7 @@
   users.users.nginx.extraGroups = [ "acme" ];
 
   services.nginx = {
-    virtualHosts."certs.${config.domain}" = {
+    virtualHosts."certs.${config.domains.public}" = {
       serverAliases = [ "*.${domain}" ];
 
       locations."/.well-known/acme-challenge" = {

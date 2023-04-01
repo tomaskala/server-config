@@ -12,6 +12,7 @@
     ../services/nginx.nix
     ../services/openssh.nix
     ../services/unbound.nix
+    ../services/yarr.nix
   ];
 
   users.users.tomas = {
@@ -66,11 +67,11 @@
   services.unbound = {
     enable = true;
     localDomains = [
-      { domain = config.domain;
+      { domain = config.domains.public;
         ipv4 = config.intranet.server.ipv4;
         ipv6 = config.intranet.server.ipv6;
       }
-      { domain = "rss.home.arpa";
+      { domain = config.domains.rss;
         ipv4 = config.intranet.server.ipv4;
         ipv6 = config.intranet.server.ipv6;
       }
@@ -80,8 +81,8 @@
   services.nginx = {
     enable = true;
     publicSites = {
-      ${config.domain} = {
-        root = "/var/www/${config.domain}";
+      ${config.domains.public} = {
+        root = "/var/www/${config.domains.public}";
 
         locations."/" = {
           index = "index.html";
@@ -108,6 +109,12 @@
     };
   };
 
+  services.yarr = {
+    enable = true;
+    listenPort = 7070;
+    workingDirectory = "/var/yarr";
+  };
+
   # TODO
   # * wireguard
   #   * when configuring the system for the first time, manually generate
@@ -116,5 +123,4 @@
   # * wireguard client
   # * unbound blocking
   # * overlay network
-  # * rss
 }
