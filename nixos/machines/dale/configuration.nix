@@ -80,32 +80,54 @@
 
   services.nginx = {
     enable = true;
-    publicSites = {
-      ${config.domains.public} = {
-        root = "/var/www/${config.domains.public}";
+    virtualHosts.${config.domains.public} = {
+      root = "/var/www/${config.domains.public}";
+      forceSSL = true;
+      enableACME = true;
 
-        locations."/" = {
-          index = "index.html";
-
-          extraOptions = ''
-            # Remove the .html suffix.
-            if ($request_uri ~ ^/(.*)\.html) {
-                return 301 /$1$is_args$args;
-            }
-            try_files $uri $uri.html $uri/ =404;
-          '';
-        };
+      locations."/" = {
+        index = "index.html";
 
         extraConfig = ''
-          # Prevent image hotlinking.
-          location ~ \.(gif|png|jpg|jpeg|ico)$ {
-              valid_referers none blocked {{ domain }};
-              if ($invalid_referer) {
-                  return 403;
-              }
+          # Remove the .html suffix.
+          if ($request_uri ~ ^/(.*)\.html) {
+            return 301 /$1$is_args$args;
           }
+          try_files $uri $uri.html $uri/ =404;
         '';
       };
+
+      extraConfig = ''
+        # Add HSTS header with preloading to HTTPS requests.
+        # Adding this header to HTTP requests is discouraged.
+        map $scheme $hsts_header {
+          https "max-age=31536000; includeSubdomains; preload";
+        }
+        add_header Strict-Transport-Security $hsts_header;
+
+        # Enable CSP for your services.
+        add_header Content-Security-Policy "script-src 'self'; object-src 'none'; base-uri 'none';" always;
+
+        # Minimize information leaked to other domains.
+        add_header 'Referrer-Policy' 'origin-when-cross-origin';
+
+        # Disable embedding as a frame.
+        add_header X-Frame-Options DENY;
+
+        # Prevent injection of code in other mime types (XSS Attacks).
+        add_header X-Content-Type-Options nosniff;
+
+        # Enable XSS protection of the browser.
+        add_header X-XSS-Protection "1; mode=block";
+
+        # Prevent image hotlinking.
+        location ~ \.(gif|png|jpg|jpeg|ico)$ {
+          valid_referers none blocked {{ domain }};
+          if ($invalid_referer) {
+            return 403;
+          }
+        }
+      '';
     };
   };
 
