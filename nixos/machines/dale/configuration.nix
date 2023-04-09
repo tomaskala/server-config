@@ -123,7 +123,7 @@
 
           # Prevent image hotlinking.
           location ~ \.(gif|png|jpg|jpeg|ico)$ {
-            valid_referers none blocked {{ domain }};
+            valid_referers none blocked ${config.domains.public};
             if ($invalid_referer) {
               return 403;
             }
