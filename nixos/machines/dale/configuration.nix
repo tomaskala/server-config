@@ -57,6 +57,69 @@
       rulesetFile = import ./nftables-ruleset.nix { inherit config pkgs; };
     };
 
+    systemd.network = {
+      netdevs."90-${config.intranet.server.interface}" = {
+        netdevConfig = {
+          Name = config.intranet.server.interface;
+          Kind = "wireguard";
+        };
+
+        wireguardConfig = {
+          # The key file must be readable by the systemd-network user, e.g.,
+          # owned by root:systemd-network with a "0640" file mode.
+          # TODO: Use agenix
+          PrivateKeyFile = "/etc/wireguard/private.key";
+          ListenPort = config.intranet.server.port;
+        };
+
+        wireguardPeers = [
+          {
+            wireguardPeerConfig = {
+              # tomas-laptop
+              PublicKey = "5t3YVZ7+nimeIknRvgn9el1+ZaURG/54MX7vFzPCRFU=";
+              PresharedKey = "";  # TODO: Use agenix, key or key file?
+              AllowedIPs = [ 10.100.100.1/32 fd25:6f6:a9f:1100::1/128 ];
+            };
+          }
+          {
+            wireguardPeerConfig = {
+              # tomas-phone
+              PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
+              PresharedKey = "";  # TODO
+              AllowedIPs = [ 10.100.100.2/32 fd25:6f6:a9f:1100::2/128 ];
+            };
+          }
+          {
+            wireguardPeerConfig = {
+              # martin-windows
+              PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
+              PresharedKey = "";  # TODO
+              AllowedIPs = [ 10.100.104.1/32 fd25:6f6:a9f:1200::1/128 ];
+            };
+          }
+          {
+            wireguardPeerConfig = {
+              # tomas-home
+              PublicKey = "0UGizNBFMqQ858L+FqLwUKMohjKssttH7sMPuIoiuFE=";
+              PresharedKeyFile = "";  # TODO
+              AllowedIPs = [ 10.100.100.3/32 fd25:6f6:a9f:1100::3/128 ];
+            };
+          }
+        ];
+      };
+
+      networks."90-${config.intranet.server.interface}" = {
+        matchConfig = {
+          Name = config.intranet.server.interface;
+        };
+
+        address = [
+          "${config.intranet.server.ipv4}/${toString config.intranet.ipv4.mask}"
+          "${config.intranet.server.ipv6}/${toString config.intranet.ipv6.mask}"
+        ];
+      };
+    };
+
     services.openssh = {
       enable = true;
       listenAddresses = [
