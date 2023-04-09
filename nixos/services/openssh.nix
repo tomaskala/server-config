@@ -1,7 +1,5 @@
-{ ... }:
-
 {
-  services.openssh = {
+  config.services.openssh = {
     openFirewall = false;
     passwordAuthentication = false;
     permitRootLogin = false;
