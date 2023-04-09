@@ -68,11 +68,13 @@
     services.unbound = {
       enable = true;
       localDomains = [
-        { domain = config.domains.public;
+        {
+          domain = config.domains.public;
           ipv4 = config.intranet.server.ipv4;
           ipv6 = config.intranet.server.ipv6;
         }
-        { domain = config.domains.rss;
+        {
+          domain = config.domains.rss;
           ipv4 = config.intranet.server.ipv4;
           ipv6 = config.intranet.server.ipv6;
         }
