@@ -23,6 +23,7 @@
   </outline>
   <outline text="security">
     <outline type="rss" text="Educated Guesswork" xmlUrl="https://educatedguesswork.org/feed/feed.xml" htmlUrl="https://educatedguesswork.org"/>
+    <outline type="rss" text="Filippo Valsorda" xmlUrl="https://words.filippo.io/rss/" htmlUrl="https://words.filippo.io/rss/"/>
   </outline>
   <outline text="tech">
     <outline type="rss" text="Drew DeVault&#39;s blog" xmlUrl="https://drewdevault.com/blog/index.xml" htmlUrl="https://drewdevault.com/blog/index.xml"/>
