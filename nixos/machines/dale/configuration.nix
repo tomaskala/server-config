@@ -78,7 +78,7 @@
               # tomas-laptop
               PublicKey = "5t3YVZ7+nimeIknRvgn9el1+ZaURG/54MX7vFzPCRFU=";
               PresharedKey = "";  # TODO: Use agenix, key or key file?
-              AllowedIPs = [ 10.100.100.1/32 fd25:6f6:a9f:1100::1/128 ];
+              AllowedIPs = [ "10.100.100.1/32" "fd25:6f6:a9f:1100::1/128" ];
             };
           }
           {
@@ -86,7 +86,7 @@
               # tomas-phone
               PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
               PresharedKey = "";  # TODO
-              AllowedIPs = [ 10.100.100.2/32 fd25:6f6:a9f:1100::2/128 ];
+              AllowedIPs = [ "10.100.100.2/32" "fd25:6f6:a9f:1100::2/128" ];
             };
           }
           {
@@ -94,7 +94,7 @@
               # martin-windows
               PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
               PresharedKey = "";  # TODO
-              AllowedIPs = [ 10.100.104.1/32 fd25:6f6:a9f:1200::1/128 ];
+              AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
             };
           }
           {
@@ -102,7 +102,7 @@
               # tomas-home
               PublicKey = "0UGizNBFMqQ858L+FqLwUKMohjKssttH7sMPuIoiuFE=";
               PresharedKeyFile = "";  # TODO
-              AllowedIPs = [ 10.100.100.3/32 fd25:6f6:a9f:1100::3/128 ];
+              AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
           }
         ];
