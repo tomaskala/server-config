@@ -44,11 +44,15 @@ in {
 
         # Access settings.
         interface = [
+          "127.0.0.1"
+          "::1"
           config.intranet.server.ipv4
           config.intranet.server.ipv6
         ];
         port = 53;
         access-control = [
+          "127.0.0.1/8 allow"
+          "::1/128 allow"
           "${config.maskedSubnet config.intranet.ipv4} allow"
           "${config.maskedSubnet config.intranet.ipv6} allow"
         ];
