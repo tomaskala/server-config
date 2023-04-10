@@ -4,6 +4,10 @@
 # RSS configuration file will configure the RSS reader as well as setup
 # nginx reverse proxy.
 
+# TODO: Pull secrets from a private repository.
+
+# TODO: Store the main user passwordFile in agenix.
+
 {
   imports = [
     ./constants.nix
@@ -57,6 +61,25 @@
       rulesetFile = import ./nftables-ruleset.nix { inherit config pkgs; };
     };
 
+    age = {
+      secrets = let
+        makeSystemdNetworkReadable = acc: secret:
+          acc // { "${secret}" =
+                   { file = "/root/secrets/${secret}.age";
+                     mode = "0640";
+                     owner = "root";
+                     group = "systemd-network";
+                   };
+                 };
+      in foldl' makeSystemdNetworkReadable {} [
+          wg-server-pk
+          wg-tomas-laptop-psk
+          wg-tomas-phone-psk
+          wg-martin-windows-psk
+          wg-tomas-home-psk
+        ];
+    };
+
     systemd.network = {
       netdevs."90-${config.intranet.server.interface}" = {
         netdevConfig = {
@@ -65,10 +88,7 @@
         };
 
         wireguardConfig = {
-          # The key file must be readable by the systemd-network user, e.g.,
-          # owned by root:systemd-network with a "0640" file mode.
-          # TODO: Use agenix
-          PrivateKeyFile = "/etc/wireguard/private.key";
+          PrivateKeyFile = config.age.secrets.wg-server-pk.path;
           ListenPort = config.intranet.server.port;
         };
 
@@ -77,7 +97,7 @@
             wireguardPeerConfig = {
               # tomas-laptop
               PublicKey = "5t3YVZ7+nimeIknRvgn9el1+ZaURG/54MX7vFzPCRFU=";
-              PresharedKey = "";  # TODO: Use agenix, key or key file?
+              PresharedKeyFile = config.age.secrets.wg-tomas-laptop-psk.path;
               AllowedIPs = [ "10.100.100.1/32" "fd25:6f6:a9f:1100::1/128" ];
             };
           }
@@ -85,7 +105,7 @@
             wireguardPeerConfig = {
               # tomas-phone
               PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
-              PresharedKey = "";  # TODO
+              PresharedKeyFile = config.age.secrets.wg-tomas-phone-psk.path;
               AllowedIPs = [ "10.100.100.2/32" "fd25:6f6:a9f:1100::2/128" ];
             };
           }
@@ -93,7 +113,7 @@
             wireguardPeerConfig = {
               # martin-windows
               PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
-              PresharedKey = "";  # TODO
+              PresharedKeyFile = config.age.secrets.wg-martin-windows-psk.path;
               AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
             };
           }
@@ -101,7 +121,7 @@
             wireguardPeerConfig = {
               # tomas-home
               PublicKey = "0UGizNBFMqQ858L+FqLwUKMohjKssttH7sMPuIoiuFE=";
-              PresharedKeyFile = "";  # TODO
+              PresharedKeyFile = config.age.secrets.wg-tomas-home-psk.path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
           }
@@ -204,11 +224,6 @@
     };
 
     # TODO
-    # * wireguard
-    #   * when configuring the system for the first time, manually generate
-    #     the server keys and the primary client's preshared key to the files
-    #     specified by the wireguard config. only then switch to the config
-    # * wireguard client
     # * unbound blocking
     # * overlay network
   };
