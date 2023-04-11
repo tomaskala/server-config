@@ -6,5 +6,5 @@
     };
     email.acme = "public@${domains.public}";
     wanInterface = "venet0";
-  }
+  };
 }

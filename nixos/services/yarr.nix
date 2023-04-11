@@ -2,7 +2,8 @@
 
 let
   cfg = config.services.yarr;
-in {
+in
+{
   options.services.yarr = {
     enable = lib.mkEnableOption "yarr";
 

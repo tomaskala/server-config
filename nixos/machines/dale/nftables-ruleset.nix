@@ -5,7 +5,8 @@
 # TODO: Use named counters and rule comments (those visible in logs).
 let
   serverCfg = config.intranet.server;
-in pkgs.writeTextFile {
+in
+pkgs.writeTextFile {
   name = "nftables-ruleset";
   text = ''
     flush ruleset

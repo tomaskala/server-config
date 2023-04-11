@@ -2,7 +2,8 @@
 
 let
   cfg = config.services.unbound;
-in {
+in
+{
   options.services.unbound = {
     localDomains = lib.mkOption {
       default = [ ];
@@ -107,7 +108,8 @@ in {
       };
 
       forward-zone = [
-        { name = ".";
+        {
+          name = ".";
           forward-tls-upstream = true;
           forward-addr = [
             "9.9.9.9@853#dns.quad9.net"

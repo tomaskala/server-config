@@ -60,33 +60,37 @@
       rulesetFile = import ./nftables-ruleset.nix { inherit config pkgs; };
     };
 
-    age.secrets = let
-      makeSecretPath = secret: "/root/secrets/${secret}.age";
+    age.secrets =
+      let
+        makeSecretPath = secret: "/root/secrets/${secret}.age";
 
-      makeSecret = acc: secret:
-        acc // { "${secret}" = { file = makeSecretPath secret; }; };
+        makeSecret = acc: secret:
+          acc // { "${secret}" = { file = makeSecretPath secret; }; };
 
-      makeSystemdNetworkReadableSecret = acc: secret:
-        acc // { "${secret}" =
-                 { file = makeSecretPath secret;
-                   mode = "0640";
-                   owner = "root";
-                   group = "systemd-network";
-                 };
-               };
+        makeSystemdNetworkReadableSecret = acc: secret:
+          acc // {
+            "${secret}" =
+              {
+                file = makeSecretPath secret;
+                mode = "0640";
+                owner = "root";
+                group = "systemd-network";
+              };
+          };
 
-      secrets = foldl' makeSecret {} [
-        users-tomas-password
-      ];
+        secrets = foldl' makeSecret { } [
+          users-tomas-password
+        ];
 
-      systemdNetworkReadableSecrets = foldl' makeSystemdNetworkReadableSecret {} [
+        systemdNetworkReadableSecrets = foldl' makeSystemdNetworkReadableSecret { } [
           wg-server-pk
           wg-tomas-laptop-psk
           wg-tomas-phone-psk
           wg-martin-windows-psk
           wg-tomas-home-psk
-      ];
-      in secrets // systemdNetworkReadableSecrets;
+        ];
+      in
+      secrets // systemdNetworkReadableSecrets;
 
     systemd.network = {
       netdevs."90-${config.intranet.server.interface}" = {
