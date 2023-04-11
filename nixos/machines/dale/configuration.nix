@@ -6,8 +6,6 @@
 
 # TODO: Pull secrets from a private repository.
 
-# TODO: Store the main user passwordFile in agenix.
-
 {
   imports = [
     ./constants.nix
@@ -24,6 +22,7 @@
       isNormalUser = true;
       home = "/home/tomas";
       extraGroups = [ "wheel" ];
+      passwordFile = config.age.secrets.users-tomas-password.path;
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrK/gGoC5nX+u82z2N/8u+gd/yMJrb6pMln/zJJjG4w laptop2dale"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDXh5D6Rhl/ORiXXW+BYZN3+/OcyMdPKTI+BM7HQI8MN home2dale"
@@ -61,24 +60,33 @@
       rulesetFile = import ./nftables-ruleset.nix { inherit config pkgs; };
     };
 
-    age = {
-      secrets = let
-        makeSystemdNetworkReadable = acc: secret:
-          acc // { "${secret}" =
-                   { file = "/root/secrets/${secret}.age";
-                     mode = "0640";
-                     owner = "root";
-                     group = "systemd-network";
-                   };
+    age.secrets = let
+      makeSecretPath = secret: "/root/secrets/${secret}.age";
+
+      makeSecret = acc: secret:
+        acc // { "${secret}" = { file = makeSecretPath secret; }; };
+
+      makeSystemdNetworkReadableSecret = acc: secret:
+        acc // { "${secret}" =
+                 { file = makeSecretPath secret;
+                   mode = "0640";
+                   owner = "root";
+                   group = "systemd-network";
                  };
-      in foldl' makeSystemdNetworkReadable {} [
+               };
+
+      secrets = foldl' makeSecret {} [
+        users-tomas-password
+      ];
+
+      systemdNetworkReadableSecrets = foldl' makeSystemdNetworkReadableSecret {} [
           wg-server-pk
           wg-tomas-laptop-psk
           wg-tomas-phone-psk
           wg-martin-windows-psk
           wg-tomas-home-psk
-        ];
-    };
+      ];
+      in secrets // systemdNetworkReadableSecrets;
 
     systemd.network = {
       netdevs."90-${config.intranet.server.interface}" = {
