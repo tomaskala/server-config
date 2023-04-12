@@ -10,7 +10,7 @@
   imports = [
     ./constants.nix
     ./acme.nix
-    ../common.nix
+    ../intranet.nix
     ../services/nginx.nix
     ../services/openssh.nix
     ../services/unbound.nix
