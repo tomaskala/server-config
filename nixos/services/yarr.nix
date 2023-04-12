@@ -12,12 +12,6 @@ in
       description = "Listen on this port";
       example = 8080;
     };
-
-    workingDirectory = lib.mkOption {
-      type = lib.types.path;
-      description = "Where to store the yarr DB file";
-      example = "/var/yarr";
-    };
   };
 
   config.services.yarr = lib.mkIf cfg.enable {
@@ -43,17 +37,14 @@ in
       after = [ "network.target" ];
       wants = after;
       wantedBy = [ "multi-user.target" ];
-      preStart = ''
-        ${pkgs.coreutils}/bin/mkdir -p ${cfg.workingDirectory}
-      '';
       serviceConfig = {
         User = "rss";
         Group = "rss";
         Type = "simple";
         ExecStart = ''
-          ${pkgs.yarr}/bin/yarr -addr 127.0.0.1:${builtins.toString cfg.listenPort} -db ${cfg.workingDirectory}/yarr.db
+          ${pkgs.yarr}/bin/yarr -addr 127.0.0.1:${builtins.toString cfg.listenPort} -db "$STATE_DIRECTORY/yarr.db"
         '';
-        WorkingDirectory = cfg.workingDirectory;
+        StateDirectory = "yarr";
         TimeoutStopSec = 20;
         Restart = "on-failure";
 
@@ -69,7 +60,7 @@ in
         RestrictRealtime = true;
         # The initial '~' character specifies that this is a deny list.
         SystemCallFilter = [ "~@clock" "@debug" "@module" "@mount" "@obsolete" "@reboot" "@setuid" "@swap" ];
-        ReadWritePaths = cfg.workingDirectory;
+        ReadWritePaths = "@statedir@";
         PrivateDevices = true;
         ProtectSystem = "strict";
         ProtectHome = true;

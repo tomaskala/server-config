@@ -232,7 +232,6 @@
     services.yarr = {
       enable = true;
       listenPort = 7070;
-      workingDirectory = "/var/yarr";
     };
 
     # TODO
