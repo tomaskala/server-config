@@ -146,8 +146,8 @@
         };
 
         address = [
-          "${config.intranet.server.ipv4}/${toString config.intranet.ipv4.mask}"
-          "${config.intranet.server.ipv6}/${toString config.intranet.ipv6.mask}"
+          "${config.intranet.server.ipv4}/${builtins.toString config.intranet.ipv4.mask}"
+          "${config.intranet.server.ipv6}/${builtins.toString config.intranet.ipv6.mask}"
         ];
       };
     };

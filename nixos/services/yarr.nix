@@ -51,7 +51,7 @@ in
         Group = "rss";
         Type = "simple";
         ExecStart = ''
-          ${pkgs.yarr}/bin/yarr -addr 127.0.0.1:${toString cfg.listenPort} -db ${cfg.workingDirectory}/yarr.db
+          ${pkgs.yarr}/bin/yarr -addr 127.0.0.1:${builtins.toString cfg.listenPort} -db ${cfg.workingDirectory}/yarr.db
         '';
         WorkingDirectory = cfg.workingDirectory;
         TimeoutStopSec = 20;

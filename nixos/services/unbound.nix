@@ -59,9 +59,9 @@ in
         ];
 
         # Local zones.
-        private-domain = catAttrs "domain" cfg.localDomains;
-        local-zone = map (domain: "${domain}. redirect") (catAttrs "domain" cfg.localDomains);
-        local-data = concatMap ({ domain, ipv4, ipv6 }: [ "${domain}. A ${ipv4}" "${domain}. AAAA ${ipv6}" ]) cfg.localDomains;
+        private-domain = builtins.catAttrs "domain" cfg.localDomains;
+        local-zone = builtins.map (domain: "${domain}. redirect") (builtins.catAttrs "domain" cfg.localDomains);
+        local-data = builtins.concatMap ({ domain, ipv4, ipv6 }: [ "${domain}. A ${ipv4}" "${domain}. AAAA ${ipv6}" ]) cfg.localDomains;
 
         # Logging settings.
         verbosity = 1;
