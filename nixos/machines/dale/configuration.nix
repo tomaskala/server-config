@@ -18,6 +18,14 @@
   ];
 
   config = {
+    # TODO: https://nixos.wiki/wiki/Overlays
+    # TODO: https://summer.nixos.org/blog/callpackage-a-tool-for-the-lazy/
+    nixpkgs.overlays = [
+      (self: super: {
+        unbound-blocker = super.callPackage ../../pkgs/unbound-blocker { };
+      })
+    ];
+
     users.users.tomas = {
       isNormalUser = true;
       home = "/home/tomas";
