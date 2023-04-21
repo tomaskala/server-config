@@ -155,16 +155,9 @@ def main():
         required=False,
         help="Whitelist file with one domain per line",
     )
-    parser.add_argument(
-        "-l",
-        "--log",
-        required=True,
-        help="Path to the log file",
-    )
     args = parser.parse_args()
 
     logging.basicConfig(
-        filename=args.log,
         format="%(asctime)-15s %(levelname)s [%(filename)s:%(lineno)d]: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         level=logging.INFO,

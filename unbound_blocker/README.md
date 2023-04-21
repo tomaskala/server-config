@@ -27,5 +27,5 @@ signal.org
 
 Run the script.
 ```
-$ fetch_blocklist -s ./blocklist-sources.txt -w ./whitelist.txt -l ./unbound-blocker.log
+$ fetch_blocklist -s ./blocklist-sources.txt -w ./whitelist.txt
 ```
