@@ -24,6 +24,7 @@ Create a file with one whitelisted domain per line.
 $ cat whitelist.txt
 s.youtube.com
 signal.org
+```
 
 Run the script.
 ```
