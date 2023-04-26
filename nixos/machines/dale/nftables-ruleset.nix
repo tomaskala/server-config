@@ -1,7 +1,5 @@
 { config, pkgs }:
 
-# TODO: This still contains dynamic sets for the overlay network script.
-
 # TODO: Use named counters and rule comments (those visible in logs).
 let
   serverCfg = config.intranet.server;

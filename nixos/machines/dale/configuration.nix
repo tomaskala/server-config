@@ -338,8 +338,5 @@
         "turn1.whispersystems.org"
       ];
     };
-
-    # TODO
-    # * overlay network
   };
 }

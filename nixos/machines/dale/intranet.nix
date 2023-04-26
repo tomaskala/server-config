@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   cfg = config.networking.intranet;
@@ -34,7 +34,27 @@ in
   };
 
   config.networking.intranet = lib.mkIf cfg.enable {
-    # TODO: Firewall entries; networking.localCommands may be useful here.
+    # Firewall entries.
+    networking.localCommands =
+      let
+        addToSet = setName: elem: "${pkgs.nftables}/bin/nft add element inet firewall ${setName} { ${elem} }";
+
+        makeAccessibleSet = ipProto: _: { gateway, subnet }: [ gateway."${ipProto}" subnet."${ipProto}" ];
+
+        accessibleIPv4 = builtins.mapAttrs (makeAccessibleSet "ipv4") config.intranet.locations;
+
+        accessibleIPv6 = builtins.mapAttrs (makeAccessibleSet "ipv6") config.intranet.locations;
+      in
+      ''
+        ${addToSet "vpn_internal_ipv4" (config.maskedSubnet config.intranet.subnets.internal.ipv4)}
+        ${addToSet "vpn_internal_ipv6" (config.maskedSubnet config.intranet.subnets.internal.ipv6)}
+
+        ${addToSet "vpn_isolated_ipv4" (config.maskedSubnet config.intranet.subnets.isolated.ipv4)}
+        ${addToSet "vpn_isolated_ipv6" (config.maskedSubnet config.intranet.subnets.isolated.ipv6)}
+
+        ${lib.concatMapStringsSep "\n" (addToSet "vpn_accessible_ipv4") accessibleIPv4}
+        ${lib.concatMapStringsSep "\n" (addToSet "vpn_accessible_ipv6") accessibleIPv6}
+      '';
 
     # Local DNS records.
     services.unbound.localDomains = config.intranet.localDomains;
