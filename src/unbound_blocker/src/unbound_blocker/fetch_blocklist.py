@@ -81,7 +81,7 @@ def clear_blocklist():
         encoding="utf-8",
     )
 
-    LOGGER.info("%s stderr:\n%s", UNBOUND_CONTROL, p.stderr)
+    print(p.stderr, file=sys.stderr)
 
     if p.returncode != 0:
         LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
@@ -106,12 +106,10 @@ def clear_blocklist():
             [UNBOUND_CONTROL, "local_zones_remove"],
             input="\n".join(blocklist) + "\n",
             bufsize=1,
-            capture_output=True,
+            capture_output=False,
             text=True,
             encoding="utf-8",
         )
-        LOGGER.info("%s stdout:\n%s", UNBOUND_CONTROL, p.stdout)
-        LOGGER.info("%s stderr:\n%s", UNBOUND_CONTROL, p.stderr)
 
     if p.returncode != 0:
         LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
@@ -127,12 +125,10 @@ def load_blocklist(blocklist):
             [UNBOUND_CONTROL, "local_zones"],
             input="\n".join(local_zones) + "\n",
             bufsize=1,
-            capture_output=True,
+            capture_output=False,
             text=True,
             encoding="utf-8",
         )
-        LOGGER.info("%s stdout:\n%s", UNBOUND_CONTROL, p.stdout)
-        LOGGER.info("%s stderr:\n%s", UNBOUND_CONTROL, p.stderr)
 
     if p.returncode != 0:
         LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
