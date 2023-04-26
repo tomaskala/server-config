@@ -1,11 +1,11 @@
 { config, pkgs, lib, ... }:
 
 let
-  cfg = config.services.blocklist-fetcher;
+  cfg = config.services.unbound-blocker;
 in
 {
-  options.services.blocklist-fetcher = {
-    enable = lib.mkEnableOption "blocklist-fetcher";
+  options.services.unbound-blocker = {
+    enable = lib.mkEnableOption "unbound-blocker";
 
     sources = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -21,8 +21,8 @@ in
     };
   };
 
-  config.services.blocklist-fetcher = lib.mkIf cfg.enable {
-    systemd.services.blocklist-fetcher = {
+  config.services.unbound-blocker = lib.mkIf cfg.enable {
+    systemd.services.unbound-blocker = {
       description = "DNS blocklist filling script";
       serviceConfig = {
         User = config.services.unbound.user;
@@ -58,11 +58,11 @@ in
       };
     };
 
-    systemd.timers.blocklist-fetcher = {
+    systemd.timers.unbound-blocker = {
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = "Sun *-*-* 05:00:00";
-        Unit = "blocklist-fetcher.service";
+        Unit = "unbound-blocker.service";
       };
     };
   };

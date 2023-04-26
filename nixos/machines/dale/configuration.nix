@@ -11,9 +11,9 @@
     ./constants.nix
     ./acme.nix
     ../intranet.nix
-    ../services/blocklist-fetcher.nix
     ../services/nginx.nix
     ../services/openssh.nix
+    ../services/unbound-blocker.nix
     ../services/unbound.nix
     ../services/yarr.nix
   ];
@@ -243,7 +243,7 @@
       listenPort = 7070;
     };
 
-    services.blocklist-fetcher = {
+    services.unbound-blocker = {
       enable = true;
       sources = [
         "https://adaway.org/hosts.txt"
