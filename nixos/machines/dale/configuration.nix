@@ -10,10 +10,11 @@ let
 
   rssDomain = "rss.home.arpa";
   rssListenPort = 7070;
+
+  wanInterface = "venet0";
 in
 {
   imports = [
-    ./constants.nix
     ./acme.nix
     ./overlay-network.nix
     ../intranet.nix
@@ -76,7 +77,7 @@ in
     networking.firewall.enable = false;
     networking.nftables = {
       enabled = true;
-      rulesetFile = import ./nftables-ruleset.nix { inherit config pkgs; };
+      rulesetFile = pkgs.callPackage ./nftables-ruleset.nix { inherit config wanInterface; };
     };
 
     age.secrets =
