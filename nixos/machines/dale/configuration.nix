@@ -185,6 +185,7 @@ in
 
     services.openssh = {
       enable = true;
+
       listenAddresses = [
         { addr = config.intranet.server.ipv4; port = 22; }
         { addr = config.intranet.server.ipv6; port = 22; }
@@ -193,6 +194,7 @@ in
 
     services.unbound = {
       enable = true;
+
       localDomains = [
         {
           domain = publicDomain;
@@ -205,6 +207,11 @@ in
           ipv6 = config.intranet.server.ipv6;
         }
       ];
+    };
+
+    services.yarr = {
+      enable = true;
+      listenPort = rssListenPort;
     };
 
     services.nginx = {
@@ -273,13 +280,9 @@ in
       };
     };
 
-    services.yarr = {
-      enable = true;
-      listenPort = rssListenPort;
-    };
-
     services.unbound-blocker = {
       enable = true;
+
       sources = [
         "https://adaway.org/hosts.txt"
         "https://bitbucket.org/ethanr/dns-blacklists/raw/8575c9f96e5b4a1308f2f12394abd86d0927a4a0/bad_lists/Mandiant_APT1_Report_Appendix_D.txt"
@@ -317,6 +320,7 @@ in
         "https://winhelp2002.mvps.org/hosts.txt"
         "https://zerodot1.gitlab.io/CoinBlockerLists/hosts_browser"
       ];
+
       whitelist = [
         "clients4.google.com"
         "clients2.google.com"
