@@ -26,7 +26,7 @@ in
     };
   };
 
-  config.security.tls-certificate = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     security.acme = {
       acceptTerms = true;
       certs.${cfg.domain} = {

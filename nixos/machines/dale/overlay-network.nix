@@ -33,7 +33,7 @@ in
     enable = lib.mkEnableOption "overlay-network";
   };
 
-  config.networking.overlay-network = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # Firewall entries.
     networking.localCommands =
       let

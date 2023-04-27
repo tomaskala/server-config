@@ -14,7 +14,7 @@ in
     };
   };
 
-  config.services.yarr = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     users.users.rss = {
       isSystemUser = true;
       shell = "${pkgs.coreutils}/bin/false";

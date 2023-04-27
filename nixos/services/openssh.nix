@@ -1,5 +1,5 @@
 {
-  config.services.openssh = {
+  config = {
     openFirewall = false;
     passwordAuthentication = false;
     permitRootLogin = false;

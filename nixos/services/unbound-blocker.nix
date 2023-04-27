@@ -21,7 +21,7 @@ in
     };
   };
 
-  config.services.unbound-blocker = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     systemd.services.unbound-blocker = {
       description = "DNS blocklist filling script";
       serviceConfig = {

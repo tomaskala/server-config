@@ -32,7 +32,7 @@ in
     };
   };
 
-  config.services.unbound = {
+  config = {
     enableRootTrustAnchor = true;
     settings = {
       server = {

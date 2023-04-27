@@ -1,5 +1,5 @@
 {
-  config.services.nginx = {
+  config = {
     recommendedGzipSettings = true;
     recommendedOptimisation = true;
     recommendedProxySettings = true;
