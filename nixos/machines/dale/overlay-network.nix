@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  cfg = config.networking.intranet;
+  cfg = config.networking.overlay-network;
 
   makePeer = location: { gateway, subnet }:
     {
@@ -29,11 +29,11 @@ let
     ];
 in
 {
-  options.networking.intranet = {
-    enable = lib.mkEnableOption "intranet";
+  options.networking.overlay-network = {
+    enable = lib.mkEnableOption "overlay-network";
   };
 
-  config.networking.intranet = lib.mkIf cfg.enable {
+  config.networking.overlay-network = lib.mkIf cfg.enable {
     # Firewall entries.
     networking.localCommands =
       let
