@@ -20,18 +20,6 @@ in
       shell = "${pkgs.coreutils}/bin/false";
     };
 
-    services.nginx.virtualHosts.${config.domains.rss} = {
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${cfg.listenPort}";
-      };
-
-      extraConfig = ''
-        allow ${config.maskedSubnet config.intranet.subnets.internal.ipv4}
-        allow ${config.maskedSubnet config.intranet.subnets.internal.ipv6}
-        deny all;
-      '';
-    };
-
     systemd.services.yarr = rec {
       description = "A simple RSS reader";
       after = [ "network.target" ];

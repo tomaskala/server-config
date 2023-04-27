@@ -1,11 +1,11 @@
 { config, pkgs, ... }:
 
-# TODO: Make each service's configuration stand-alone? Meaning that the
-# RSS configuration file will configure the RSS reader as well as setup
-# nginx reverse proxy.
-
 # TODO: Pull secrets from a private repository.
 
+let
+  rssDomain = "rss.home.arpa";
+  rssListenPort = 7070;
+in
 {
   imports = [
     ./constants.nix
@@ -187,7 +187,7 @@
           ipv6 = config.intranet.server.ipv6;
         }
         {
-          domain = config.domains.rss;
+          domain = rssDomain;
           ipv4 = config.intranet.server.ipv4;
           ipv6 = config.intranet.server.ipv6;
         }
@@ -196,6 +196,7 @@
 
     services.nginx = {
       enable = true;
+
       virtualHosts.${config.domains.public} = {
         root = "/var/www/${config.domains.public}";
         forceSSL = true;
@@ -245,11 +246,23 @@
           }
         '';
       };
+
+      virtualHosts.${rssDomain} = {
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${cfg.listenPort}";
+        };
+
+        extraConfig = ''
+          allow ${config.maskedSubnet config.intranet.subnets.internal.ipv4}
+          allow ${config.maskedSubnet config.intranet.subnets.internal.ipv6}
+          deny all;
+        '';
+      };
     };
 
     services.yarr = {
       enable = true;
-      listenPort = 7070;
+      listenPort = rssListenPort;
     };
 
     services.unbound-blocker = {
