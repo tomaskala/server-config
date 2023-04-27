@@ -10,6 +10,7 @@
   imports = [
     ./constants.nix
     ./acme.nix
+    ./overlay-network.nix
     ../intranet.nix
     ../services/nginx.nix
     ../services/openssh.nix
@@ -163,6 +164,10 @@
           "${config.intranet.server.ipv6}/${builtins.toString config.intranet.ipv6.mask}"
         ];
       };
+    };
+
+    services.overlay-network = {
+      enable = true;
     };
 
     services.openssh = {
