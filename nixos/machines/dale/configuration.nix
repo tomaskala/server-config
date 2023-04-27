@@ -15,8 +15,8 @@ let
 in
 {
   imports = [
-    ./acme.nix
     ./overlay-network.nix
+    ./tls-certificate.nix
     ../intranet.nix
     ../services/nginx.nix
     ../services/openssh.nix
@@ -172,7 +172,7 @@ in
       };
     };
 
-    acme = {
+    security.tls-certificate = {
       enable = true;
       email = acmeEmail;
       domain = publicDomain;

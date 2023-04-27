@@ -1,11 +1,11 @@
 { config, lib, ... }:
 
 let
-  cfg = config.acme;
+  cfg = config.security.tls-certificate;
 in
 {
-  options.acme = {
-    enable = lib.mkEnableOption "ACME";
+  options.security.tls-certificate = {
+    enable = lib.mkEnableOption "TLS certificate";
 
     email = lib.mkOption {
       type = lib.types.str;
@@ -26,7 +26,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config.security.tls-certificate = lib.mkIf cfg.enable {
     security.acme = {
       acceptTerms = true;
       certs.${cfg.domain} = {
