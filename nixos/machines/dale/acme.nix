@@ -1,12 +1,37 @@
-{ config, ... }:
+{ config, lib, ... }:
 
+let
+  cfg = config.acme;
+in
 {
-  config = {
+  options.acme = {
+    enable = lib.mkEnableOption "ACME";
+
+    email = lib.mkOption {
+      type = lib.types.str;
+      description = "Email address for the CA account creation";
+      example = "acme@domain.com";
+    };
+
+    domain = lib.mkOption {
+      type = lib.types.str;
+      description = "Domain which the certificate should be generated for";
+      example = "domain.com";
+    };
+
+    webroot = lib.mkOption {
+      type = lib.types.path;
+      description = "Where the domain's webroot is located";
+      example = "/var/www/domain.com";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
     security.acme = {
       acceptTerms = true;
-      certs.${config.domains.public} = {
-        webroot = "/var/lib/acme/.challenges";
-        email = config.email.acme;
+      certs.${cfg.domain} = {
+        webroot = cfg.webroot;
+        email = cfg.email;
         # The webserver must be able to read the generated certificates.
         group = config.users.users.nginx.group;
       };
@@ -17,7 +42,7 @@
     users.users.nginx.extraGroups = [ "acme" ];
 
     services.nginx = {
-      virtualHosts."certs.${config.domains.public}" = {
+      virtualHosts."certs.${cfg.domain}" = {
         serverAliases = [ "*.${domain}" ];
 
         locations."/.well-known/acme-challenge" = {

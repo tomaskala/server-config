@@ -3,6 +3,11 @@
 # TODO: Pull secrets from a private repository.
 
 let
+  publicDomain = "tomaskala.com";
+  publicDomainWebroot = "/var/www/${publicDomain}";
+
+  acmeEmail = "public@${publicDomain}";
+
   rssDomain = "rss.home.arpa";
   rssListenPort = 7070;
 in
@@ -166,6 +171,13 @@ in
       };
     };
 
+    acme = {
+      enable = true;
+      email = acmeEmail;
+      domain = publicDomain;
+      webroot = publicDomainWebroot;
+    };
+
     services.overlay-network = {
       enable = true;
     };
@@ -182,7 +194,7 @@ in
       enable = true;
       localDomains = [
         {
-          domain = config.domains.public;
+          domain = publicDomain;
           ipv4 = config.intranet.server.ipv4;
           ipv6 = config.intranet.server.ipv6;
         }
@@ -197,8 +209,8 @@ in
     services.nginx = {
       enable = true;
 
-      virtualHosts.${config.domains.public} = {
-        root = "/var/www/${config.domains.public}";
+      virtualHosts.${publicDomain} = {
+        root = publicDomainWebroot;
         forceSSL = true;
         enableACME = true;
 
@@ -239,7 +251,7 @@ in
 
           # Prevent image hotlinking.
           location ~ \.(gif|png|jpg|jpeg|ico)$ {
-            valid_referers none blocked ${config.domains.public};
+            valid_referers none blocked ${publicDomain};
             if ($invalid_referer) {
               return 403;
             }
