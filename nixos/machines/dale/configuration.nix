@@ -44,8 +44,7 @@ in
       extraGroups = [ "wheel" ];
       passwordFile = config.age.secrets.users-tomas-password.path;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrK/gGoC5nX+u82z2N/8u+gd/yMJrb6pMln/zJJjG4w laptop2dale"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDXh5D6Rhl/ORiXXW+BYZN3+/OcyMdPKTI+BM7HQI8MN home2dale"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl home2dale"
       ];
     };
 
@@ -56,9 +55,8 @@ in
       shell = "${pkgs.git}/bin/git-shell";
       group = "git";
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBaTcR5f4bbzG6JmuyFfMAEuQYRmWzt518BlBIbyr1MK laptop2dale-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOCmYsyCuOmqW1utcZvBWYIzZnDEXUjmg/YpdcOWudF5 phone2dale-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQQQ7zAwXCpFVWNGnhOck8GqOELWAHCy5NrH9nyxjzU home2dale-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 phone2dale-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf home2dale-git"
       ];
     };
 
@@ -127,14 +125,6 @@ in
         wireguardPeers = [
           {
             wireguardPeerConfig = {
-              # tomas-laptop
-              PublicKey = "5t3YVZ7+nimeIknRvgn9el1+ZaURG/54MX7vFzPCRFU=";
-              PresharedKeyFile = config.age.secrets.wg-tomas-laptop-psk.path;
-              AllowedIPs = [ "10.100.100.1/32" "fd25:6f6:a9f:1100::1/128" ];
-            };
-          }
-          {
-            wireguardPeerConfig = {
               # tomas-phone
               PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
               PresharedKeyFile = config.age.secrets.wg-tomas-phone-psk.path;
@@ -152,7 +142,7 @@ in
           {
             wireguardPeerConfig = {
               # tomas-home
-              PublicKey = "0UGizNBFMqQ858L+FqLwUKMohjKssttH7sMPuIoiuFE=";
+              PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
               PresharedKeyFile = config.age.secrets.wg-tomas-home-psk.path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
