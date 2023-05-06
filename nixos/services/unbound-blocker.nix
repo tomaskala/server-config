@@ -63,7 +63,6 @@ in
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = "Sun *-*-* 05:00:00";
-        Unit = "unbound-blocker.service";
       };
     };
   };
