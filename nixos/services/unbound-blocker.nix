@@ -59,6 +59,7 @@ in
     };
 
     systemd.timers.unbound-blocker = {
+      description = "Periodically update the DNS blocklist";
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = "Sun *-*-* 05:00:00";
