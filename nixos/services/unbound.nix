@@ -5,7 +5,7 @@ in {
   options.services.unbound = {
     localDomains = lib.mkOption {
       default = [ ];
-      type = lib.types.listOf (types.submodule {
+      type = lib.types.listOf (lib.types.submodule {
         options = {
           domain = lib.mkOption {
             type = lib.types.str;

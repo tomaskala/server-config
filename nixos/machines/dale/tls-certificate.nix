@@ -41,7 +41,7 @@ in {
 
     services.nginx = {
       virtualHosts."certs.${cfg.domain}" = {
-        serverAliases = [ "*.${domain}" ];
+        serverAliases = [ "*.${cfg.domain}" ];
 
         locations."/.well-known/acme-challenge" = {
           root = "/var/lib/acme/.challenges";

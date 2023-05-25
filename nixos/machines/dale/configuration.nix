@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 # TODO: Pull secrets from a private repository.
 
@@ -74,34 +74,31 @@ in {
     };
 
     age.secrets = let
-      makeSecretPath = secret: "/root/secrets/${secret}.age";
+      makeSecret = name: {
+        inherit name;
+        value.file = "/root/secrets/${name}.age";
+      };
 
-      makeSecret = acc: secret:
-        acc // {
-          "${secret}" = { file = makeSecretPath secret; };
-        };
-
-      makeSystemdNetworkReadableSecret = acc: secret:
-        acc // {
-          "${secret}" = {
-            file = makeSecretPath secret;
+      makeSystemdNetworkReadableSecret = name:
+        lib.recursiveUpdate (makeSecret name) {
+          value = {
             mode = "0640";
             owner = "root";
             group = "systemd-network";
           };
         };
 
-      secrets = foldl' makeSecret { } [ users-tomas-password ];
+      secrets = builtins.map makeSecret [ "users-tomas-password" ];
 
       systemdNetworkReadableSecrets =
-        foldl' makeSystemdNetworkReadableSecret { } [
-          wg-server-pk
-          wg-tomas-laptop-psk
-          wg-tomas-phone-psk
-          wg-martin-windows-psk
-          wg-tomas-home-psk
+        builtins.map makeSystemdNetworkReadableSecret [
+          "wg-server-pk"
+          "wg-tomas-laptop-psk"
+          "wg-tomas-phone-psk"
+          "wg-martin-windows-psk"
+          "wg-tomas-home-psk"
         ];
-    in secrets // systemdNetworkReadableSecrets;
+    in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
 
     systemd.network = {
       netdevs."90-${config.intranet.server.interface}" = {
@@ -257,7 +254,7 @@ in {
       };
 
       virtualHosts.${rssDomain} = {
-        locations."/" = { proxyPass = "http://127.0.0.1:${cfg.listenPort}"; };
+        locations."/" = { proxyPass = "http://127.0.0.1:${rssListenPort}"; };
 
         extraConfig = ''
           allow ${config.maskedSubnet config.intranet.subnets.internal.ipv4}
