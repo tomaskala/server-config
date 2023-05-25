@@ -4,20 +4,38 @@
 
     intranet = {
       # IP ranges of the entire intranet.
-      ipv4 = { subnet = "10.100.0.0"; mask = 16; };
-      ipv6 = { subnet = "fd25:6f6:a9f:1000::"; mask = 52; };
+      ipv4 = {
+        subnet = "10.100.0.0";
+        mask = 16;
+      };
+      ipv6 = {
+        subnet = "fd25:6f6:a9f:1000::";
+        mask = 52;
+      };
 
       # Subnets within the VPN tunnel.
       subnets = {
         # Devices in the internal subnet can communicate with each other
         # as well as access the public internet via the server.
-        internal.ipv4 = { subnet = "10.100.100.0"; mask = 24; };
-        internal.ipv6 = { subnet = "fd25:6f6:a9f:1100::"; mask = 56; };
+        internal.ipv4 = {
+          subnet = "10.100.100.0";
+          mask = 24;
+        };
+        internal.ipv6 = {
+          subnet = "fd25:6f6:a9f:1100::";
+          mask = 56;
+        };
 
         # Devices in the isolated subnet can communicate with each other,
         # but not access the public internet via the server.
-        isolated.ipv4 = { subnet = "10.100.104.0"; mask = 24; };
-        isolated.ipv6 = { subnet = "fd25:6f6:a9f:1200::"; mask = 56; };
+        isolated.ipv4 = {
+          subnet = "10.100.104.0";
+          mask = 24;
+        };
+        isolated.ipv6 = {
+          subnet = "fd25:6f6:a9f:1200::";
+          mask = 56;
+        };
       };
 
       # Configuration of the server VPN interface.

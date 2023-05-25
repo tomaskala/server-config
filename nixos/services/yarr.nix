@@ -1,9 +1,7 @@
 { config, pkgs, lib, ... }:
 
-let
-  cfg = config.services.yarr;
-in
-{
+let cfg = config.services.yarr;
+in {
   options.services.yarr = {
     enable = lib.mkEnableOption "yarr";
 
@@ -30,7 +28,9 @@ in
         Group = "rss";
         Type = "simple";
         ExecStart = ''
-          ${pkgs.yarr}/bin/yarr -addr 127.0.0.1:${builtins.toString cfg.listenPort} -db "$STATE_DIRECTORY/yarr.db"
+          ${pkgs.yarr}/bin/yarr -addr 127.0.0.1:${
+            builtins.toString cfg.listenPort
+          } -db "$STATE_DIRECTORY/yarr.db"
         '';
         StateDirectory = "yarr";
         TimeoutStopSec = 20;
@@ -47,7 +47,16 @@ in
         RestrictNamespaces = true;
         RestrictRealtime = true;
         # The initial '~' character specifies that this is a deny list.
-        SystemCallFilter = [ "~@clock" "@debug" "@module" "@mount" "@obsolete" "@reboot" "@setuid" "@swap" ];
+        SystemCallFilter = [
+          "~@clock"
+          "@debug"
+          "@module"
+          "@mount"
+          "@obsolete"
+          "@reboot"
+          "@setuid"
+          "@swap"
+        ];
         ReadWritePaths = "@statedir@";
         PrivateDevices = true;
         ProtectSystem = "strict";

@@ -12,8 +12,7 @@ let
   rssListenPort = 7070;
 
   wanInterface = "venet0";
-in
-{
+in {
   imports = [
     ./overlay-network.nix
     ./tls-certificate.nix
@@ -26,9 +25,7 @@ in
   ];
 
   config = {
-    nix.settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-    };
+    nix.settings = { experimental-features = [ "nix-command" "flakes" ]; };
 
     # TODO: https://nixos.wiki/wiki/Overlays
     # TODO: https://summer.nixos.org/blog/callpackage-a-tool-for-the-lazy/
@@ -65,50 +62,46 @@ in
     services.timesyncd.enable = true;
 
     programs.vim.defaultEditor = true;
-    environment.systemPackages = with pkgs; [
-      git
-      rsync
-      tmux
-    ];
+    environment.systemPackages = with pkgs; [ git rsync tmux ];
 
     networking.hostName = "dale";
     networking.firewall.enable = false;
     networking.nftables = {
       enabled = true;
-      rulesetFile = pkgs.callPackage ./nftables-ruleset.nix { inherit config wanInterface; };
+      rulesetFile = pkgs.callPackage ./nftables-ruleset.nix {
+        inherit config wanInterface;
+      };
     };
 
-    age.secrets =
-      let
-        makeSecretPath = secret: "/root/secrets/${secret}.age";
+    age.secrets = let
+      makeSecretPath = secret: "/root/secrets/${secret}.age";
 
-        makeSecret = acc: secret:
-          acc // { "${secret}" = { file = makeSecretPath secret; }; };
+      makeSecret = acc: secret:
+        acc // {
+          "${secret}" = { file = makeSecretPath secret; };
+        };
 
-        makeSystemdNetworkReadableSecret = acc: secret:
-          acc // {
-            "${secret}" =
-              {
-                file = makeSecretPath secret;
-                mode = "0640";
-                owner = "root";
-                group = "systemd-network";
-              };
+      makeSystemdNetworkReadableSecret = acc: secret:
+        acc // {
+          "${secret}" = {
+            file = makeSecretPath secret;
+            mode = "0640";
+            owner = "root";
+            group = "systemd-network";
           };
+        };
 
-        secrets = foldl' makeSecret { } [
-          users-tomas-password
-        ];
+      secrets = foldl' makeSecret { } [ users-tomas-password ];
 
-        systemdNetworkReadableSecrets = foldl' makeSystemdNetworkReadableSecret { } [
+      systemdNetworkReadableSecrets =
+        foldl' makeSystemdNetworkReadableSecret { } [
           wg-server-pk
           wg-tomas-laptop-psk
           wg-tomas-phone-psk
           wg-martin-windows-psk
           wg-tomas-home-psk
         ];
-      in
-      secrets // systemdNetworkReadableSecrets;
+    in secrets // systemdNetworkReadableSecrets;
 
     systemd.network = {
       netdevs."90-${config.intranet.server.interface}" = {
@@ -151,13 +144,15 @@ in
       };
 
       networks."90-${config.intranet.server.interface}" = {
-        matchConfig = {
-          Name = config.intranet.server.interface;
-        };
+        matchConfig = { Name = config.intranet.server.interface; };
 
         address = [
-          "${config.intranet.server.ipv4}/${builtins.toString config.intranet.ipv4.mask}"
-          "${config.intranet.server.ipv6}/${builtins.toString config.intranet.ipv6.mask}"
+          "${config.intranet.server.ipv4}/${
+            builtins.toString config.intranet.ipv4.mask
+          }"
+          "${config.intranet.server.ipv6}/${
+            builtins.toString config.intranet.ipv6.mask
+          }"
         ];
       };
     };
@@ -169,16 +164,20 @@ in
       webroot = publicDomainWebroot;
     };
 
-    services.overlay-network = {
-      enable = true;
-    };
+    services.overlay-network = { enable = true; };
 
     services.openssh = {
       enable = true;
 
       listenAddresses = [
-        { addr = config.intranet.server.ipv4; port = 22; }
-        { addr = config.intranet.server.ipv6; port = 22; }
+        {
+          addr = config.intranet.server.ipv4;
+          port = 22;
+        }
+        {
+          addr = config.intranet.server.ipv6;
+          port = 22;
+        }
       ];
     };
 
@@ -258,9 +257,7 @@ in
       };
 
       virtualHosts.${rssDomain} = {
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${cfg.listenPort}";
-        };
+        locations."/" = { proxyPass = "http://127.0.0.1:${cfg.listenPort}"; };
 
         extraConfig = ''
           allow ${config.maskedSubnet config.intranet.subnets.internal.ipv4}

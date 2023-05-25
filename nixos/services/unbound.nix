@@ -1,9 +1,7 @@
 { config, lib, ... }:
 
-let
-  cfg = config.services.unbound;
-in
-{
+let cfg = config.services.unbound;
+in {
   options.services.unbound = {
     localDomains = lib.mkOption {
       default = [ ];
@@ -60,8 +58,12 @@ in
 
         # Local zones.
         private-domain = builtins.catAttrs "domain" cfg.localDomains;
-        local-zone = builtins.map (domain: "${domain}. redirect") (builtins.catAttrs "domain" cfg.localDomains);
-        local-data = builtins.concatMap ({ domain, ipv4, ipv6 }: [ "${domain}. A ${ipv4}" "${domain}. AAAA ${ipv6}" ]) cfg.localDomains;
+        local-zone = builtins.map (domain: "${domain}. redirect")
+          (builtins.catAttrs "domain" cfg.localDomains);
+        local-data = builtins.concatMap ({ domain, ipv4, ipv6 }: [
+          "${domain}. A ${ipv4}"
+          "${domain}. AAAA ${ipv6}"
+        ]) cfg.localDomains;
 
         # Logging settings.
         verbosity = 1;
@@ -107,18 +109,16 @@ in
         so-rcvbuf = "1m";
       };
 
-      forward-zone = [
-        {
-          name = ".";
-          forward-tls-upstream = true;
-          forward-addr = [
-            "9.9.9.9@853#dns.quad9.net"
-            "149.112.112.112@853#dns.quad9.net"
-            "2620:fe::fe@853#dns.quad9.net"
-            "2620:fe::9@853#dns.quad9.net"
-          ];
-        }
-      ];
+      forward-zone = [{
+        name = ".";
+        forward-tls-upstream = true;
+        forward-addr = [
+          "9.9.9.9@853#dns.quad9.net"
+          "149.112.112.112@853#dns.quad9.net"
+          "2620:fe::fe@853#dns.quad9.net"
+          "2620:fe::9@853#dns.quad9.net"
+        ];
+      }];
 
       remote-control = {
         control-enable = true;

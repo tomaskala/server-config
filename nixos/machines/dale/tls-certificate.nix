@@ -1,9 +1,7 @@
 { config, lib, ... }:
 
-let
-  cfg = config.security.tls-certificate;
-in
-{
+let cfg = config.security.tls-certificate;
+in {
   options.security.tls-certificate = {
     enable = lib.mkEnableOption "TLS certificate";
 
@@ -49,9 +47,7 @@ in
           root = "/var/lib/acme/.challenges";
         };
 
-        locations."/" = {
-          return = "301 https://$host$request_uri";
-        };
+        locations."/" = { return = "301 https://$host$request_uri"; };
       };
     };
   };

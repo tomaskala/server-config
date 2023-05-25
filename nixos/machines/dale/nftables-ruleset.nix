@@ -1,10 +1,8 @@
 { config, writeTextFile, wanInterface }:
 
 # TODO: Use named counters and rule comments (those visible in logs).
-let
-  serverCfg = config.intranet.server;
-in
-writeTextFile {
+let serverCfg = config.intranet.server;
+in writeTextFile {
   name = "nftables-ruleset";
   text = ''
     flush ruleset
@@ -169,12 +167,20 @@ writeTextFile {
             type nat hook postrouting priority 100;
 
             # Masquerade VPN traffic to WAN.
-            oifname ${wanInterface} ip saddr ${config.maskedSubnet config.intranet.ipv4} masquerade
-            oifname ${wanInterface} ip6 saddr ${config.maskedSubnet config.intranet.ipv6} masquerade
+            oifname ${wanInterface} ip saddr ${
+              config.maskedSubnet config.intranet.ipv4
+            } masquerade
+            oifname ${wanInterface} ip6 saddr ${
+              config.maskedSubnet config.intranet.ipv6
+            } masquerade
 
             # Masquerade VPN traffic to VPN.
-            oifname ${serverCfg.interface} ip saddr ${config.maskedSubnet config.intranet.ipv4} masquerade
-            oifname ${serverCfg.interface} ip6 saddr ${config.maskedSubnet config.intranet.ipv6} masquerade
+            oifname ${serverCfg.interface} ip saddr ${
+              config.maskedSubnet config.intranet.ipv4
+            } masquerade
+            oifname ${serverCfg.interface} ip6 saddr ${
+              config.maskedSubnet config.intranet.ipv6
+            } masquerade
         }
     }
 

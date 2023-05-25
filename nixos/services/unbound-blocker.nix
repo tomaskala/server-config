@@ -1,9 +1,7 @@
 { config, pkgs, lib, ... }:
 
-let
-  cfg = config.services.unbound-blocker;
-in
-{
+let cfg = config.services.unbound-blocker;
+in {
   options.services.unbound-blocker = {
     enable = lib.mkEnableOption "unbound-blocker";
 
@@ -29,16 +27,18 @@ in
         Group = config.services.unbound.group;
         Type = "oneshot";
         ExecStart = ''
-          ${pkgs.unbound-blocker}/bin/fetch_blocklist ${lib.cli.toGNUCommandLineShell { } {
-            sources = pkgs.writeTextFile {
-              name = "dns-blocker-sources.txt";
-              text = builtins.concatStringsSep "\n" cfg.sources;
-            };
-            whitelist = pkgs.writeTextFile {
-              name = "dns-blocker-whitelist.txt";
-              text = builtins.concatStringsSep "\n" cfg.whitelist;
-            };
-          }}
+          ${pkgs.unbound-blocker}/bin/fetch_blocklist ${
+            lib.cli.toGNUCommandLineShell { } {
+              sources = pkgs.writeTextFile {
+                name = "dns-blocker-sources.txt";
+                text = builtins.concatStringsSep "\n" cfg.sources;
+              };
+              whitelist = pkgs.writeTextFile {
+                name = "dns-blocker-whitelist.txt";
+                text = builtins.concatStringsSep "\n" cfg.whitelist;
+              };
+            }
+          }
         '';
         DevicePolicy = "closed";
         NoNewPrivileges = true;
@@ -51,7 +51,16 @@ in
         RestrictNamespaces = true;
         RestrictRealtime = true;
         # The initial '~' character specifies that this is a deny list.
-        SystemCallFilter = [ "~@clock" "@debug" "@module" "@mount" "@obsolete" "@reboot" "@setuid" "@swap" ];
+        SystemCallFilter = [
+          "~@clock"
+          "@debug"
+          "@module"
+          "@mount"
+          "@obsolete"
+          "@reboot"
+          "@setuid"
+          "@swap"
+        ];
         PrivateDevices = true;
         ProtectSystem = "strict";
         ProtectHome = true;
@@ -61,9 +70,7 @@ in
     systemd.timers.unbound-blocker = {
       description = "Periodically update the DNS blocklist";
       wantedBy = [ "timers.target" ];
-      timerConfig = {
-        OnCalendar = "Sun *-*-* 05:00:00";
-      };
+      timerConfig = { OnCalendar = "Sun *-*-* 05:00:00"; };
     };
   };
 }
