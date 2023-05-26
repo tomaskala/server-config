@@ -1,4 +1,4 @@
-{ buildPythonApplication, setuptools-scm, requests }:
+{ buildPythonApplication, setuptools-scm, click, requests }:
 
 buildPythonApplication {
   pname = "unbound-blocker";
@@ -8,5 +8,5 @@ buildPythonApplication {
 
   nativeBuildInputs = [ setuptools-scm ];
 
-  propagatedBuildInputs = [ requests ];
+  propagatedBuildInputs = [ click requests ];
 }

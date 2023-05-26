@@ -1,10 +1,12 @@
-import argparse
 import ipaddress
 import logging
 import re
 import sys
+from collections.abc import Iterator
+from pathlib import Path
 from subprocess import run
 
+import click
 import requests
 from requests.exceptions import Timeout
 
@@ -15,12 +17,12 @@ REQUEST_TIMEOUT = 10
 UNBOUND_CONTROL = "/usr/sbin/unbound-control"
 
 
-def all_lines(source):
-    with open(source, encoding="utf-8") as f:
+def all_lines(source: Path) -> Iterator[str]:
+    with source.open(encoding="utf-8") as f:
         yield from map(str.strip, f)
 
 
-def is_ip_address(string):
+def is_ip_address(string: str) -> bool:
     try:
         ipaddress.ip_address(string)
     except ValueError:
@@ -29,11 +31,11 @@ def is_ip_address(string):
         return True
 
 
-def parse_blocklist(text):
+def parse_blocklist(text: str) -> list[str]:
     blocklist = []
     lines = text.lower().splitlines()
 
-    for line in filter(None, map(lambda l: COMMENT.sub(repl="", string=l), lines)):
+    for line in filter(None, (COMMENT.sub(repl="", string=line) for line in lines)):
         parts = line.split()
 
         if is_ip_address(parts[0]):
@@ -46,7 +48,7 @@ def parse_blocklist(text):
     return blocklist
 
 
-def retrieve_blocklist(sources):
+def retrieve_blocklist(sources: Path) -> set[str]:
     LOGGER.info("Retrieving blocklist")
     blocklist = []
 
@@ -59,7 +61,9 @@ def retrieve_blocklist(sources):
 
         if not response:
             LOGGER.error(
-                "Got status code %d from source '%s'", response.status_code, source
+                "Got status code %d from source '%s'",
+                response.status_code,
+                source,
             )
             continue
 
@@ -69,7 +73,7 @@ def retrieve_blocklist(sources):
     return set(blocklist)
 
 
-def clear_blocklist():
+def clear_blocklist() -> None:
     LOGGER.info("Clearing blocklist")
     LOGGER.info("Obtaining current local zones")
 
@@ -116,7 +120,7 @@ def clear_blocklist():
         sys.exit(1)
 
 
-def load_blocklist(blocklist):
+def load_blocklist(blocklist: list[str]) -> None:
     LOGGER.info("Filling blocklist (%d domains)", len(blocklist))
     local_zones = [f"{domain}. always_null" for domain in blocklist]
 
@@ -137,32 +141,32 @@ def load_blocklist(blocklist):
     LOGGER.info("Success")
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-s",
-        "--sources",
-        required=True,
-        help="File with blocklist source URLs, one per line",
-    )
-    parser.add_argument(
-        "-w",
-        "--whitelist",
-        required=False,
-        help="Whitelist file with one domain per line",
-    )
-    args = parser.parse_args()
-
+@click.command
+@click.option(
+    "-s",
+    "--sources",
+    required=True,
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+    help="File with blocklist source URLs, one per line",
+)
+@click.option(
+    "-w",
+    "--whitelist",
+    required=False,
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+    help="Whitelist file with one domain per line",
+)
+def main(sources: Path, whitelist: Path) -> None:
     logging.basicConfig(
         format="%(asctime)-15s %(levelname)s [%(filename)s:%(lineno)d]: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         level=logging.INFO,
     )
 
-    blocklist = retrieve_blocklist(args.sources)
+    blocklist = retrieve_blocklist(sources)
 
-    if args.whitelist is not None:
-        blocklist -= set(all_lines(args.whitelist))
+    if whitelist is not None:
+        blocklist -= set(all_lines(whitelist))
 
     clear_blocklist()
     load_blocklist(list(blocklist))
