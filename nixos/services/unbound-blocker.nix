@@ -26,18 +26,19 @@ in {
         User = config.services.unbound.user;
         Group = config.services.unbound.group;
         Type = "oneshot";
-        ExecStart = ''
-          ${pkgs.unbound-blocker}/bin/fetch_blocklist ${
-            lib.cli.toGNUCommandLineShell { } {
-              sources = pkgs.writeTextFile {
-                name = "dns-blocker-sources.txt";
-                text = builtins.concatStringsSep "\n" cfg.sources;
-              };
-              whitelist = pkgs.writeTextFile {
-                name = "dns-blocker-whitelist.txt";
-                text = builtins.concatStringsSep "\n" cfg.whitelist;
-              };
-            }
+        ExecStart = let
+          sourcesFile = pkgs.writeTextFile {
+            name = "dns-blocker-sources.txt";
+            text = builtins.concatStringsSep "\n" cfg.sources;
+          };
+
+          whitelistFile = pkgs.writeTextFile {
+            name = "dns-blocker-whitelist.txt";
+            text = builtins.concatStringsSep "\n" cfg.whitelist;
+          };
+        in ''
+          ${pkgs.unbound-blocker}/bin/fetch_blocklist ${sourcesFile} ${
+            lib.cli.toGNUCommandLineShell { } { whitelist = whitelistFile; }
           }
         '';
         DevicePolicy = "closed";

@@ -142,21 +142,24 @@ def load_blocklist(blocklist: list[str]) -> None:
 
 
 @click.command
-@click.option(
-    "-s",
-    "--sources",
-    required=True,
+@click.argument(
+    "sources",
     type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
-    help="File with blocklist source URLs, one per line",
 )
 @click.option(
     "-w",
     "--whitelist",
-    required=False,
     type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
     help="Whitelist file with one domain per line",
 )
 def main(sources: Path, whitelist: Path) -> None:
+    """
+    Use unbound(8) as a DNS blocker.
+
+    Read one blocklist URL per line from SOURCES, retrieve its contents and parse
+    it as a blocklist in the hosts(5) format. The obtained domains are passed to
+    unbound-control(8) to always resolve them to the null address.
+    """
     logging.basicConfig(
         format="%(asctime)-15s %(levelname)s [%(filename)s:%(lineno)d]: %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
