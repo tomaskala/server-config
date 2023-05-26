@@ -1,4 +1,12 @@
-{ buildPythonApplication, setuptools-scm, click, requests }:
+{ buildPythonApplication
+, setuptools-scm
+, click
+, requests
+
+, black
+, mypy
+, ruff
+}:
 
 buildPythonApplication {
   pname = "unbound-blocker";
@@ -6,7 +14,13 @@ buildPythonApplication {
   src = ../../../src/unbound_blocker;
   format = "pyproject";
 
-  nativeBuildInputs = [ setuptools-scm ];
+  nativeBuildInputs = [ setuptools-scm black mypy ruff ];
 
   propagatedBuildInputs = [ click requests ];
+
+  preBuild = ''
+    black --check --diff .
+    mypy --pretty --no-color-output .
+    ruff check --no-cache .
+  '';
 }
