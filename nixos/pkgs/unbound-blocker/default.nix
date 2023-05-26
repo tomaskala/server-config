@@ -6,6 +6,7 @@
 , black
 , mypy
 , ruff
+, types-requests
 }:
 
 buildPythonApplication {
@@ -14,7 +15,7 @@ buildPythonApplication {
   src = ../../../src/unbound_blocker;
   format = "pyproject";
 
-  nativeBuildInputs = [ setuptools-scm black mypy ruff ];
+  nativeBuildInputs = [ setuptools-scm black mypy ruff types-requests ];
 
   propagatedBuildInputs = [ click requests ];
 
