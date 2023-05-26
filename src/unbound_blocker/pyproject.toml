@@ -10,7 +10,7 @@ authors = [
 ]
 description = "DNS-level content blocking utilizing Unbound"
 readme = "README.md"
-requires-python = ">= 3.8"
+requires-python = ">= 3.10"
 dependencies = [
   "requests ~= 2.28.2"
 ]
