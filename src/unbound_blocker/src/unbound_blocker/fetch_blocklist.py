@@ -115,9 +115,9 @@ def clear_blocklist() -> None:
             encoding="utf-8",
         )
 
-    if p.returncode != 0:
-        LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
-        sys.exit(1)
+        if p.returncode != 0:
+            LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
+            sys.exit(1)
 
 
 def load_blocklist(blocklist: list[str]) -> None:
@@ -134,9 +134,9 @@ def load_blocklist(blocklist: list[str]) -> None:
             encoding="utf-8",
         )
 
-    if p.returncode != 0:
-        LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
-        sys.exit(1)
+        if p.returncode != 0:
+            LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
+            sys.exit(1)
 
     LOGGER.info("Success")
 
