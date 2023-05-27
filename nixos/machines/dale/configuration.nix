@@ -254,7 +254,7 @@ in {
       };
 
       virtualHosts.${rssDomain} = {
-        locations."/" = { proxyPass = "http://127.0.0.1:${rssListenPort}"; };
+        locations."/" = { proxyPass = "http://127.0.0.1:${builtins.toString rssListenPort}"; };
 
         extraConfig = ''
           allow ${config.maskedSubnet config.intranet.subnets.internal.ipv4}
