@@ -1,13 +1,5 @@
-{ buildPythonApplication
-, click
-, requests
-
-, black
-, mypy
-, ruff
-, setuptools-scm
-, types-requests
-}:
+{ buildPythonApplication, click, requests, black, mypy, ruff, setuptools-scm
+, types-requests }:
 
 buildPythonApplication {
   pname = "unbound-blocker";
