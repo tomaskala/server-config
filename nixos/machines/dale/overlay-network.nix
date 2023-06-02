@@ -3,6 +3,8 @@
 let
   cfg = config.networking.overlay-network;
 
+  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+
   makePeer = location:
     { gateway, subnet }: {
       wireguardPeerConfig = {
@@ -50,14 +52,14 @@ in {
         builtins.mapAttrs (makeAccessibleSet "ipv6") config.intranet.locations;
     in ''
       ${addToSet "vpn_internal_ipv4"
-      (config.maskedSubnet config.intranet.subnets.internal.ipv4)}
+      (maskSubnet config.intranet.subnets.internal.ipv4)}
       ${addToSet "vpn_internal_ipv6"
-      (config.maskedSubnet config.intranet.subnets.internal.ipv6)}
+      (maskSubnet config.intranet.subnets.internal.ipv6)}
 
       ${addToSet "vpn_isolated_ipv4"
-      (config.maskedSubnet config.intranet.subnets.isolated.ipv4)}
+      (maskSubnet config.intranet.subnets.isolated.ipv4)}
       ${addToSet "vpn_isolated_ipv6"
-      (config.maskedSubnet config.intranet.subnets.isolated.ipv6)}
+      (maskSubnet config.intranet.subnets.isolated.ipv6)}
 
       ${lib.concatMapStringsSep "\n" (addToSet "vpn_accessible_ipv4")
       accessibleIPv4}

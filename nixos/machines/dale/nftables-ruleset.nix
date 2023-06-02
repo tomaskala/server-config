@@ -1,7 +1,10 @@
 { config, writeTextFile, wanInterface }:
 
 # TODO: Use named counters and rule comments (those visible in logs).
-let serverCfg = config.intranet.server;
+let
+  serverCfg = config.intranet.server;
+
+  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in writeTextFile {
   name = "nftables-ruleset";
   text = ''
@@ -168,18 +171,18 @@ in writeTextFile {
 
             # Masquerade VPN traffic to WAN.
             oifname ${wanInterface} ip saddr ${
-              config.maskedSubnet config.intranet.ipv4
+              maskSubnet config.intranet.ipv4
             } masquerade
             oifname ${wanInterface} ip6 saddr ${
-              config.maskedSubnet config.intranet.ipv6
+              maskSubnet config.intranet.ipv6
             } masquerade
 
             # Masquerade VPN traffic to VPN.
             oifname ${serverCfg.interface} ip saddr ${
-              config.maskedSubnet config.intranet.ipv4
+              maskSubnet config.intranet.ipv4
             } masquerade
             oifname ${serverCfg.interface} ip6 saddr ${
-              config.maskedSubnet config.intranet.ipv6
+              maskSubnet config.intranet.ipv6
             } masquerade
         }
     }

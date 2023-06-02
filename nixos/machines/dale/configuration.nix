@@ -12,6 +12,8 @@ let
   rssListenPort = 7070;
 
   wanInterface = "venet0";
+
+  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
     ./overlay-network.nix
@@ -259,8 +261,8 @@ in {
         };
 
         extraConfig = ''
-          allow ${config.maskedSubnet config.intranet.subnets.internal.ipv4}
-          allow ${config.maskedSubnet config.intranet.subnets.internal.ipv6}
+          allow ${maskSubnet config.intranet.subnets.internal.ipv4}
+          allow ${maskSubnet config.intranet.subnets.internal.ipv6}
           deny all;
         '';
       };

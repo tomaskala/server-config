@@ -1,6 +1,9 @@
 { config, lib, ... }:
 
-let cfg = config.services.unbound;
+let
+  cfg = config.services.unbound;
+
+  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   options.services.unbound = {
     localDomains = lib.mkOption {
@@ -52,8 +55,8 @@ in {
         access-control = [
           "127.0.0.1/8 allow"
           "::1/128 allow"
-          "${config.maskedSubnet config.intranet.ipv4} allow"
-          "${config.maskedSubnet config.intranet.ipv6} allow"
+          "${maskSubnet config.intranet.ipv4} allow"
+          "${maskSubnet config.intranet.ipv6} allow"
         ];
 
         # Local zones.

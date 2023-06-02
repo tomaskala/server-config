@@ -1,7 +1,5 @@
 {
   config = {
-    maskedSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-
     intranet = {
       # IP ranges of the entire intranet.
       ipv4 = {
