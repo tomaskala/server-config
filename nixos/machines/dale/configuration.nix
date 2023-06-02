@@ -16,12 +16,12 @@ in {
   imports = [
     ./overlay-network.nix
     ./tls-certificate.nix
-    ../intranet.nix
-    ../services/nginx.nix
-    ../services/openssh.nix
-    ../services/unbound-blocker.nix
-    ../services/unbound.nix
-    ../services/yarr.nix
+    ../../intranet.nix
+    ../../services/nginx.nix
+    ../../services/openssh.nix
+    ../../services/unbound-blocker.nix
+    ../../services/unbound.nix
+    ../../services/yarr.nix
   ];
 
   config = {
