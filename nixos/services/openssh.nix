@@ -2,8 +2,8 @@
   config.services.openssh = {
     openFirewall = false;
     passwordAuthentication = false;
-    permitRootLogin = false;
+    permitRootLogin = "no";
     forwardX11 = false;
-    gatewayPorts = false;
+    gatewayPorts = "no";
   };
 }
