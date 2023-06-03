@@ -39,7 +39,6 @@ in {
 
     users.users.tomas = {
       isNormalUser = true;
-      home = "/home/tomas";
       extraGroups = [ "wheel" ];
       passwordFile = config.age.secrets.users-tomas-password.path;
       openssh.authorizedKeys.keys = [
