@@ -21,16 +21,20 @@ let
 
   makeRoute = subnet: [
     {
-      Gateway = config.intranet.server.ipv4;
-      Destination = maskSubnet subnet.ipv4;
-      Scope = "host";
-      Type = "local";
+      routeConfig = {
+        Gateway = config.intranet.server.ipv4;
+        Destination = maskSubnet subnet.ipv4;
+        Scope = "host";
+        Type = "local";
+      };
     }
     {
-      Gateway = config.intranet.server.ipv6;
-      Destination = maskSubnet subnet.ipv6;
-      Scope = "host";
-      Type = "local";
+      routeConfig = {
+        Gateway = config.intranet.server.ipv6;
+        Destination = maskSubnet subnet.ipv6;
+        Scope = "host";
+        Type = "local";
+      };
     }
   ];
 in {
