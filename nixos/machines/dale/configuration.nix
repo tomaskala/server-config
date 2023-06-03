@@ -60,6 +60,8 @@ in {
       ];
     };
 
+    users.groups.git = { };
+
     time.timeZone = "Europe/Prague";
     services.ntp.enable = false;
     services.timesyncd.enable = true;
