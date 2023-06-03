@@ -1,15 +1,14 @@
-{ buildPythonApplication, click, requests, black, mypy, ruff, setuptools-scm
-, types-requests }:
+{ python3Packages, ruff }:
 
-buildPythonApplication {
+python3Packages.buildPythonApplication {
   pname = "unbound-blocker";
   version = "0.1.0";
   src = ../../../src/unbound_blocker;
   format = "pyproject";
 
-  nativeBuildInputs = [ black mypy ruff setuptools-scm types-requests ];
+  nativeBuildInputs = with python3Packages; [ black mypy ruff setuptools-scm types-requests ];
 
-  propagatedBuildInputs = [ click requests ];
+  propagatedBuildInputs = with python3Packages; [ click requests ];
 
   preBuild = ''
     black --check --diff .
