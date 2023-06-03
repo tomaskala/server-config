@@ -102,6 +102,8 @@ in {
     in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
 
     systemd.network = {
+      enable = true;
+
       netdevs."90-${config.intranet.server.interface}" = {
         netdevConfig = {
           Name = config.intranet.server.interface;

@@ -70,6 +70,8 @@ in {
     services.unbound.localDomains = config.intranet.localDomains;
 
     systemd.network = {
+      enable = true;
+
       # Add each location's gateway as a Wireguard peer.
       netdevs."90-${config.intranet.server.interface}" = {
         wireguardPeers = lib.mapAttrsToList makePeer config.intranet.locations;
