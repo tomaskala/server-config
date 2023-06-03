@@ -2,6 +2,7 @@
 
 let
   cfg = config.services.unbound;
+  intranetCfg = config.networking.intranet;
 
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
@@ -45,18 +46,14 @@ in {
         edns-buffer-size = 1232;
 
         # Access settings.
-        interface = [
-          "127.0.0.1"
-          "::1"
-          config.intranet.server.ipv4
-          config.intranet.server.ipv6
-        ];
+        interface =
+          [ "127.0.0.1" "::1" intranetCfg.server.ipv4 intranetCfg.server.ipv6 ];
         port = 53;
         access-control = [
           "127.0.0.1/8 allow"
           "::1/128 allow"
-          "${maskSubnet config.intranet.ipv4} allow"
-          "${maskSubnet config.intranet.ipv6} allow"
+          "${maskSubnet intranetCfg.ipv4} allow"
+          "${maskSubnet intranetCfg.ipv6} allow"
         ];
 
         # Local zones.

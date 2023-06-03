@@ -14,6 +14,8 @@ let
   wanInterface = "venet0";
 
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+
+  intranetCfg = config.networking.intranet;
 in {
   imports = [
     ./overlay-network.nix
@@ -105,15 +107,15 @@ in {
     systemd.network = {
       enable = true;
 
-      netdevs."90-${config.intranet.server.interface}" = {
+      netdevs."90-${intranetCfg.server.interface}" = {
         netdevConfig = {
-          Name = config.intranet.server.interface;
+          Name = intranetCfg.server.interface;
           Kind = "wireguard";
         };
 
         wireguardConfig = {
           PrivateKeyFile = config.age.secrets.wg-server-pk.path;
-          ListenPort = config.intranet.server.port;
+          ListenPort = intranetCfg.server.port;
         };
 
         wireguardPeers = [
@@ -144,15 +146,15 @@ in {
         ];
       };
 
-      networks."90-${config.intranet.server.interface}" = {
-        matchConfig = { Name = config.intranet.server.interface; };
+      networks."90-${intranetCfg.server.interface}" = {
+        matchConfig = { Name = intranetCfg.server.interface; };
 
         address = [
-          "${config.intranet.server.ipv4}/${
-            builtins.toString config.intranet.ipv4.mask
+          "${intranetCfg.server.ipv4}/${
+            builtins.toString intranetCfg.ipv4.mask
           }"
-          "${config.intranet.server.ipv6}/${
-            builtins.toString config.intranet.ipv6.mask
+          "${intranetCfg.server.ipv6}/${
+            builtins.toString intranetCfg.ipv6.mask
           }"
         ];
       };
@@ -172,11 +174,11 @@ in {
 
       listenAddresses = [
         {
-          addr = config.intranet.server.ipv4;
+          addr = intranetCfg.server.ipv4;
           port = 22;
         }
         {
-          addr = config.intranet.server.ipv6;
+          addr = intranetCfg.server.ipv6;
           port = 22;
         }
       ];
@@ -188,13 +190,13 @@ in {
       localDomains = [
         {
           domain = publicDomain;
-          ipv4 = config.intranet.server.ipv4;
-          ipv6 = config.intranet.server.ipv6;
+          ipv4 = intranetCfg.server.ipv4;
+          ipv6 = intranetCfg.server.ipv6;
         }
         {
           domain = rssDomain;
-          ipv4 = config.intranet.server.ipv4;
-          ipv6 = config.intranet.server.ipv6;
+          ipv4 = intranetCfg.server.ipv4;
+          ipv6 = intranetCfg.server.ipv6;
         }
       ];
     };
@@ -263,8 +265,8 @@ in {
         };
 
         extraConfig = ''
-          allow ${maskSubnet config.intranet.subnets.internal.ipv4}
-          allow ${maskSubnet config.intranet.subnets.internal.ipv6}
+          allow ${maskSubnet intranetCfg.subnets.internal.ipv4}
+          allow ${maskSubnet intranetCfg.subnets.internal.ipv6}
           deny all;
         '';
       };

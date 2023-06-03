@@ -2,6 +2,7 @@
 
 let
   cfg = config.networking.overlay-network;
+  intranetCfg = config.networking.intranet;
 
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
@@ -22,7 +23,7 @@ let
   makeRoute = subnet: [
     {
       routeConfig = {
-        Gateway = config.intranet.server.ipv4;
+        Gateway = intranetCfg.server.ipv4;
         Destination = maskSubnet subnet.ipv4;
         Scope = "host";
         Type = "local";
@@ -30,7 +31,7 @@ let
     }
     {
       routeConfig = {
-        Gateway = config.intranet.server.ipv6;
+        Gateway = intranetCfg.server.ipv6;
         Destination = maskSubnet subnet.ipv6;
         Scope = "host";
         Type = "local";
@@ -55,20 +56,20 @@ in {
         ];
 
       accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
-        (builtins.attrValues config.intranet.locations);
+        (builtins.attrValues intranetCfg.locations);
 
       accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6")
-        (builtins.attrValues config.intranet.locations);
+        (builtins.attrValues intranetCfg.locations);
     in ''
       ${addToSet "vpn_internal_ipv4"
-      (maskSubnet config.intranet.subnets.internal.ipv4)}
+      (maskSubnet intranetCfg.subnets.internal.ipv4)}
       ${addToSet "vpn_internal_ipv6"
-      (maskSubnet config.intranet.subnets.internal.ipv6)}
+      (maskSubnet intranetCfg.subnets.internal.ipv6)}
 
       ${addToSet "vpn_isolated_ipv4"
-      (maskSubnet config.intranet.subnets.isolated.ipv4)}
+      (maskSubnet intranetCfg.subnets.isolated.ipv4)}
       ${addToSet "vpn_isolated_ipv6"
-      (maskSubnet config.intranet.subnets.isolated.ipv6)}
+      (maskSubnet intranetCfg.subnets.isolated.ipv6)}
 
       ${lib.concatMapStringsSep "\n" (addToSet "vpn_accessible_ipv4")
       accessibleIPv4}
@@ -77,17 +78,17 @@ in {
     '';
 
     # Local DNS records.
-    services.unbound.localDomains = config.intranet.localDomains;
+    services.unbound.localDomains = intranetCfg.localDomains;
 
     systemd.network = {
       enable = true;
 
       # Add each location's gateway as a Wireguard peer.
-      netdevs."90-${config.intranet.server.interface}" = {
-        wireguardPeers = lib.mapAttrsToList makePeer config.intranet.locations;
+      netdevs."90-${intranetCfg.server.interface}" = {
+        wireguardPeers = lib.mapAttrsToList makePeer intranetCfg.locations;
       };
 
-      networks."90-${config.intranet.server.interface}" = {
+      networks."90-${intranetCfg.server.interface}" = {
         # IP forwarding.
         networkConfig = { IPForward = true; };
 
@@ -95,7 +96,7 @@ in {
         # Wireguard takes care of routing to the correct gateway within the
         # tunnel thanks to the AllowedIPs clause of each gateway peer.
         routes = let
-          locationValues = builtins.attrValues config.intranet.locations;
+          locationValues = builtins.attrValues intranetCfg.locations;
 
           subnets = builtins.catAttrs "subnet" locationValues;
         in builtins.concatMap makeRoute subnets;
