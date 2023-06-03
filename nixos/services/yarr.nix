@@ -19,6 +19,8 @@ in {
       group = "rss";
     };
 
+    users.groups.rss = { };
+
     systemd.services.yarr = rec {
       description = "A simple RSS reader";
       after = [ "network.target" ];
