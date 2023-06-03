@@ -156,7 +156,7 @@
   };
 
   config = {
-    intranet = {
+    networking.intranet = {
       ipv4 = {
         subnet = "10.100.0.0";
         mask = 16;
