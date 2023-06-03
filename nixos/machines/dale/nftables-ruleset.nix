@@ -33,7 +33,7 @@ in writeTextFile {
         set udp_accepted_wan {
             type inet_service
             elements = {
-                ${serverCfg.port},
+                ${builtins.toString serverCfg.port},
             }
         }
 
