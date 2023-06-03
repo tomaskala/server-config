@@ -246,7 +246,7 @@ in {
 
           # Prevent image hotlinking.
           location ~ \.(gif|png|jpg|jpeg|ico)$ {
-            valid_referers none blocked ${publicDomain};
+            valid_referers blocked ${publicDomain};
             if ($invalid_referer) {
               return 403;
             }
