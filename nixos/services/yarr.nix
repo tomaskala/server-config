@@ -33,7 +33,7 @@ in {
         ExecStart = ''
           ${pkgs.yarr}/bin/yarr -addr 127.0.0.1:${
             builtins.toString cfg.listenPort
-          } -db "$STATE_DIRECTORY/yarr.db"
+          } -db "/var/lib/yarr/yarr.db"
         '';
         StateDirectory = "yarr";
         TimeoutStopSec = 20;
@@ -60,7 +60,7 @@ in {
           "@setuid"
           "@swap"
         ];
-        ReadWritePaths = "@statedir@";
+        ReadWritePaths = "/var/lib/yarr";
         PrivateDevices = true;
         ProtectSystem = "strict";
         ProtectHome = true;
