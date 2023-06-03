@@ -163,7 +163,7 @@ in {
       webroot = publicDomainWebroot;
     };
 
-    services.overlay-network = { enable = true; };
+    networking.overlay-network = { enable = true; };
 
     services.openssh = {
       enable = true;
