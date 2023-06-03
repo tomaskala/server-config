@@ -44,17 +44,11 @@ in {
       addToSet = setName: elem:
         "${pkgs.nftables}/bin/nft add element inet firewall ${setName} { ${elem} }";
 
-      makeAccessibleSet = ipProto: _:
-        { gateway, subnet }: [
-          gateway."${ipProto}"
-          (maskSubnet subnet."${ipProto}")
-        ];
+      makeAccessibleSet = ipProto: { gateway, subnet }: [ gateway."${ipProto}" (maskSubnet subnet."${ipProto}") ];
 
-      accessibleIPv4 =
-        builtins.mapAttrs (makeAccessibleSet "ipv4") config.intranet.locations;
+      accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4") (builtins.attrValues config.intranet.locations);
 
-      accessibleIPv6 =
-        builtins.mapAttrs (makeAccessibleSet "ipv6") config.intranet.locations;
+      accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6") (builtins.attrValues config.intranet.locations);
     in ''
       ${addToSet "vpn_internal_ipv4"
       (maskSubnet config.intranet.subnets.internal.ipv4)}
@@ -78,8 +72,7 @@ in {
     systemd.network = {
       # Add each location's gateway as a Wireguard peer.
       netdevs."90-${config.intranet.server.interface}" = {
-        wireguardPeers = builtins.attrValues
-          (builtins.mapAttrs makePeer config.intranet.locations);
+        wireguardPeers = lib.mapAttrsToList makePeer config.intranet.locations;
       };
 
       networks."90-${config.intranet.server.interface}" = {
