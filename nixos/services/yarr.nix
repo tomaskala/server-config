@@ -16,6 +16,7 @@ in {
     users.users.rss = {
       isSystemUser = true;
       shell = "${pkgs.coreutils}/bin/false";
+      group = "rss";
     };
 
     systemd.services.yarr = rec {
