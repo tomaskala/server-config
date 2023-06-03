@@ -59,7 +59,7 @@ in {
       ];
     };
 
-    time.timezone = "Europe/Prague";
+    time.timeZone = "Europe/Prague";
     services.ntp.enable = false;
     services.timesyncd.enable = true;
 
