@@ -69,7 +69,7 @@ in {
     networking.hostName = "dale";
     networking.firewall.enable = false;
     networking.nftables = {
-      enabled = true;
+      enable = true;
       rulesetFile = pkgs.callPackage ./nftables-ruleset.nix {
         inherit config wanInterface;
       };
