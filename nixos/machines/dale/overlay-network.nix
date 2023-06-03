@@ -48,11 +48,17 @@ in {
       addToSet = setName: elem:
         "${pkgs.nftables}/bin/nft add element inet firewall ${setName} { ${elem} }";
 
-      makeAccessibleSet = ipProto: { gateway, subnet }: [ gateway."${ipProto}" (maskSubnet subnet."${ipProto}") ];
+      makeAccessibleSet = ipProto:
+        { gateway, subnet }: [
+          gateway."${ipProto}"
+          (maskSubnet subnet."${ipProto}")
+        ];
 
-      accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4") (builtins.attrValues config.intranet.locations);
+      accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
+        (builtins.attrValues config.intranet.locations);
 
-      accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6") (builtins.attrValues config.intranet.locations);
+      accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6")
+        (builtins.attrValues config.intranet.locations);
     in ''
       ${addToSet "vpn_internal_ipv4"
       (maskSubnet config.intranet.subnets.internal.ipv4)}

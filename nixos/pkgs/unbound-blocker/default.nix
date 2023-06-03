@@ -6,7 +6,13 @@ python3Packages.buildPythonApplication {
   src = ../../../src/unbound_blocker;
   format = "pyproject";
 
-  nativeBuildInputs = with python3Packages; [ black mypy ruff setuptools-scm types-requests ];
+  nativeBuildInputs = with python3Packages; [
+    black
+    mypy
+    ruff
+    setuptools-scm
+    types-requests
+  ];
 
   propagatedBuildInputs = with python3Packages; [ click requests ];
 
