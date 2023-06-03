@@ -10,20 +10,25 @@ let
       wireguardPeerConfig = {
         PublicKey = gateway.publicKey;
         PresharedKeyFile = config.age.secrets."wg-${location}-psk".path;
-        AllowedIPs = [ gateway.ipv4 gateway.ipv6 subnet.ipv4 subnet.ipv6 ];
+        AllowedIPs = [
+          gateway.ipv4
+          gateway.ipv6
+          (maskSubnet subnet.ipv4)
+          (maskSubnet subnet.ipv6)
+        ];
       };
     };
 
   makeRoute = subnet: [
     {
       Gateway = config.intranet.server.ipv4;
-      Destination = subnet.ipv4;
+      Destination = maskSubnet subnet.ipv4;
       Scope = "host";
       Type = "local";
     }
     {
       Gateway = config.intranet.server.ipv6;
-      Destination = subnet.ipv6;
+      Destination = maskSubnet subnet.ipv6;
       Scope = "host";
       Type = "local";
     }
@@ -42,7 +47,7 @@ in {
       makeAccessibleSet = ipProto: _:
         { gateway, subnet }: [
           gateway."${ipProto}"
-          subnet."${ipProto}"
+          (maskSubnet subnet."${ipProto}")
         ];
 
       accessibleIPv4 =
