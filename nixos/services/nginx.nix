@@ -12,6 +12,12 @@
     commonHttpConfig = ''
       # Disable directory listing.
       autoindex off;
+
+      # Add HSTS header with preloading to HTTPS requests.
+      # Adding this header to HTTP requests is discouraged.
+      map $scheme $hsts_header {
+        https "max-age=31536000; includeSubdomains; preload";
+      }
     '';
   };
 }
