@@ -1,9 +1,12 @@
 {
   config.services.openssh = {
     openFirewall = false;
-    passwordAuthentication = false;
-    permitRootLogin = "no";
-    forwardX11 = false;
-    gatewayPorts = "no";
+
+    settings = {
+      X11Forwarding = false;
+      GatewayPorts = "no";
+      PermitRootLogin = "no";
+      PasswordAuthentication = false;
+    };
   };
 }
