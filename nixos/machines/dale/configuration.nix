@@ -267,8 +267,8 @@ in {
         };
 
         extraConfig = ''
-          allow ${maskSubnet intranetCfg.subnets.internal.ipv4}
-          allow ${maskSubnet intranetCfg.subnets.internal.ipv6}
+          allow ${maskSubnet intranetCfg.subnets.internal.ipv4};
+          allow ${maskSubnet intranetCfg.subnets.internal.ipv6};
           deny all;
         '';
       };
