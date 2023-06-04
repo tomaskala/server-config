@@ -38,7 +38,11 @@ in {
           };
         in ''
           ${pkgs.unbound-blocker}/bin/fetch_blocklist ${sourcesFile} ${
-            lib.cli.toGNUCommandLineShell { } { whitelist = whitelistFile; }
+            lib.cli.toGNUCommandLineShell { } {
+              whitelist = whitelistFile;
+
+              unbound-control = "${pkgs.unbound}/bin/unbound-control";
+            }
           }
         '';
         DevicePolicy = "closed";

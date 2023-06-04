@@ -14,7 +14,6 @@ LOGGER = logging.getLogger(__name__)
 COMMENT = re.compile(r"\s*#.*$")
 TRAILING_DOTS = re.compile(r"\.+$")
 REQUEST_TIMEOUT = 10
-UNBOUND_CONTROL = "/usr/sbin/unbound-control"
 
 
 def all_lines(source: Path) -> Iterator[str]:
@@ -73,12 +72,12 @@ def retrieve_blocklist(sources: Path) -> set[str]:
     return set(blocklist)
 
 
-def clear_blocklist() -> None:
+def clear_blocklist(unbound_control: Path) -> None:
     LOGGER.info("Clearing blocklist")
     LOGGER.info("Obtaining current local zones")
 
     p = run(
-        [UNBOUND_CONTROL, "list_local_zones"],
+        [unbound_control, "list_local_zones"],
         bufsize=1,
         capture_output=True,
         text=True,
@@ -88,7 +87,7 @@ def clear_blocklist() -> None:
     print(p.stderr, file=sys.stderr)
 
     if p.returncode != 0:
-        LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
+        LOGGER.critical("%s exitted with code %d", unbound_control, p.returncode)
         sys.exit(1)
 
     blocklist = []
@@ -107,7 +106,7 @@ def clear_blocklist() -> None:
 
     if blocklist:
         p = run(
-            [UNBOUND_CONTROL, "local_zones_remove"],
+            [unbound_control, "local_zones_remove"],
             input="\n".join(blocklist) + "\n",
             bufsize=1,
             capture_output=False,
@@ -116,17 +115,17 @@ def clear_blocklist() -> None:
         )
 
         if p.returncode != 0:
-            LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
+            LOGGER.critical("%s exitted with code %d", unbound_control, p.returncode)
             sys.exit(1)
 
 
-def load_blocklist(blocklist: list[str]) -> None:
+def load_blocklist(blocklist: list[str], unbound_control: Path) -> None:
     LOGGER.info("Filling blocklist (%d domains)", len(blocklist))
     local_zones = [f"{domain}. always_null" for domain in blocklist]
 
     if local_zones:
         p = run(
-            [UNBOUND_CONTROL, "local_zones"],
+            [unbound_control, "local_zones"],
             input="\n".join(local_zones) + "\n",
             bufsize=1,
             capture_output=False,
@@ -135,7 +134,7 @@ def load_blocklist(blocklist: list[str]) -> None:
         )
 
         if p.returncode != 0:
-            LOGGER.critical("%s exitted with code %d", UNBOUND_CONTROL, p.returncode)
+            LOGGER.critical("%s exitted with code %d", unbound_control, p.returncode)
             sys.exit(1)
 
     LOGGER.info("Success")
@@ -147,12 +146,26 @@ def load_blocklist(blocklist: list[str]) -> None:
     type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
 )
 @click.option(
+    "-u",
+    "--unbound-control",
+    type=click.Path(
+        exists=True,
+        file_okay=True,
+        dir_okay=False,
+        executable=True,
+        path_type=Path,
+    ),
+    default=Path("/usr/sbin/unbound-control"),
+    show_default=True,
+    help="Path to unbound-control(8)",
+)
+@click.option(
     "-w",
     "--whitelist",
     type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
     help="Whitelist file with one domain per line",
 )
-def main(sources: Path, whitelist: Path) -> None:
+def main(sources: Path, unbound_control: Path, whitelist: Path) -> None:
     """
     Use unbound(8) as a DNS blocker.
 
@@ -171,8 +184,8 @@ def main(sources: Path, whitelist: Path) -> None:
     if whitelist is not None:
         blocklist -= set(all_lines(whitelist))
 
-    clear_blocklist()
-    load_blocklist(list(blocklist))
+    clear_blocklist(unbound_control)
+    load_blocklist(list(blocklist), unbound_control)
 
 
 if __name__ == "__main__":
