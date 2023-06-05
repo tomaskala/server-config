@@ -67,7 +67,14 @@ in {
     services.timesyncd.enable = true;
 
     programs.vim.defaultEditor = true;
-    environment.systemPackages = with pkgs; [ git rsync tmux wireguard-tools ];
+    environment.systemPackages = with pkgs; [
+      curl
+      git
+      ldns
+      rsync
+      tmux
+      wireguard-tools
+    ];
 
     networking.hostName = "dale";
     networking.firewall.enable = false;
