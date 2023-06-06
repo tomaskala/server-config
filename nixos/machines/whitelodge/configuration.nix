@@ -44,7 +44,7 @@ in {
       extraGroups = [ "wheel" ];
       passwordFile = config.age.secrets.users-tomas-password.path;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl home2dale"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl home2whitelodge"
       ];
     };
 
@@ -55,8 +55,8 @@ in {
       shell = "${pkgs.git}/bin/git-shell";
       group = "git";
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 phone2dale-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf home2dale-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 phone2whitelodge-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf home2whitelodge-git"
       ];
     };
 
@@ -76,7 +76,7 @@ in {
       wireguard-tools
     ];
 
-    networking.hostName = "dale";
+    networking.hostName = "whitelodge";
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
