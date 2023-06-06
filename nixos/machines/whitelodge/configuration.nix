@@ -20,7 +20,7 @@ in {
   imports = [
     ./overlay-network.nix
     ./tls-certificate.nix
-    ../../intranet.nix
+    ../intranet.nix
     ../../services/nginx.nix
     ../../services/openssh.nix
     ../../services/unbound-blocker.nix
