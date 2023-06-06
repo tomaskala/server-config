@@ -80,9 +80,8 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
-      rulesetFile = pkgs.callPackage ./nftables-ruleset.nix {
-        inherit config wanInterface;
-      };
+      checkRuleset = true;
+      ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
     };
 
     age.secrets = let
