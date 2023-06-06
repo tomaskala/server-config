@@ -23,7 +23,6 @@ let
   makeRoute = subnet: [
     {
       routeConfig = {
-        Gateway = intranetCfg.server.ipv4;
         Destination = maskSubnet subnet.ipv4;
         Scope = "host";
         Type = "local";
@@ -31,7 +30,6 @@ let
     }
     {
       routeConfig = {
-        Gateway = intranetCfg.server.ipv6;
         Destination = maskSubnet subnet.ipv6;
         Scope = "host";
         Type = "local";
