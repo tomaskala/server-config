@@ -29,7 +29,17 @@ in {
   ];
 
   config = {
-    nix.settings = { experimental-features = [ "nix-command" "flakes" ]; };
+    nix = {
+      gc = {
+        automatic = true;
+        dates = "weekly";
+      };
+
+      settings = {
+        auto-optimise-store = true;
+        experimental-features = [ "nix-command" "flakes" ];
+      };
+    };
 
     # TODO: https://nixos.wiki/wiki/Overlays
     # TODO: https://summer.nixos.org/blog/callpackage-a-tool-for-the-lazy/
