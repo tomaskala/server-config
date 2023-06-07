@@ -180,12 +180,16 @@ in {
         '';
       };
 
-      # Explicitly specify HTTP to disable automatic TLS certificate creation.
+      # Explicitly specify HTTP to disable automatic TLS certificate creation,
+      # since this is an internal domain only accessible from the VPN anyway.
       virtualHosts."http://${rssDomain}" = {
         listenAddresses = [ intranetCfg.server.ipv4 intranetCfg.server.ipv6 ];
 
         extraConfig = ''
           reverse_proxy :${builtins.toString rssListenPort}
+
+          @blocked not remote_ip ${intranetCfg.ipv4} ${intranetCfg.ipv6}
+          respond @blocked "Forbidden" 403
         '';
       };
     };
