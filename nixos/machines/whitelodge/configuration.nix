@@ -12,6 +12,7 @@ let
 
   wanInterface = "venet0";
 
+  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
   intranetCfg = config.networking.intranet;
 in {
   imports = [
@@ -188,7 +189,9 @@ in {
         extraConfig = ''
           reverse_proxy :${builtins.toString rssListenPort}
 
-          @blocked not remote_ip ${intranetCfg.ipv4} ${intranetCfg.ipv6}
+          @blocked not remote_ip ${maskSubnet intranetCfg.ipv4} ${
+            maskSubnet intranetCfg.ipv6
+          }
           respond @blocked "Forbidden" 403
         '';
       };
