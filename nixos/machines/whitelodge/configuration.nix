@@ -5,23 +5,18 @@
 let
   publicDomain = "tomaskala.com";
   publicDomainWebroot = "/var/www/${publicDomain}";
-
-  acmeEmail = "public@${publicDomain}";
+  acmeEmail = "public+acme@${publicDomain}";
 
   rssDomain = "rss.home.arpa";
   rssListenPort = 7070;
 
   wanInterface = "venet0";
 
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-
   intranetCfg = config.networking.intranet;
 in {
   imports = [
     ./overlay-network.nix
-    ./tls-certificate.nix
     ../intranet.nix
-    ../../services/nginx.nix
     ../../services/openssh.nix
     ../../services/unbound-blocker.nix
     ../../services/unbound.nix
@@ -94,6 +89,7 @@ in {
       ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
     };
 
+    # TODO: Refactor this to ./secrets-management.nix.
     age.secrets = let
       makeSecret = name: {
         inherit name;
@@ -178,13 +174,6 @@ in {
       };
     };
 
-    security.tls-certificate = {
-      enable = true;
-      email = acmeEmail;
-      domain = publicDomain;
-      webroot = publicDomainWebroot;
-    };
-
     networking.overlay-network = { enable = true; };
 
     services.openssh = {
@@ -202,6 +191,33 @@ in {
       ];
     };
 
+    services.yarr = {
+      enable = true;
+      listenPort = rssListenPort;
+    };
+
+    services.caddy = {
+      enable = true;
+      email = acmeEmail;
+
+      virtualHosts.${publicDomain} = {
+        extraConfig = ''
+          root * ${publicDomainWebroot}
+          encode gzip
+          file_server
+        '';
+      };
+
+      # Explicitly specify HTTP to disable automatic TLS certificate creation.
+      virtualHosts."http://${rssDomain}" = {
+        listenAddresses = [ intranetCfg.server.ipv4 intranetCfg.server.ipv6 ];
+
+        extraConfig = ''
+          reverse_proxy :${builtins.toString rssListenPort}
+        '';
+      };
+    };
+
     services.unbound = {
       enable = true;
 
@@ -217,74 +233,6 @@ in {
           ipv6 = intranetCfg.server.ipv6;
         }
       ];
-    };
-
-    services.yarr = {
-      enable = true;
-      listenPort = rssListenPort;
-    };
-
-    services.nginx = {
-      enable = true;
-
-      virtualHosts.${publicDomain} = {
-        root = publicDomainWebroot;
-        forceSSL = true;
-        enableACME = true;
-
-        locations."/" = {
-          index = "index.html";
-
-          extraConfig = ''
-            # Remove the .html suffix.
-            if ($request_uri ~ ^/(.*)\.html) {
-              return 301 /$1$is_args$args;
-            }
-            try_files $uri $uri.html $uri/ =404;
-          '';
-        };
-
-        extraConfig = ''
-          # Add HSTS header with preloading to HTTPS requests.
-          # Adding this header to HTTP requests is discouraged.
-          add_header Strict-Transport-Security $hsts_header;
-
-          # Enable CSP for your services.
-          add_header Content-Security-Policy "script-src 'self'; object-src 'none'; base-uri 'none';" always;
-
-          # Minimize information leaked to other domains.
-          add_header 'Referrer-Policy' 'origin-when-cross-origin';
-
-          # Disable embedding as a frame.
-          add_header X-Frame-Options DENY;
-
-          # Prevent injection of code in other mime types (XSS Attacks).
-          add_header X-Content-Type-Options nosniff;
-
-          # Enable XSS protection of the browser.
-          add_header X-XSS-Protection "1; mode=block";
-
-          # Prevent image hotlinking.
-          location ~ \.(gif|png|jpg|jpeg|ico)$ {
-            valid_referers blocked ${publicDomain};
-            if ($invalid_referer) {
-              return 403;
-            }
-          }
-        '';
-      };
-
-      virtualHosts.${rssDomain} = {
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${builtins.toString rssListenPort}";
-        };
-
-        extraConfig = ''
-          allow ${maskSubnet intranetCfg.subnets.internal.ipv4};
-          allow ${maskSubnet intranetCfg.subnets.internal.ipv6};
-          deny all;
-        '';
-      };
     };
 
     services.unbound-blocker = {
