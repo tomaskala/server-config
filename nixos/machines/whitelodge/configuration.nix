@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 # TODO: Pull secrets from a private repository.
 
@@ -16,6 +16,7 @@ let
 in {
   imports = [
     ./overlay-network.nix
+    ./secrets-management.nix
     ../intranet.nix
     ../../services/openssh.nix
     ../../services/unbound-blocker.nix
@@ -88,35 +89,6 @@ in {
       checkRuleset = true;
       ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
     };
-
-    # TODO: Refactor this to ./secrets-management.nix.
-    age.secrets = let
-      makeSecret = name: {
-        inherit name;
-        value.file = "/root/secrets/${name}.age";
-      };
-
-      makeSystemdNetworkReadableSecret = name:
-        lib.recursiveUpdate (makeSecret name) {
-          value = {
-            mode = "0640";
-            owner = "root";
-            group = "systemd-network";
-          };
-        };
-
-      secrets = builtins.map makeSecret [ "users-tomas-password" ];
-
-      systemdNetworkReadableSecrets =
-        builtins.map makeSystemdNetworkReadableSecret [
-          "wg-server-pk"
-          "wg-home-psk"
-          "wg-tomas-laptop-psk"
-          "wg-tomas-phone-psk"
-          "wg-martin-windows-psk"
-          "wg-tomas-home-psk"
-        ];
-    in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
 
     systemd.network = {
       enable = true;
