@@ -203,13 +203,11 @@ in {
       localDomains = [
         {
           domain = publicDomain;
-          ipv4 = intranetCfg.server.ipv4;
-          ipv6 = intranetCfg.server.ipv6;
+          inherit (intranetCfg.server) ipv4 ipv6;
         }
         {
           domain = rssDomain;
-          ipv4 = intranetCfg.server.ipv4;
-          ipv6 = intranetCfg.server.ipv6;
+          inherit (intranetCfg.server) ipv4 ipv6;
         }
       ];
     };
