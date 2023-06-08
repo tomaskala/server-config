@@ -104,6 +104,8 @@ in {
   config = lib.mkIf cfg.enable {
     systemd.services.unbound-blocker = {
       description = "DNS blocklist filling script";
+      startAt = "Sun *-*-* 05:00:00";
+
       serviceConfig = {
         User = config.services.unbound.user;
         Group = config.services.unbound.group;
@@ -152,12 +154,6 @@ in {
         ProtectSystem = "strict";
         ProtectHome = true;
       };
-    };
-
-    systemd.timers.unbound-blocker = {
-      description = "Periodically update the DNS blocklist";
-      wantedBy = [ "timers.target" ];
-      timerConfig = { OnCalendar = "Sun *-*-* 05:00:00"; };
     };
   };
 }
