@@ -31,6 +31,13 @@
           pkgs.mkShell { packages = with pkgs; [ deadnix nixfmt statix ]; };
       });
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt);
+      formatter = forAllSystems (pkgs:
+        pkgs.writeShellApplication {
+          name = "nixfmt";
+          runtimeInputs = with pkgs; [ findutils nixfmt ];
+          text = ''
+            find . -type f -name '*.nix' -exec nixfmt {} \+
+          '';
+        });
     };
 }
