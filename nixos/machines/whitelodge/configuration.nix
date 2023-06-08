@@ -133,7 +133,7 @@ in {
       };
 
       networks."90-${intranetCfg.server.interface}" = {
-        matchConfig = { Name = intranetCfg.server.interface; };
+        matchConfig.Name = intranetCfg.server.interface;
 
         address = [
           "${intranetCfg.server.ipv4}/${
@@ -146,7 +146,7 @@ in {
       };
     };
 
-    networking.overlay-network = { enable = true; };
+    networking.overlay-network.enable = true;
 
     services.openssh = {
       enable = true;
@@ -211,6 +211,6 @@ in {
       ];
     };
 
-    services.unbound-blocker = { enable = true; };
+    services.unbound-blocker.enable = true;
   };
 }

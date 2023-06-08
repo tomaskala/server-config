@@ -87,8 +87,8 @@ in {
       };
 
       networks."90-${intranetCfg.server.interface}" = {
-        # IP forwarding.
-        networkConfig = { IPForward = true; };
+        # Enable IP forwarding (system-wide).
+        networkConfig.IPForward = true;
 
         # Route traffic to each location's subnet to the Wireguard interface.
         # Wireguard takes care of routing to the correct gateway within the
