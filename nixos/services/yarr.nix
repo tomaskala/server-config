@@ -13,13 +13,12 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    users.groups.rss = { };
     users.users.rss = {
       isSystemUser = true;
       shell = "${pkgs.coreutils}/bin/false";
       group = "rss";
     };
-
-    users.groups.rss = { };
 
     systemd.services.yarr = rec {
       description = "A simple RSS reader";

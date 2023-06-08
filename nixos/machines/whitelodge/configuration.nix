@@ -55,6 +55,7 @@ in {
       ];
     };
 
+    users.groups.git = { };
     users.users.git = {
       isSystemUser = true;
       createHome = true;
@@ -66,8 +67,6 @@ in {
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf home2whitelodge-git"
       ];
     };
-
-    users.groups.git = { };
 
     time.timeZone = "Europe/Prague";
     services.ntp.enable = false;
