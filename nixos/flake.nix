@@ -8,10 +8,12 @@
 
     agenix.url = "github:ryantm/agenix";
 
+    vps-admin-os.url = "github:vpsfreecz/vpsadminos";
+
     unbound-blocker.url = "github:tomaskala/unbound-blocker";
   };
 
-  outputs = { self, nixpkgs, agenix, unbound-blocker }:
+  outputs = { self, nixpkgs, agenix, vps-admin-os, unbound-blocker }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -37,6 +39,7 @@
           modules = [
             ./machines/whitelodge/configuration.nix
             agenix.nixosModules.default
+            vps-admin-os.nixosConfigurations.container
           ];
         };
       };

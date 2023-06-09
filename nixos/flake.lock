@@ -115,7 +115,8 @@
       "inputs": {
         "agenix": "agenix",
         "nixpkgs": "nixpkgs_2",
-        "unbound-blocker": "unbound-blocker"
+        "unbound-blocker": "unbound-blocker",
+        "vps-admin-os": "vps-admin-os"
       }
     },
     "unbound-blocker": {
@@ -133,6 +134,21 @@
       "original": {
         "owner": "tomaskala",
         "repo": "unbound-blocker",
+        "type": "github"
+      }
+    },
+    "vps-admin-os": {
+      "locked": {
+        "lastModified": 1686238278,
+        "narHash": "sha256-CIFfZHwLStKFvKjkYkEbdD24BMvy6skr7rIKcSFjYqk=",
+        "owner": "vpsfreecz",
+        "repo": "vpsadminos",
+        "rev": "e37128cd317c4036b41606113141ede36ea8a3ef",
+        "type": "github"
+      },
+      "original": {
+        "owner": "vpsfreecz",
+        "repo": "vpsadminos",
         "type": "github"
       }
     }
