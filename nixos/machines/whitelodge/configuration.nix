@@ -32,6 +32,8 @@ in {
       gc = {
         automatic = true;
         dates = "weekly";
+        # The system is running on ZFS, so we don't need Nix generations.
+        options = "--delete-old";
       };
 
       settings = {
