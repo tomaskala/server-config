@@ -26,7 +26,16 @@ in {
   ];
 
   config = {
-    system.stateVersion = "23.05";
+    system = {
+      stateVersion = "23.05";
+
+      autoUpgrade = {
+        enable = true;
+        dates = "05:00";
+        allowReboot = true;
+        flake = "github:tomaskala/infra";
+      };
+    };
 
     nix = {
       gc = {
