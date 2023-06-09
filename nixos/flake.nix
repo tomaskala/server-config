@@ -15,27 +15,24 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
-      # TODO: This makes the overlays only accessible from the forAllSystems
-      # function call. The nixosConfigurations members below do not use this
-      # function, and hence do not have access to the overlays.
-      # Possible fix: Define a function accepting a single system and producing
-      # pkgs with the given system and overlay. The nixosConfigurations could
-      # call it for a single system, and the forAllSystems function could call
-      # it for each system.
-      forAllSystems = f:
-        nixpkgs.lib.genAttrs systems (system:
-          f (import nixpkgs {
-            inherit system;
-            overlays = [
-              (_: _: {
-                unbound-blocker = unbound-blocker.packages.${system}.default;
-              })
-            ];
-          }));
+      forOneSystem = f: system:
+        f (import nixpkgs {
+          inherit system;
+          overlays = [
+            (_: _: {
+              unbound-blocker = unbound-blocker.packages.${system}.default;
+            })
+          ];
+        });
+
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (forOneSystem f);
     in {
       nixosConfigurations = {
-        whitelodge = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
+        whitelodge = let system = "x86_64-linux";
+        in nixpkgs.lib.nixosSystem {
+          inherit system;
+
+          pkgs = forOneSystem (pkgs: pkgs) system;
 
           modules = [
             ./machines/whitelodge/configuration.nix
