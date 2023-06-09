@@ -36,6 +36,8 @@ in {
 
   config.services.unbound = {
     enableRootTrustAnchor = true;
+    resolveLocalQueries = true;
+
     settings = {
       server = {
         # Basic settings.
