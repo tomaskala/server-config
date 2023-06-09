@@ -51,6 +51,7 @@ in {
       ];
     };
 
+    programs.git.config.init.defaultBranch = "master";
     users.groups.git = { };
     users.users.git = {
       isSystemUser = true;
