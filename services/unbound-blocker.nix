@@ -102,6 +102,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    services.unbound.settings.remote-control.control-enable = true;
+
     systemd.services.unbound-blocker = {
       description = "DNS blocklist filling script";
       startAt = "Sun *-*-* 05:00:00";

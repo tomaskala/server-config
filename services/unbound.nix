@@ -110,11 +110,6 @@ in {
           "2620:fe::9@853#dns.quad9.net"
         ];
       }];
-
-      remote-control = {
-        control-enable = true;
-        control-port = 8953;
-      };
     };
   };
 }
