@@ -4,7 +4,7 @@
   nixConfig.bash-prompt = "[nix-develop]$ ";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
 
     agenix.url = "github:ryantm/agenix";
 
