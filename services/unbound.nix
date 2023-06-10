@@ -1,10 +1,6 @@
 { config, lib, ... }:
 
-let
-  cfg = config.services.unbound;
-  intranetCfg = config.networking.intranet;
-
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+let cfg = config.services.unbound;
 in {
   options.services.unbound = {
     localDomains = lib.mkOption {
