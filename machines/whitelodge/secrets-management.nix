@@ -1,10 +1,10 @@
-{ lib, ... }:
+{ config, lib, ... }:
 
 {
   config.age.secrets = let
     makeSecret = name: {
       inherit name;
-      value.file = "/root/secrets/${name}.age";
+      value.file = "/root/secrets/${config.networking.hostName}-${name}.age";
     };
 
     makeSystemdNetworkReadableSecret = name:

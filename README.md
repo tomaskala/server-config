@@ -22,6 +22,14 @@ To deploy a machine (called `twinpeaks` in this example), do the following.
 
 ## Adding a new secret
 
-1. Put it into `secrets.nix` and assign a key.
-2. Add it into `machines/twinpeaks/secrets-management.nix`.
+1. Put it into `secrets.nix` (prefixed with `twinpeaks-`) and assign a key.
+2. Add it into `machines/twinpeaks/secrets-management.nix` (_not_ prefixed with 
+   `twinpeaks-`).
 3. Edit it with `agenix -e <secret.age>`.
+
+Note: Prefixing each secret by the hostname in `secrets.nix` prevents conflicts 
+in case multiple machines want to use a secret with the same name (e.g. 
+`users-tomas-password`). The hostname prefix is automatically put in place to 
+the file names in `secrets-management.nix`, but not to the Nix variables. That 
+in turn allows sharing configurations between machines, reusing the secret 
+name, but not the secret itself.

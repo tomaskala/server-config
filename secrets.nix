@@ -7,11 +7,11 @@ let
       value.publicKeys = keys;
     }) secrets);
 in setKeys [ whitelodge ] [
-  "users-tomas-password"
-  "wg-server-pk"
-  "wg-home-psk"
-  "wg-tomas-laptop-psk"
-  "wg-tomas-phone-psk"
-  "wg-martin-windows-psk"
-  "wg-tomas-home-psk"
+  "whitelodge-users-tomas-password"
+  "whitelodge-wg-server-pk"
+  "whitelodge-wg-home-psk"
+  "whitelodge-wg-tomas-laptop-psk"
+  "whitelodge-wg-tomas-phone-psk"
+  "whitelodge-wg-martin-windows-psk"
+  "whitelodge-wg-tomas-home-psk"
 ]
