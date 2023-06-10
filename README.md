@@ -4,6 +4,12 @@ Configuration for my network infrastructure.
 
 ## Deployment
 
+The deployment involves secrets management using 
+[agenix](https://github.com/ryantm/agenix). It can be run through Nix flakes as
+```
+$ nix run github:ryantm/agenix -- --help
+```
+
 To deploy a machine (called `twinpeaks` in this example), do the following.
 
 1. Put its configuration under `machines/twinpeaks`.
