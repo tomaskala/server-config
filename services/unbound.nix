@@ -32,7 +32,7 @@ in {
 
   config.services.unbound = {
     enableRootTrustAnchor = true;
-    resolveLocalQueries = true;
+    resolveLocalQueries = false;
 
     settings = {
       server = {
