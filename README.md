@@ -23,7 +23,7 @@ following.
 8. SSH into the machine and enter a Nix shell with git (the flake setup needs 
    it).
    ```
-   $ nix-shell -p git
+   $ nix shell nixpkgs#git
    ```
 9. Run
    ```
