@@ -13,7 +13,7 @@
     unbound-blocker.url = "github:tomaskala/unbound-blocker";
   };
 
-  outputs = { self, nixpkgs, agenix, vps-admin-os, unbound-blocker }:
+  outputs = inputs@{ self, nixpkgs, agenix, vps-admin-os, unbound-blocker }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -35,6 +35,8 @@
           inherit system;
 
           pkgs = forOneSystem (pkgs: pkgs) system;
+
+          specialArgs = { inherit inputs; };
 
           modules = [
             ./machines/whitelodge/configuration.nix

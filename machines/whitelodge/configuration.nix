@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 let
   publicDomain = "tomaskala.com";
@@ -36,6 +36,14 @@ in {
     };
 
     nix = {
+      # Pin the nixpkgs flake to the same exact version used to build the
+      # system. This has two benefits:
+      # 1. No version mismatch between system packages and those brought in by
+      #    commands like 'nix shell nixpkgs#<package>'.
+      # 2. More efficient evaluation, because many dependencies will already
+      #    be present in the Nix store.
+      registry.nixpkgs.flake = inputs.nixpkgs;
+
       gc = {
         automatic = true;
         dates = "weekly";
