@@ -58,7 +58,6 @@ in {
       ];
     };
 
-    programs.git.config.init.defaultBranch = "master";
     users.groups.git = { };
     users.users.git = {
       isSystemUser = true;
@@ -76,7 +75,6 @@ in {
     services.ntp.enable = false;
     services.timesyncd.enable = true;
 
-    programs.vim.defaultEditor = true;
     environment.systemPackages = with pkgs; [
       curl
       git
@@ -85,6 +83,11 @@ in {
       tmux
       wireguard-tools
     ];
+
+    programs = {
+      vim.defaultEditor = true;
+      git.config.init.defaultBranch = "master";
+    };
 
     networking.hostName = "whitelodge";
     networking.firewall.enable = false;
