@@ -4,29 +4,34 @@ Configuration for my network infrastructure.
 
 ## Deployment
 
-The deployment involves secrets management using 
-[agenix](https://github.com/ryantm/agenix). It can be run through Nix flakes as
-```
-$ nix run github:ryantm/agenix -- --help
-```
-
 To deploy a machine (called `twinpeaks` in this example), do the following.
 
 1. Put its configuration under `machines/twinpeaks`.
 2. Create an `outputs.nixosConfigurations.twinpeaks` block in `flake.nix`.
 3. Start the machine and its SSH server to generate an SSH host key.
-4. Obtain the host key using `ssh-keyscan <ip-address>`.
+4. Obtain the host key.
+   ```
+   $ ssh-keyscan <ip-address>
+   ```
 5. Put the host key and any secrets inside `secrets.nix`.
-6. Define all secrets by running `agenix -e <secret.age>`.
+6. Define all secrets.
+   ```
+   $ nix run github:ryantm/agenix -- -e <secret.age>
+   ```
 7. Clone this repository to the machine.
 8. Copy all secrets into `/root/secrets` on the machine.
 9. Symlink `flake.nix` to `/etc/nixos/flake.nix`.
-10. Enter a Nix shell with git, because the flake setup needs it:
-    `nix-shell -p git`.
-10. Run `nixos-rebuild --switch --flake '<path-to-repo>#twinpeaks'`. Explicitly
-    setting the flake is only necessary during the initial deployment. 
-    Afterwards, the hostname will have been set and `nixos-rebuild` will 
-    automatically select the matching flake.
+10. Enter a Nix shell with git, because the flake setup needs it.
+    ```
+    $ nix-shell -p git
+    ```
+11. Run
+    ```
+    # nixos-rebuild --switch --flake '<path-to-repo>#twinpeaks'
+    ```
+    Explicitly setting the flake is only necessary during the initial 
+    deployment. Afterwards, the hostname will have been set and `nixos-rebuild` 
+    will automatically select the matching flake.
 
 ## Adding a new secret
 
