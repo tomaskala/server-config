@@ -47,17 +47,6 @@ in {
         do-tcp = true;
         edns-buffer-size = 1232;
 
-        # Access settings.
-        interface =
-          [ "127.0.0.1" "::1" intranetCfg.server.ipv4 intranetCfg.server.ipv6 ];
-        port = 53;
-        access-control = [
-          "127.0.0.1/8 allow"
-          "::1/128 allow"
-          "${maskSubnet intranetCfg.ipv4} allow"
-          "${maskSubnet intranetCfg.ipv6} allow"
-        ];
-
         # Local zones.
         private-domain = builtins.catAttrs "domain" cfg.localDomains;
         local-zone = builtins.map (domain: ''"${domain}." redirect'')
