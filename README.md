@@ -21,7 +21,9 @@ To deploy a machine (called `twinpeaks` in this example), do the following.
 7. Clone this repository to the machine.
 8. Copy all secrets into `/root/secrets` on the machine.
 9. Symlink `flake.nix` to `/etc/nixos/flake.nix`.
-10. Run `nixos-rebuild --switch --flake '/etc/nixos#twinpeaks'`. Explicitly 
+10. Enter a Nix shell with git, because the flake setup needs it:
+    `nix-shell -p git`.
+10. Run `nixos-rebuild --switch --flake '<path-to-repo>#twinpeaks'`. Explicitly
     setting the flake is only necessary during the initial deployment. 
     Afterwards, the hostname will have been set and `nixos-rebuild` will 
     automatically select the matching flake.
