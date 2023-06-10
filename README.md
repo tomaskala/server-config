@@ -4,7 +4,8 @@ Configuration for my network infrastructure.
 
 ## Deployment
 
-To deploy a machine (called `twinpeaks` in this example), do the following.
+To define and deploy a machine (called `twinpeaks` in this example), do the 
+following.
 
 1. Put its configuration under `machines/twinpeaks`.
 2. Create an `outputs.nixosConfigurations.twinpeaks` block in `flake.nix`.
@@ -18,20 +19,19 @@ To deploy a machine (called `twinpeaks` in this example), do the following.
    ```
    $ nix run github:ryantm/agenix -- -e <secret.age>
    ```
-7. Clone this repository to the machine.
-8. Copy all secrets into `/root/secrets` on the machine.
-9. Symlink `flake.nix` to `/etc/nixos/flake.nix`.
-10. Enter a Nix shell with git, because the flake setup needs it.
-    ```
-    $ nix-shell -p git
-    ```
-11. Run
-    ```
-    # nixos-rebuild --switch --flake '<path-to-repo>#twinpeaks'
-    ```
-    Explicitly setting the flake is only necessary during the initial 
-    deployment. Afterwards, the hostname will have been set and `nixos-rebuild` 
-    will automatically select the matching flake.
+7. Copy all secrets into `/root/secrets` on the machine.
+8. SSH into the machine and enter a Nix shell with git (the flake setup needs 
+   it).
+   ```
+   $ nix-shell -p git
+   ```
+9. Run
+   ```
+   # nixos-rebuild --switch --flake 'github:tomaskala/infra#twinpeaks'
+   ```
+   Explicitly setting the flake is only necessary during the initial 
+   deployment. Afterwards, the hostname will have been set and `nixos-rebuild` 
+   will automatically select the matching flake.
 
 ## Adding a new secret
 
