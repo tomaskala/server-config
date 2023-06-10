@@ -93,7 +93,11 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
-      checkRuleset = true;
+      # Ruleset checking reports errors with chains defined on top of the
+      # ingress hooks. Since the hook must be specific to a network interface,
+      # I suspect that the interface does not propagate to the checking phase.
+      # What's weird is that when I run the check manually, it succeeds.
+      checkRuleset = false;
       ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
     };
 
