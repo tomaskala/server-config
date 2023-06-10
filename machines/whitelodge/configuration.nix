@@ -1,7 +1,5 @@
 { config, pkgs, ... }:
 
-# TODO: Pull secrets from a private repository.
-
 let
   publicDomain = "tomaskala.com";
   publicDomainWebroot = "/var/www/${publicDomain}";
