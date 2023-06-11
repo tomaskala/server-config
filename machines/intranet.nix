@@ -119,7 +119,7 @@
       description = "Configuration of the server VPN interface";
     };
 
-    locations = lib.mkOption {
+    gateways = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           gateway = lib.mkOption {
@@ -146,7 +146,7 @@
         };
       });
       description =
-        "Locations connected to the VPN, each consisting of a gateway and a subnet.";
+        "Peers connected to the VPN, each consisting of a gateway and a subnet.";
     };
 
     localDomains = lib.mkOption {
@@ -204,12 +204,12 @@
         interface = "wg0";
       };
 
-      # Each location consists of a subnet and a gateway. The gateway is
+      # Each peer consists of a subnet and a gateway. The gateway is
       # connected to the VPN and consists of its addresses within the tunnel
-      # and a public key. The preshared key is looked up based on the location
-      # name. All traffic destined to the location's subnet is routed through
+      # and a public key. The preshared key is looked up based on the peer
+      # name. All traffic destined to the peer's subnet is routed through
       # the gateway inside the VPN tunnel.
-      locations = {
+      gateways = {
         bob = {
           gateway = {
             ipv4 = "10.100.0.10";
