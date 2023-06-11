@@ -22,10 +22,10 @@
     systemdNetworkReadableSecrets =
       builtins.map makeSystemdNetworkReadableSecret [
         "wg-${config.networking.hostName}-pk"
-        "wg-home2${config.networking.hostName}-psk"
+        "wg-bob${config.networking.hostName}-psk"
         "wg-tomas-phone2${config.networking.hostName}-psk"
         "wg-martin-windows2${config.networking.hostName}-psk"
-        "wg-tomas-home2${config.networking.hostName}-psk"
+        "wg-blacklodge2${config.networking.hostName}-psk"
       ];
   in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
 }

@@ -57,7 +57,7 @@ in {
       extraGroups = [ "wheel" ];
       passwordFile = config.age.secrets."users-tomas-password-${hostName}".path;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl tomas-home2${hostName}"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2${hostName}"
       ];
     };
 
@@ -70,7 +70,7 @@ in {
       group = "git";
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2${hostName}-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf tomas-home2${hostName}-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf blacklodge2${hostName}-git"
       ];
     };
 
@@ -139,10 +139,10 @@ in {
           }
           {
             wireguardPeerConfig = {
-              # tomas-home
+              # blacklodge
               PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
               PresharedKeyFile =
-                config.age.secrets."wg-tomas-home2${hostName}-psk".path;
+                config.age.secrets."wg-blacklodge2${hostName}-psk".path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
           }

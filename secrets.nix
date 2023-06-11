@@ -11,12 +11,12 @@ in setKeys [ whitelodge ] [
   "users-tomas-password-whitelodge"
   # whitelodge WireGuard private key
   "wg-whitelodge-pk"
-  # home2whitelodge WireGuard preshared key
-  "wg-home2whitelodge-psk"
+  # bob2whitelodge WireGuard preshared key
+  "wg-bob2whitelodge-psk"
   # tomas-phone2whitelodge WireGuard preshared key
   "wg-tomas-phone2whitelodge-psk"
   # martin-windows2whitelodge WireGuard preshared key
   "wg-martin-windows2whitelodge-psk"
-  # tomas-home2whitelodge WireGuard preshared key
-  "wg-tomas-home2whitelodge-psk"
+  # blacklodge2whitelodge WireGuard preshared key
+  "wg-blacklodge2whitelodge-psk"
 ]

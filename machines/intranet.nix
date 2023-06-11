@@ -210,7 +210,7 @@
       # name. All traffic destined to the location's subnet is routed through
       # the gateway inside the VPN tunnel.
       locations = {
-        home = {
+        bob = {
           gateway = {
             ipv4 = "10.100.0.10";
             ipv6 = "fd25:6f6:a9f:1000::10";
