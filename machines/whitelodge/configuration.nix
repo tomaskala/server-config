@@ -97,9 +97,9 @@ in {
     networking.nftables = {
       enable = true;
       # Ruleset checking reports errors with chains defined on top of the
-      # ingress hooks. Since the hook must be specific to a network interface,
-      # I suspect that the interface does not propagate to the checking phase.
-      # What's weird is that when I run the check manually, it succeeds.
+      # ingress hook. This hook must be interface-specific, and the ruleset
+      # check always fails because it runs in a sandbox.
+      # Source: https://github.com/NixOS/nixpkgs/pull/223283/files.
       checkRuleset = false;
       ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
     };
