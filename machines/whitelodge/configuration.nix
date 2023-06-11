@@ -53,6 +53,8 @@ in {
       };
 
       settings = {
+        # Optimise the store after each build (as opposed to nix.optimise.*
+        # which sets up a systemd timer to optimise the store periodically).
         auto-optimise-store = true;
         experimental-features = [ "nix-command" "flakes" ];
       };
