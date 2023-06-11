@@ -96,12 +96,18 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
+      ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
+
       # Ruleset checking reports errors with chains defined on top of the
       # ingress hook. This hook must be interface-specific, and the ruleset
-      # check always fails because it runs in a sandbox.
+      # check always fails as it runs in a sandbox. A solution is to rename
+      # all occurrences of the WAN interface to the loopback interface, which
+      # is available even inside the sandbox.
       # Source: https://github.com/NixOS/nixpkgs/pull/223283/files.
-      checkRuleset = false;
-      ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
+      checkRuleset = true;
+      preCheckRuleset = ''
+        ${pkgs.gnused}/bin/sed -i 's/${wanInterface}/lo/g' ruleset.conf
+      '';
     };
 
     systemd.network = {
