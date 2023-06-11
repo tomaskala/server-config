@@ -1,7 +1,0 @@
----
-
-- name: Restart lighttpd
-  systemd:
-    name: lighttpd.service
-    enabled: yes
-    state: restarted

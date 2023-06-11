@@ -1,7 +1,0 @@
-[Interface]
-Address = {{ vpn_address_ipv4 }}/{{ vpn_mask_ipv4 }}
-Address = {{ vpn_address_ipv6 }}/{{ vpn_mask_ipv6 }}
-PrivateKey = {{ vpn_private_key.stdout }}
-{% if vpn_port is defined %}
-ListenPort = {{ vpn_port }}
-{% endif %}

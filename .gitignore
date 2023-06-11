@@ -1,2 +1,2 @@
-venv
-.vault_pass
+# Age-encrypted files.
+*.age
