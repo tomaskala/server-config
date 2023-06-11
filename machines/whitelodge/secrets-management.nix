@@ -16,15 +16,16 @@
         };
       };
 
-    secrets = builtins.map makeSecret [ "users-tomas-password" ];
+    secrets = builtins.map makeSecret
+      [ "users-tomas-password-${config.networking.hostName}" ];
 
     systemdNetworkReadableSecrets =
       builtins.map makeSystemdNetworkReadableSecret [
-        "wg-server-pk"
-        "wg-home-psk"
-        "wg-tomas-phone-psk"
-        "wg-martin-windows-psk"
-        "wg-tomas-home-psk"
+        "wg-${config.networking.hostName}-pk"
+        "wg-home2${config.networking.hostName}-psk"
+        "wg-tomas-phone2${config.networking.hostName}-psk"
+        "wg-martin-windows2${config.networking.hostName}-psk"
+        "wg-tomas-home2${config.networking.hostName}-psk"
       ];
   in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
 }
