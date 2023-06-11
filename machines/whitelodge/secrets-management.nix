@@ -22,7 +22,6 @@
       builtins.map makeSystemdNetworkReadableSecret [
         "wg-server-pk"
         "wg-home-psk"
-        "wg-tomas-laptop-psk"
         "wg-tomas-phone-psk"
         "wg-martin-windows-psk"
         "wg-tomas-home-psk"
