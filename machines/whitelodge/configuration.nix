@@ -60,9 +60,9 @@ in {
     users.users.tomas = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
-      passwordFile = config.age.secrets.users-tomas-password.path;
+      passwordFile = config.age.secrets.users-tomas-password-whitelodge.path;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl home2whitelodge"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl tomas-home2whitelodge"
       ];
     };
 
@@ -74,8 +74,8 @@ in {
       shell = "${pkgs.git}/bin/git-shell";
       group = "git";
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 phone2whitelodge-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf home2whitelodge-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2whitelodge-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf tomas-home2whitelodge-git"
       ];
     };
 
@@ -119,7 +119,7 @@ in {
         };
 
         wireguardConfig = {
-          PrivateKeyFile = config.age.secrets.wg-server-pk.path;
+          PrivateKeyFile = config.age.secrets.wg-whitelodge-pk.path;
           ListenPort = intranetCfg.server.port;
         };
 
@@ -128,7 +128,8 @@ in {
             wireguardPeerConfig = {
               # tomas-phone
               PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
-              PresharedKeyFile = config.age.secrets.wg-tomas-phone-psk.path;
+              PresharedKeyFile =
+                config.age.secrets.wg-tomas-phone2whitelodge-psk.path;
               AllowedIPs = [ "10.100.100.2/32" "fd25:6f6:a9f:1100::2/128" ];
             };
           }
@@ -136,7 +137,8 @@ in {
             wireguardPeerConfig = {
               # martin-windows
               PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
-              PresharedKeyFile = config.age.secrets.wg-martin-windows-psk.path;
+              PresharedKeyFile =
+                config.age.secrets.wg-martin-windows2whitelodge-psk.path;
               AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
             };
           }
@@ -144,7 +146,8 @@ in {
             wireguardPeerConfig = {
               # tomas-home
               PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
-              PresharedKeyFile = config.age.secrets.wg-tomas-home-psk.path;
+              PresharedKeyFile =
+                config.age.secrets.wg-tomas-home2whitelodge-psk.path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
           }

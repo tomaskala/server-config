@@ -10,7 +10,8 @@ let
     { gateway, subnet }: {
       wireguardPeerConfig = {
         PublicKey = gateway.publicKey;
-        PresharedKeyFile = config.age.secrets."wg-${location}-psk".path;
+        PresharedKeyFile =
+          config.age.secrets."wg-${location}2${config.networking.hostName}-psk".path;
         AllowedIPs = [
           gateway.ipv4
           gateway.ipv6

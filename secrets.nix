@@ -7,11 +7,16 @@ let
       value.publicKeys = keys;
     }) secrets);
 in setKeys [ whitelodge ] [
-  "whitelodge-users-tomas-password"
-  "whitelodge-wg-server-pk"
-  "whitelodge-wg-home-psk"
-  "whitelodge-wg-tomas-laptop-psk"
-  "whitelodge-wg-tomas-phone-psk"
-  "whitelodge-wg-martin-windows-psk"
-  "whitelodge-wg-tomas-home-psk"
+  # tomas@whitelodge password
+  "users-tomas-password-whitelodge"
+  # whitelodge WireGuard private key
+  "wg-whitelodge-pk"
+  # home2whitelodge WireGuard preshared key
+  "wg-home2whitelodge-psk"
+  # tomas-phone2whitelodge WireGuard preshared key
+  "wg-tomas-phone2whitelodge-psk"
+  # martin-windows2whitelodge WireGuard preshared key
+  "wg-martin-windows2whitelodge-psk"
+  # tomas-home2whitelodge WireGuard preshared key
+  "wg-tomas-home2whitelodge-psk"
 ]
