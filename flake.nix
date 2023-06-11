@@ -13,7 +13,7 @@
     unbound-blocker.url = "github:tomaskala/unbound-blocker";
   };
 
-  outputs = inputs@{ self, nixpkgs, agenix, vps-admin-os, unbound-blocker }:
+  outputs = { self, nixpkgs, agenix, vps-admin-os, unbound-blocker }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -36,10 +36,19 @@
 
           pkgs = forOneSystem (pkgs: pkgs) system;
 
-          specialArgs = { inherit inputs; };
-
           modules = [
             ./machines/whitelodge/configuration.nix
+
+            {
+              # Pin the nixpkgs flake to the same exact version used to build
+              # the system. This has two benefits:
+              # 1. No version mismatch between system packages and those
+              #    brought in by commands like 'nix shell nixpkgs#<package>'.
+              # 2. More efficient evaluation, because many dependencies will
+              # already be present in the Nix store.
+              config.nix.registry.nixpkgs.flake = nixpkgs;
+            }
+
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
           ];
