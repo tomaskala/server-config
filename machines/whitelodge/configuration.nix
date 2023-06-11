@@ -8,6 +8,7 @@ let
   rssDomain = "rss.home.arpa";
   rssListenPort = 7070;
 
+  hostName = "whitelodge";
   wanInterface = "venet0";
 
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -60,9 +61,9 @@ in {
     users.users.tomas = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
-      passwordFile = config.age.secrets.users-tomas-password-whitelodge.path;
+      passwordFile = config.age.secrets."users-tomas-password-${hostName}".path;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl tomas-home2whitelodge"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl tomas-home2${hostName}"
       ];
     };
 
@@ -74,8 +75,8 @@ in {
       shell = "${pkgs.git}/bin/git-shell";
       group = "git";
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2whitelodge-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf tomas-home2whitelodge-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2${hostName}-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf tomas-home2${hostName}-git"
       ];
     };
 
@@ -97,7 +98,7 @@ in {
       git.config.init.defaultBranch = "master";
     };
 
-    networking.hostName = "whitelodge";
+    networking.hostName = hostName;
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
@@ -119,7 +120,7 @@ in {
         };
 
         wireguardConfig = {
-          PrivateKeyFile = config.age.secrets.wg-whitelodge-pk.path;
+          PrivateKeyFile = config.age.secrets."wg-${hostName}-pk".path;
           ListenPort = intranetCfg.server.port;
         };
 
@@ -129,7 +130,7 @@ in {
               # tomas-phone
               PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
               PresharedKeyFile =
-                config.age.secrets.wg-tomas-phone2whitelodge-psk.path;
+                config.age.secrets."wg-tomas-phone2${hostName}-psk".path;
               AllowedIPs = [ "10.100.100.2/32" "fd25:6f6:a9f:1100::2/128" ];
             };
           }
@@ -138,7 +139,7 @@ in {
               # martin-windows
               PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
               PresharedKeyFile =
-                config.age.secrets.wg-martin-windows2whitelodge-psk.path;
+                config.age.secrets."wg-martin-windows2${hostName}-psk".path;
               AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
             };
           }
@@ -147,7 +148,7 @@ in {
               # tomas-home
               PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
               PresharedKeyFile =
-                config.age.secrets.wg-tomas-home2whitelodge-psk.path;
+                config.age.secrets."wg-tomas-home2${hostName}-psk".path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
           }
