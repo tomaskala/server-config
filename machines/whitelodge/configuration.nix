@@ -84,6 +84,7 @@ in {
       ldns
       rsync
       tmux
+      tree
       wireguard-tools
     ];
 
