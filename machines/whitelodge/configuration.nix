@@ -173,16 +173,10 @@ in {
 
     services.openssh = {
       enable = true;
-
+      ports = [ 22 ];
       listenAddresses = [
-        {
-          addr = intranetCfg.server.ipv4;
-          port = 22;
-        }
-        {
-          addr = intranetCfg.server.ipv6;
-          port = 22;
-        }
+        { addr = intranetCfg.server.ipv4; }
+        { addr = intranetCfg.server.ipv6; }
       ];
     };
 
