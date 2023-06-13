@@ -33,7 +33,7 @@ following.
    ```
 9. Run
    ```
-   # nixos-rebuild --switch --flake 'github:tomaskala/infra#twinpeaks'
+   # nixos-rebuild switch --flake 'github:tomaskala/infra#twinpeaks'
    ```
    Explicitly setting the flake is only necessary during the initial 
    deployment. Afterwards, the hostname will have been set and `nixos-rebuild` 
