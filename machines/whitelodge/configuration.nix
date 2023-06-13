@@ -198,15 +198,9 @@ in {
         '';
       };
 
-      # Workaround for Caddy not binding to port 80 for redirections.
-      # Source: https://github.com/caddyserver/caddy/issues/5309.
-      virtualHosts."http://" = { };
-
       # Explicitly specify HTTP to disable automatic TLS certificate creation,
       # since this is an internal domain only accessible from the VPN anyway.
       virtualHosts."http://${rssDomain}" = {
-        listenAddresses = [ intranetCfg.server.ipv4 intranetCfg.server.ipv6 ];
-
         extraConfig = ''
           reverse_proxy :${builtins.toString rssListenPort}
 
