@@ -1,5 +1,6 @@
 let
-  whitelodge = ""; # TODO: SSH host key.
+  whitelodge =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqZXcy8lb24LirRJ4X77olNBGZkSnB6EGHwXF3MYbi8";
 
   setKeys = keys: secrets:
     builtins.listToAttrs (builtins.map (secret: {
