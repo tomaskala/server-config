@@ -195,6 +195,27 @@ in {
           root * ${publicDomainWebroot}
           encode gzip
           file_server
+
+          header {
+            # Disable FLoC tracking.
+            Permissions-Policy interest-cohort=()
+
+            # Enable HSTS.
+            Strict-Transport-Security max-age=31536000
+
+            # Disable clients from sniffing the media type.
+            X-Content-Type-Options nosniff
+
+            # Clickjacking protection.
+            X-Frame-Options DENY
+
+            # Keep referrer data off third parties.
+            Referrer-Policy same-origin
+
+            # Content should come from the site's origin (excludes subdomains).
+            # Prevent the framing of this site by other sites.
+            Content-Security-Policy "default-src 'self'; frame-ancestors 'none'"
+          }
         '';
       };
 
