@@ -16,8 +16,10 @@
         };
       };
 
-    secrets = builtins.map makeSecret
-      [ "users-tomas-password-${config.networking.hostName}" ];
+    secrets = builtins.map makeSecret [
+      "users-tomas-password-${config.networking.hostName}"
+      "miniflux-admin-credentials"
+    ];
 
     systemdNetworkReadableSecrets =
       builtins.map makeSystemdNetworkReadableSecret [

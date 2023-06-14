@@ -21,7 +21,6 @@ in {
     ../../services/openssh.nix
     ../../services/unbound-blocker.nix
     ../../services/unbound.nix
-    ../../services/yarr.nix
   ];
 
   config = {
@@ -186,9 +185,15 @@ in {
       ];
     };
 
-    services.yarr = {
+    services.miniflux = {
       enable = true;
-      listenPort = rssListenPort;
+      adminCredentialsFile = config.age.secrets.miniflux-admin-credentials.path;
+      config = {
+        POLLING_FREQUENCY = "1440";
+        LISTEN_ADDR = "127.0.0.1:${builtins.toString rssListenPort}";
+        BASE_URL = "http://${rssDomain}";
+        CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
+      };
     };
 
     services.caddy = {
