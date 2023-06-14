@@ -31,7 +31,12 @@ in {
       autoUpgrade = {
         enable = true;
         dates = "05:00";
-        allowReboot = true;
+        # The system runs in a container, sharing the Linux kernel with other
+        # containers. As such, no kernel upgrades can happen during a system
+        # upgrade, and no reboot is necessary. When enabled, this broke the
+        # nixos-upgrade service because it attempted to read non-existent
+        # files under /run/booted-system.
+        allowReboot = false;
         flake = "github:tomaskala/infra";
       };
     };
