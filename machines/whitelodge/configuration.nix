@@ -98,6 +98,7 @@ in {
     };
 
     networking.hostName = hostName;
+    networking.dhcpcd.enable = false;
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
