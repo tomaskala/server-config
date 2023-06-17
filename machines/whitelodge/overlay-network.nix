@@ -7,7 +7,7 @@ let
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
   makePeer = peer:
-    { gateway, subnet }: {
+    { gateway, network, ... }: {
       wireguardPeerConfig = {
         PublicKey = gateway.publicKey;
         PresharedKeyFile =
@@ -15,23 +15,23 @@ let
         AllowedIPs = [
           gateway.ipv4
           gateway.ipv6
-          (maskSubnet subnet.ipv4)
-          (maskSubnet subnet.ipv6)
+          (maskSubnet network.ipv4)
+          (maskSubnet network.ipv6)
         ];
       };
     };
 
-  makeRoute = subnet: [
+  makeRoute = network: [
     {
       routeConfig = {
-        Destination = maskSubnet subnet.ipv4;
+        Destination = maskSubnet network.ipv4;
         Scope = "host";
         Type = "local";
       };
     }
     {
       routeConfig = {
-        Destination = maskSubnet subnet.ipv6;
+        Destination = maskSubnet network.ipv6;
         Scope = "host";
         Type = "local";
       };
@@ -49,9 +49,9 @@ in {
         "${pkgs.nftables}/bin/nft add element inet firewall ${setName} { ${elem} }";
 
       makeAccessibleSet = ipProto:
-        { gateway, subnet }: [
+        { gateway, network, ... }: [
           gateway."${ipProto}"
-          (maskSubnet subnet."${ipProto}")
+          (maskSubnet network."${ipProto}")
         ];
 
       accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
@@ -91,14 +91,14 @@ in {
         # Enable IP forwarding (system-wide).
         networkConfig.IPForward = true;
 
-        # Route traffic to each peer's subnet to the Wireguard interface.
+        # Route traffic to each peer's network to the Wireguard interface.
         # Wireguard takes care of routing to the correct gateway within the
         # tunnel thanks to the AllowedIPs clause of each gateway peer.
         routes = let
           peerValues = builtins.attrValues intranetCfg.gateways;
 
-          subnets = builtins.catAttrs "subnet" peerValues;
-        in builtins.concatMap makeRoute subnets;
+          networks = builtins.catAttrs "network" peerValues;
+        in builtins.concatMap makeRoute networks;
       };
     };
   };

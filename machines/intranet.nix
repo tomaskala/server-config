@@ -127,26 +127,46 @@
             description = "IP addresses and a public key of the VPN gateway";
           };
 
-          subnet = lib.mkOption {
+          network = lib.mkOption {
             type = lib.types.submodule {
               options = {
                 ipv4 = lib.mkOption {
                   type = subnet;
-                  description = "IPv4 range of the subnet";
+                  description = "IPv4 range of the network";
                 };
 
                 ipv6 = lib.mkOption {
                   type = subnet;
-                  description = "IPv6 range of the subnet";
+                  description = "IPv6 range of the network";
                 };
               };
             };
-            description = "IPv4 and IPv6 ranges of the subnet";
+            description = "IPv4 and IPv6 ranges of the network";
+          };
+
+          address = lib.mkOption {
+            type = lib.types.submodule {
+              options = {
+                ipv4 = lib.mkOption {
+                  type = lib.types.str;
+                  description = "Gateway's IPv4 address in its network";
+                  example = "10.0.0.1";
+                };
+
+                ipv6 = lib.mkOption {
+                  type = lib.types.str;
+                  description = "Gateway's IPv6 address in its network";
+                  example = "fd25:6f6:a9f:2000::1";
+                };
+              };
+            };
           };
         };
       });
-      description =
-        "Peers connected to the VPN, each consisting of a gateway and a subnet.";
+      description = ''
+        Peers connected to the VPN, each consisting of a gateway, a local
+        network, and addresses inside that network.
+      '';
     };
 
     localDomains = lib.mkOption {
@@ -156,7 +176,7 @@
   };
 
   config = {
-    networking.intranet = {
+    networking.intranet = rec {
       ipv4 = {
         subnet = "10.100.0.0";
         mask = 16;
@@ -217,7 +237,7 @@
             publicKey = "AA8z9EaVsdss2agi0V7Hho8xe+mMlVUJpqgZcp4D5Eg=";
           };
 
-          subnet = {
+          network = {
             ipv4 = {
               subnet = "10.0.0.0";
               mask = 16;
@@ -227,6 +247,11 @@
               subnet = "fd25:6f6:a9f:2000::";
               mask = 52;
             };
+          };
+
+          address = {
+            ipv4 = "10.0.0.2";
+            ipv6 = "fd25:6f6:a9f:2000::2";
           };
         };
       };
@@ -239,8 +264,7 @@
         }
         {
           domain = "bob.home.arpa";
-          ipv4 = "10.0.0.2";
-          ipv6 = "fd25:6f6:a9f:2000::2";
+          inherit (gateways.bob.address) ipv4 ipv6;
         }
         {
           domain = "nas.home.arpa";
