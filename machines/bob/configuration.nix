@@ -3,8 +3,11 @@
 let
   hostName = "bob";
   wanInterface = "eth0";
+
+  intranetCfg = config.networking.intranet;
 in {
-  imports = [ ./secrets-management.nix ../../services/openssh.nix ];
+  imports =
+    [ ./secrets-management.nix ../intranet.nix ../../services/openssh.nix ];
 
   config = {
     system.stateVersion = "23.05";
@@ -60,7 +63,10 @@ in {
       enable = true;
       ports = [ 22 ];
       listenAddresses = [
-        # TODO
+        { addr = intranetCfg.gateways."${hostName}".gateway.ipv4; }
+        { addr = intranetCfg.gateways."${hostName}".gateway.ipv6; }
+        { addr = intranetCfg.gateways."${hostName}".address.ipv4; }
+        { addr = intranetCfg.gateways."${hostName}".address.ipv6; }
       ];
     };
 
