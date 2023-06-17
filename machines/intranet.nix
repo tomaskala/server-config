@@ -243,11 +243,6 @@
           ipv6 = "fd25:6f6:a9f:2000::2";
         }
         {
-          domain = "mike.home.arpa";
-          ipv4 = "10.0.0.3";
-          ipv6 = "fd25:6f6:a9f:2000::3";
-        }
-        {
           domain = "nas.home.arpa";
           ipv4 = "10.0.0.10";
           ipv6 = "fd25:6f6:a9f:2000::a";
