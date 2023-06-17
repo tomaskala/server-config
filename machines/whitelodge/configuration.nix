@@ -85,6 +85,7 @@ in {
     environment.systemPackages = with pkgs; [
       curl
       git
+      htop
       ldns
       rsync
       tmux
