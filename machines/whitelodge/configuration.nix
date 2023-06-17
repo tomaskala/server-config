@@ -178,7 +178,6 @@ in {
 
     services.openssh = {
       enable = true;
-      ports = [ 22 ];
       listenAddresses = [
         { addr = peerCfg.internal.interface.ipv4; }
         { addr = peerCfg.internal.interface.ipv6; }
@@ -253,7 +252,6 @@ in {
           peerCfg.internal.interface.ipv4
           peerCfg.internal.interface.ipv6
         ];
-        port = 53;
         access-control = [
           "127.0.0.1/8 allow"
           "::1/128 allow"

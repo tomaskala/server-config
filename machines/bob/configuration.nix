@@ -59,7 +59,6 @@ in {
 
     services.openssh = {
       enable = true;
-      ports = [ 22 ];
       listenAddresses = [
         { addr = peerCfg.internal.interface.ipv4; }
         { addr = peerCfg.internal.interface.ipv6; }
