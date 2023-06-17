@@ -4,29 +4,22 @@ let cfg = config.services.unbound;
 in {
   options.services.unbound = {
     localDomains = lib.mkOption {
-      default = [ ];
-      type = lib.types.listOf (lib.types.submodule {
+      type = lib.types.attrsOf (lib.types.submodule {
         options = {
-          domain = lib.mkOption {
-            type = lib.types.str;
-            description = "Local domain";
-            example = "example.home.arpa";
-          };
           ipv4 = lib.mkOption {
             type = lib.types.str;
-            description = "IPv4 address of the local domain";
-            example = "192.168.0.10";
+            description = "IPv4 address the domain resolves to";
+            example = "192.168.0.1";
           };
+
           ipv6 = lib.mkOption {
             type = lib.types.str;
-            description = "IPv6 address of the local domain";
-            example = "fd2b:4d9d:64af:1871::10";
+            description = "IPv6 address the domain resolves to";
+            example = "fe80::1";
           };
         };
       });
-      description = ''
-        List of local domains and their addresses.
-      '';
+      description = "Locally-resolvable domains and their addresses";
     };
   };
 
@@ -44,13 +37,14 @@ in {
         edns-buffer-size = 1232;
 
         # Local zones.
-        private-domain = builtins.catAttrs "domain" cfg.localDomains;
+        private-domain = builtins.attrNames cfg.localDomains;
         local-zone = builtins.map (domain: ''"${domain}." redirect'')
-          (builtins.catAttrs "domain" cfg.localDomains);
-        local-data = builtins.concatMap ({ domain, ipv4, ipv6 }: [
-          ''"${domain}. A ${ipv4}"''
-          ''"${domain}. AAAA ${ipv6}"''
-        ]) cfg.localDomains;
+          (builtins.attrNames cfg.localDomains);
+        local-data = builtins.concatLists (lib.mapAttrsToList (domain:
+          { ipv4, ipv6 }: [
+            ''"${domain}. A ${ipv4}"''
+            ''"${domain}. AAAA ${ipv6}"''
+          ]) cfg.localDomains);
 
         # Logging settings.
         verbosity = 1;

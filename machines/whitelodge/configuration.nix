@@ -9,10 +9,8 @@ let
   rssListenPort = 7070;
 
   hostName = "whitelodge";
-  wanInterface = "venet0";
-
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-  intranetCfg = config.networking.intranet;
+  peerCfg = config.networking.intranet.peers."${hostName}";
 in {
   imports = [
     ./overlay-network.nix
@@ -103,7 +101,7 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
-      ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
+      ruleset = import ./nftables-ruleset.nix { inherit config; };
 
       # Ruleset checking reports errors with chains defined on top of the
       # ingress hook. This hook must be interface-specific, and the ruleset
@@ -113,22 +111,22 @@ in {
       # Source: https://github.com/NixOS/nixpkgs/pull/223283/files.
       checkRuleset = true;
       preCheckRuleset = ''
-        ${pkgs.gnused}/bin/sed -i 's/${wanInterface}/lo/g' ruleset.conf
+        ${pkgs.gnused}/bin/sed -i 's/${peerCfg.external.name}/lo/g' ruleset.conf
       '';
     };
 
     systemd.network = {
       enable = true;
 
-      netdevs."90-${intranetCfg.server.interface}" = {
+      netdevs."90-${peerCfg.internal.interface.name}" = {
         netdevConfig = {
-          Name = intranetCfg.server.interface;
+          Name = peerCfg.internal.interface.name;
           Kind = "wireguard";
         };
 
         wireguardConfig = {
           PrivateKeyFile = config.age.secrets."wg-${hostName}-pk".path;
-          ListenPort = intranetCfg.server.port;
+          ListenPort = peerCfg.internal.port;
         };
 
         wireguardPeers = [
@@ -162,15 +160,15 @@ in {
         ];
       };
 
-      networks."90-${intranetCfg.server.interface}" = {
-        matchConfig.Name = intranetCfg.server.interface;
+      networks."90-${peerCfg.internal.interface.name}" = {
+        matchConfig.Name = peerCfg.internal.interface.name;
 
         address = [
-          "${intranetCfg.server.ipv4}/${
-            builtins.toString intranetCfg.ipv4.mask
+          "${peerCfg.internal.interface.ipv4}/${
+            builtins.toString peerCfg.network.ipv4.mask
           }"
-          "${intranetCfg.server.ipv6}/${
-            builtins.toString intranetCfg.ipv6.mask
+          "${peerCfg.internal.interface.ipv6}/${
+            builtins.toString peerCfg.network.ipv6.mask
           }"
         ];
       };
@@ -182,8 +180,8 @@ in {
       enable = true;
       ports = [ 22 ];
       listenAddresses = [
-        { addr = intranetCfg.server.ipv4; }
-        { addr = intranetCfg.server.ipv6; }
+        { addr = peerCfg.internal.interface.ipv4; }
+        { addr = peerCfg.internal.interface.ipv6; }
       ];
     };
 
@@ -237,8 +235,8 @@ in {
         extraConfig = ''
           reverse_proxy :${builtins.toString rssListenPort}
 
-          @blocked not remote_ip ${maskSubnet intranetCfg.ipv4} ${
-            maskSubnet intranetCfg.ipv6
+          @blocked not remote_ip ${maskSubnet peerCfg.network.ipv4} ${
+            maskSubnet peerCfg.network.ipv6
           }
           respond @blocked "Forbidden" 403
         '';
@@ -249,27 +247,25 @@ in {
       enable = true;
 
       settings.server = {
-        interface =
-          [ "127.0.0.1" "::1" intranetCfg.server.ipv4 intranetCfg.server.ipv6 ];
+        interface = [
+          "127.0.0.1"
+          "::1"
+          peerCfg.internal.interface.ipv4
+          peerCfg.internal.interface.ipv6
+        ];
         port = 53;
         access-control = [
           "127.0.0.1/8 allow"
           "::1/128 allow"
-          "${maskSubnet intranetCfg.ipv4} allow"
-          "${maskSubnet intranetCfg.ipv6} allow"
+          "${maskSubnet peerCfg.network.ipv4} allow"
+          "${maskSubnet peerCfg.network.ipv6} allow"
         ];
       };
 
-      localDomains = [
-        {
-          domain = publicDomain;
-          inherit (intranetCfg.server) ipv4 ipv6;
-        }
-        {
-          domain = rssDomain;
-          inherit (intranetCfg.server) ipv4 ipv6;
-        }
-      ];
+      localDomains = {
+        "${publicDomain}" = { inherit (peerCfg.internal.interface) ipv4 ipv6; };
+        "${rssDomain}" = { inherit (peerCfg.internal.interface) ipv4 ipv6; };
+      };
     };
 
     services.unbound-blocker.enable = true;

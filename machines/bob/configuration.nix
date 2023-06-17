@@ -2,9 +2,7 @@
 
 let
   hostName = "bob";
-  wanInterface = "eth0";
-
-  intranetCfg = config.networking.intranet;
+  peerCfg = config.networking.intranet.peers."${hostName}";
 in {
   imports =
     [ ./secrets-management.nix ../intranet.nix ../../services/openssh.nix ];
@@ -55,7 +53,7 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
-      ruleset = import ./nftables-ruleset.nix { inherit config wanInterface; };
+      ruleset = import ./nftables-ruleset.nix { inherit config; };
       checkRuleset = true;
     };
 
@@ -63,10 +61,10 @@ in {
       enable = true;
       ports = [ 22 ];
       listenAddresses = [
-        { addr = intranetCfg.gateways."${hostName}".gateway.ipv4; }
-        { addr = intranetCfg.gateways."${hostName}".gateway.ipv6; }
-        { addr = intranetCfg.gateways."${hostName}".address.ipv4; }
-        { addr = intranetCfg.gateways."${hostName}".address.ipv6; }
+        { addr = peerCfg.internal.interface.ipv4; }
+        { addr = peerCfg.internal.interface.ipv6; }
+        { addr = peerCfg.external.ipv4; }
+        { addr = peerCfg.external.ipv6; }
       ];
     };
 

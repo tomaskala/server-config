@@ -1,4 +1,4 @@
-{ config, wanInterface }:
+{ config }:
 
 ''
   flush ruleset

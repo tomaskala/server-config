@@ -3,35 +3,36 @@
 let
   cfg = config.networking.overlay-network;
   intranetCfg = config.networking.intranet;
+  peerCfg = intranetCfg.peers."${config.networking.hostName}";
 
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
-  makePeer = peer:
-    { gateway, network, ... }: {
+  makePeer = peerName:
+    { internal, network, ... }: {
       wireguardPeerConfig = {
-        PublicKey = gateway.publicKey;
+        PublicKey = internal.publicKey;
         PresharedKeyFile =
-          config.age.secrets."wg-${peer}2${config.networking.hostName}-psk".path;
+          config.age.secrets."wg-${peerName}2${config.networking.hostName}-psk".path;
         AllowedIPs = [
-          gateway.ipv4
-          gateway.ipv6
+          internal.interface.ipv4
+          internal.interface.ipv6
           (maskSubnet network.ipv4)
           (maskSubnet network.ipv6)
         ];
       };
     };
 
-  makeRoute = network: [
+  makeRoute = { ipv4, ipv6 }: [
     {
       routeConfig = {
-        Destination = maskSubnet network.ipv4;
+        Destination = maskSubnet ipv4;
         Scope = "host";
         Type = "local";
       };
     }
     {
       routeConfig = {
-        Destination = maskSubnet network.ipv6;
+        Destination = maskSubnet ipv6;
         Scope = "host";
         Type = "local";
       };
@@ -49,16 +50,16 @@ in {
         "${pkgs.nftables}/bin/nft add element inet firewall ${setName} { ${elem} }";
 
       makeAccessibleSet = ipProto:
-        { gateway, network, ... }: [
-          gateway."${ipProto}"
+        { internal, network, ... }: [
+          internal.interface."${ipProto}"
           (maskSubnet network."${ipProto}")
         ];
 
       accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
-        (builtins.attrValues intranetCfg.gateways);
+        (builtins.attrValues intranetCfg.peers);
 
       accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6")
-        (builtins.attrValues intranetCfg.gateways);
+        (builtins.attrValues intranetCfg.peers);
     in ''
       ${addToSet "vpn_internal_ipv4"
       (maskSubnet intranetCfg.subnets.internal.ipv4)}
@@ -83,11 +84,11 @@ in {
       enable = true;
 
       # Add each peer's gateway as a Wireguard peer.
-      netdevs."90-${intranetCfg.server.interface}" = {
-        wireguardPeers = lib.mapAttrsToList makePeer intranetCfg.gateways;
+      netdevs."90-${peerCfg.internal.interface.name}" = {
+        wireguardPeers = lib.mapAttrsToList makePeer intranetCfg.peers;
       };
 
-      networks."90-${intranetCfg.server.interface}" = {
+      networks."90-${peerCfg.internal.interface.name}" = {
         # Enable IP forwarding (system-wide).
         networkConfig.IPForward = true;
 
@@ -95,7 +96,7 @@ in {
         # Wireguard takes care of routing to the correct gateway within the
         # tunnel thanks to the AllowedIPs clause of each gateway peer.
         routes = let
-          peerValues = builtins.attrValues intranetCfg.gateways;
+          peerValues = builtins.attrValues intranetCfg.peers;
 
           networks = builtins.catAttrs "network" peerValues;
         in builtins.concatMap makeRoute networks;
