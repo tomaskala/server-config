@@ -17,6 +17,16 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
+      nixpkgsPin = {
+        # Pin the nixpkgs flake to the same exact version used to build
+        # the system. This has two benefits:
+        # 1. No version mismatch between system packages and those
+        #    brought in by commands like 'nix shell nixpkgs#<package>'.
+        # 2. More efficient evaluation, because many dependencies will
+        # already be present in the Nix store.
+        config.nix.registry.nixpkgs.flake = nixpkgs;
+      };
+
       forOneSystem = f: system:
         f (import nixpkgs {
           inherit system;
@@ -38,19 +48,22 @@
 
           modules = [
             ./machines/whitelodge/configuration.nix
-
-            {
-              # Pin the nixpkgs flake to the same exact version used to build
-              # the system. This has two benefits:
-              # 1. No version mismatch between system packages and those
-              #    brought in by commands like 'nix shell nixpkgs#<package>'.
-              # 2. More efficient evaluation, because many dependencies will
-              # already be present in the Nix store.
-              config.nix.registry.nixpkgs.flake = nixpkgs;
-            }
-
+            nixpkgsPin
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
+          ];
+        };
+
+        bob = let system = "aarch64-linux";
+        in nixpkgs.lib.nixosSystem {
+          inherit system;
+
+          pkgs = forOneSystem (pkgs: pkgs) system;
+
+          modules = [
+            ./machines/bob/configuration.nix
+            nixpkgsPin
+            agenix.nixosModules.default
           ];
         };
       };

@@ -1,0 +1,5 @@
+{ config, wanInterface }:
+
+''
+  flush ruleset
+''
