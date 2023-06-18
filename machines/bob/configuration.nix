@@ -1,8 +1,13 @@
 { config, pkgs, ... }:
 
 let
+  musicDir = "/mnt/Music";
+
   hostName = "bob";
-  peerCfg = config.networking.intranet.peers."${hostName}";
+  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+
+  intranetCfg = config.networking.intranet;
+  peerCfg = intranetCfg.peers."${hostName}";
 in {
   imports =
     [ ./secrets-management.nix ../intranet.nix ../../services/openssh.nix ];
@@ -67,7 +72,46 @@ in {
       ];
     };
 
-    # TODO: navidrome
+    services.navidrome = {
+      enable = true;
+      settings = {
+        MusicFolder = musicDir;
+        LogLevel = "warn";
+        Address = "127.0.0.1";
+        AutoImportPlaylists = false;
+        EnableCoverAnimation = false;
+        EnableExternalServices = false;
+        EnableFavourites = false;
+        EnableGravatar = false;
+        EnableStarRating = false;
+        EnableTranscodingConfig = false;
+        "LastFM.Enabled" = false;
+        "ListenBrainz.Enabled" = false;
+        "Prometheus.Enabled" = false;
+        ScanSchedule = "@every 24h";
+      };
+    };
+
+    services.caddy = {
+      enable = true;
+      # Explicitly specify HTTP to disable automatic TLS certificate creation,
+      # since this is an internal domain only accessible from the private
+      # range anyway.
+      virtualHosts."http://music.home.arpa" = {
+        extraConfig = ''
+          reverse_proxy :${
+            builtins.toString config.services.navidrome.settings.Port
+          }
+          @blocked not remote_ip ${maskSubnet intranetCfg.privateRange.ipv4} ${
+            maskSubnet intranetCfg.privateRange.ipv6
+          }
+          respond @blocked "Forbidden" 403
+        '';
+      };
+    };
+
+    # TODO: NFS mount
+
     # TODO: overlay network
   };
 }

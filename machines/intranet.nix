@@ -75,6 +75,11 @@
       };
     };
   in {
+    privateRange = lib.mkOption {
+      type = subnet;
+      description = "The entire range reserved for the intranet";
+    };
+
     subnets = lib.mkOption {
       type = lib.types.attrsOf subnet;
       description = "Subnets inside the VPN";
@@ -128,6 +133,18 @@
   };
 
   config.networking.intranet = rec {
+    privateRange = {
+      ipv4 = {
+        subnet = "10.0.0.0";
+        mask = 8;
+      };
+
+      ipv6 = {
+        subnet = "fd25:6f6:a9f::";
+        mask = 48;
+      };
+    };
+
     subnets = {
       # Devices in the internal subnet can communicate with each other
       # as well as access the public internet via the server.
