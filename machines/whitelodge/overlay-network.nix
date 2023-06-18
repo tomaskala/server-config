@@ -1,9 +1,13 @@
 { config, pkgs, lib, ... }:
 
 let
+  inherit (config.networking) hostName;
+
   cfg = config.networking.overlay-network;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers."${config.networking.hostName}";
+  peerCfg = intranetCfg.peers."${hostName}";
+  otherPeers =
+    lib.filterAttrs (peerName: _: peerName != hostName) intranetCfg.peers;
 
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
@@ -12,7 +16,7 @@ let
       wireguardPeerConfig = {
         PublicKey = internal.publicKey;
         PresharedKeyFile =
-          config.age.secrets."wg-${peerName}2${config.networking.hostName}-psk".path;
+          config.age.secrets."wg-${peerName}2${hostName}-psk".path;
         AllowedIPs = [
           internal.interface.ipv4
           internal.interface.ipv6
@@ -56,10 +60,10 @@ in {
         ];
 
       accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
-        (builtins.attrValues intranetCfg.peers);
+        (builtins.attrValues otherPeers);
 
       accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6")
-        (builtins.attrValues intranetCfg.peers);
+        (builtins.attrValues otherPeers);
     in ''
       ${addToSet "vpn_internal_ipv4"
       (maskSubnet intranetCfg.subnets.internal.ipv4)}
@@ -85,7 +89,7 @@ in {
 
       # Add each peer's gateway as a Wireguard peer.
       netdevs."90-${peerCfg.internal.interface.name}" = {
-        wireguardPeers = lib.mapAttrsToList makePeer intranetCfg.peers;
+        wireguardPeers = lib.mapAttrsToList makePeer otherPeers;
       };
 
       networks."90-${peerCfg.internal.interface.name}" = {
@@ -96,7 +100,7 @@ in {
         # Wireguard takes care of routing to the correct gateway within the
         # tunnel thanks to the AllowedIPs clause of each gateway peer.
         routes = let
-          peerValues = builtins.attrValues intranetCfg.peers;
+          peerValues = builtins.attrValues otherPeers;
 
           networks = builtins.catAttrs "network" peerValues;
         in builtins.concatMap makeRoute networks;
