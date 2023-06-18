@@ -1,13 +1,14 @@
 { config, pkgs, ... }:
 
 let
-  musicDir = "/mnt/Music";
-
   hostName = "bob";
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers."${hostName}";
+
+  nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
+  musicDir = "/mnt/Music";
 in {
   imports =
     [ ./secrets-management.nix ../intranet.nix ../../services/openssh.nix ];
@@ -57,8 +58,22 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
-      ruleset = import ./nftables-ruleset.nix { inherit config; };
+      ruleset = import ./nftables-ruleset.nix { inherit config; }; # TODO
       checkRuleset = true;
+    };
+
+    fileSystems."${musicDir}" = {
+      device = "${nasAddr}:/volume1/Music";
+      fsType = "nfs";
+      options = [
+        # Lazily mount the filesystem upon first access.
+        "x-systemd.automount"
+        "noauto"
+        # Disconnect from the NFS server after 1 hour of no access.
+        "x-systemd.idle-timeout=3600"
+        # Mount as a read-only filesystem.
+        "ro"
+      ];
     };
 
     services.openssh = {
@@ -108,8 +123,6 @@ in {
         '';
       };
     };
-
-    # TODO: NFS mount
 
     # TODO: overlay network
   };
