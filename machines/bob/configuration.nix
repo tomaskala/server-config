@@ -14,7 +14,6 @@ in {
 
   config = {
     system.stateVersion = "23.05";
-    # TODO: Autoupgrade?
 
     nix = {
       gc = {
