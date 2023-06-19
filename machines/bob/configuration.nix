@@ -58,7 +58,7 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
-      ruleset = import ./nftables-ruleset.nix { inherit config; }; # TODO
+      ruleset = import ./nftables-ruleset.nix { inherit config; };
       checkRuleset = true;
     };
 

@@ -146,6 +146,18 @@
     };
 
     subnets = {
+      # Private home network containing trusted devices.
+      home-private = {
+        ipv4 = {
+          subnet = "10.0.0.0";
+          mask = 24;
+        };
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:2000::";
+          mask = 52;
+        };
+      };
+
       # Devices in the internal subnet can communicate with each other
       # as well as access the public internet via the server.
       internal = {
