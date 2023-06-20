@@ -1,9 +1,13 @@
 { config }:
 
 let
-  peerCfg = config.networking.intranet.peers."${config.networking.hostName}";
+  intranetCfg = config.networking.intranet;
+  peerCfg = intranetCfg.peers."${config.networking.hostName}";
+
   vpnInterface = peerCfg.internal.interface.name;
   wanInterface = peerCfg.external.name;
+
+  vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in ''
   flush ruleset
@@ -168,20 +172,12 @@ in ''
       type nat hook postrouting priority 100;
 
       # Masquerade VPN traffic to WAN.
-      oifname ${wanInterface} ip saddr ${
-        maskSubnet peerCfg.network.ipv4
-      } masquerade
-      oifname ${wanInterface} ip6 saddr ${
-        maskSubnet peerCfg.network.ipv6
-      } masquerade
+      oifname ${wanInterface} ip saddr ${maskSubnet vpnSubnet.ipv4} masquerade
+      oifname ${wanInterface} ip6 saddr ${maskSubnet vpnSubnet.ipv6} masquerade
 
       # Masquerade VPN traffic to VPN.
-      oifname ${vpnInterface} ip saddr ${
-        maskSubnet peerCfg.network.ipv4
-      } masquerade
-      oifname ${vpnInterface} ip6 saddr ${
-        maskSubnet peerCfg.network.ipv6
-      } masquerade
+      oifname ${vpnInterface} ip saddr ${maskSubnet vpnSubnet.ipv4} masquerade
+      oifname ${vpnInterface} ip6 saddr ${maskSubnet vpnSubnet.ipv6} masquerade
     }
   }
 

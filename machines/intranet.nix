@@ -75,11 +75,6 @@
       };
     };
   in {
-    privateRange = lib.mkOption {
-      type = subnet;
-      description = "The entire range reserved for the intranet";
-    };
-
     subnets = lib.mkOption {
       type = lib.types.attrsOf subnet;
       description = "Subnets inside the VPN";
@@ -99,8 +94,8 @@
           };
 
           network = lib.mkOption {
-            type = subnet;
-            description = "Network this peer is a gateway to";
+            type = lib.types.str;
+            description = "Network in 'subnets' this peer is a gateway to";
           };
         };
       });
@@ -133,34 +128,36 @@
   };
 
   config.networking.intranet = rec {
-    privateRange = {
-      ipv4 = {
-        subnet = "10.0.0.0";
-        mask = 8;
-      };
-
-      ipv6 = {
-        subnet = "fd25:6f6:a9f::";
-        mask = 48;
-      };
-    };
-
     subnets = {
-      # Private home network containing trusted devices.
-      home-private = {
+      # Range of the entire intranet.
+      intranet = {
         ipv4 = {
           subnet = "10.0.0.0";
-          mask = 24;
+          mask = 8;
         };
+
         ipv6 = {
-          subnet = "fd25:6f6:a9f:2000::";
+          subnet = "fd25:6f6:a9f::";
+          mask = 48;
+        };
+      };
+
+      # Accessible by connecting to the server.
+      vpn = {
+        ipv4 = {
+          subnet = "10.100.0.0";
+          mask = 16;
+        };
+
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:1000::";
           mask = 52;
         };
       };
 
       # Devices in the internal subnet can communicate with each other
       # as well as access the public internet via the server.
-      internal = {
+      vpn-internal = {
         ipv4 = {
           subnet = "10.100.100.0";
           mask = 24;
@@ -173,7 +170,7 @@
 
       # Devices in the isolated subnet can communicate with each other,
       # but not access the public internet via the server.
-      isolated = {
+      vpn-isolated = {
         ipv4 = {
           subnet = "10.100.104.0";
           mask = 24;
@@ -181,6 +178,31 @@
         ipv6 = {
           subnet = "fd25:6f6:a9f:1200::";
           mask = 56;
+        };
+      };
+
+      # Accessible by connecting to the home gateway.
+      home = {
+        ipv4 = {
+          subnet = "10.0.0.0";
+          mask = 16;
+        };
+
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:2000::";
+          mask = 52;
+        };
+      };
+
+      # Private home subnet containing trusted devices.
+      home-private = {
+        ipv4 = {
+          subnet = "10.0.0.0";
+          mask = 24;
+        };
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:2000::";
+          mask = 52;
         };
       };
     };
@@ -204,17 +226,7 @@
           ipv6 = "2a01:430:17:1::ffff:1108";
         };
 
-        network = {
-          ipv4 = {
-            subnet = "10.100.0.0";
-            mask = 16;
-          };
-
-          ipv6 = {
-            subnet = "fd25:6f6:a9f:1000::";
-            mask = 52;
-          };
-        };
+        network = "vpn";
       };
 
       bob = {
@@ -235,17 +247,7 @@
           ipv6 = "fd25:6f6:a9f:2000::2";
         };
 
-        network = {
-          ipv4 = {
-            subnet = "10.0.0.0";
-            mask = 16;
-          };
-
-          ipv6 = {
-            subnet = "fd25:6f6:a9f:2000::";
-            mask = 52;
-          };
-        };
+        network = "home";
       };
     };
 

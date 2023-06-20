@@ -3,10 +3,11 @@
 let
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers."${config.networking.hostName}";
+
   vpnInterface = peerCfg.internal.interface.name;
   lanInterface = peerCfg.external.name;
 
-  vpnSubnet = intranetCfg.peers."whitelodge".network;
+  vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.home-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in ''

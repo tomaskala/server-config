@@ -2,13 +2,16 @@
 
 let
   hostName = "bob";
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+
+  nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
+  musicDir = "/mnt/Music";
 
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers."${hostName}";
 
-  nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
-  musicDir = "/mnt/Music";
+  vpnSubnet = intranetCfg.subnets.vpn;
+  privateSubnet = intranetCfg.subnets.home-private;
+  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports =
     [ ./secrets-management.nix ../intranet.nix ../../services/openssh.nix ];
@@ -109,16 +112,16 @@ in {
     services.caddy = {
       enable = true;
       # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from the private
-      # range anyway.
+      # since this is an internal domain only accessible from private subnets.
       virtualHosts."http://music.home.arpa" = {
         extraConfig = ''
           reverse_proxy :${
             builtins.toString config.services.navidrome.settings.Port
           }
-          @blocked not remote_ip ${maskSubnet intranetCfg.privateRange.ipv4} ${
-            maskSubnet intranetCfg.privateRange.ipv6
-          }
+
+          @blocked not remote_ip ${maskSubnet privateSubnet.ipv4} ${
+            maskSubnet privateSubnet.ipv6
+          } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
           respond @blocked "Forbidden" 403
         '';
       };

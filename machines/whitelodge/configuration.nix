@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
 let
+  hostName = "whitelodge";
+
   publicDomain = "tomaskala.com";
   publicDomainWebroot = "/var/www/${publicDomain}";
   acmeEmail = "public+acme@${publicDomain}";
@@ -8,9 +10,12 @@ let
   rssDomain = "rss.home.arpa";
   rssListenPort = 7070;
 
-  hostName = "whitelodge";
+  intranetCfg = config.networking.intranet;
+  peerCfg = intranetCfg.peers."${hostName}";
+  vpnInterface = peerCfg.internal.interface.name;
+
+  vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-  peerCfg = config.networking.intranet.peers."${hostName}";
 in {
   imports = [
     ./overlay-network.nix
@@ -104,9 +109,9 @@ in {
     systemd.network = {
       enable = true;
 
-      netdevs."90-${peerCfg.internal.interface.name}" = {
+      netdevs."90-${vpnInterface}" = {
         netdevConfig = {
-          Name = peerCfg.internal.interface.name;
+          Name = vpnInterface;
           Kind = "wireguard";
         };
 
@@ -146,15 +151,15 @@ in {
         ];
       };
 
-      networks."90-${peerCfg.internal.interface.name}" = {
-        matchConfig.Name = peerCfg.internal.interface.name;
+      networks."90-${vpnInterface}" = {
+        matchConfig.Name = vpnInterface;
 
         address = [
           "${peerCfg.internal.interface.ipv4}/${
-            builtins.toString peerCfg.network.ipv4.mask
+            builtins.toString vpnSubnet.ipv4.mask
           }"
           "${peerCfg.internal.interface.ipv6}/${
-            builtins.toString peerCfg.network.ipv6.mask
+            builtins.toString vpnSubnet.ipv6.mask
           }"
         ];
       };
@@ -215,13 +220,13 @@ in {
       };
 
       # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from the VPN anyway.
+      # since this is an internal domain only accessible from the VPN.
       virtualHosts."http://${rssDomain}" = {
         extraConfig = ''
           reverse_proxy :${builtins.toString rssListenPort}
 
-          @blocked not remote_ip ${maskSubnet peerCfg.network.ipv4} ${
-            maskSubnet peerCfg.network.ipv6
+          @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
+            maskSubnet vpnSubnet.ipv6
           }
           respond @blocked "Forbidden" 403
         '';
@@ -241,8 +246,8 @@ in {
         access-control = [
           "127.0.0.1/8 allow"
           "::1/128 allow"
-          "${maskSubnet peerCfg.network.ipv4} allow"
-          "${maskSubnet peerCfg.network.ipv6} allow"
+          "${maskSubnet vpnSubnet.ipv4} allow"
+          "${maskSubnet vpnSubnet.ipv6} allow"
         ];
       };
 

@@ -20,23 +20,23 @@ let
         AllowedIPs = [
           internal.interface.ipv4
           internal.interface.ipv6
-          (maskSubnet network.ipv4)
-          (maskSubnet network.ipv6)
+          (maskSubnet intranetCfg.subnets."${network}".ipv4)
+          (maskSubnet intranetCfg.subnets."${network}".ipv6)
         ];
       };
     };
 
-  makeRoute = { ipv4, ipv6 }: [
+  makeRoute = network: [
     {
       routeConfig = {
-        Destination = maskSubnet ipv4;
+        Destination = maskSubnet intranetCfg.subnets."${network}".ipv4;
         Scope = "host";
         Type = "local";
       };
     }
     {
       routeConfig = {
-        Destination = maskSubnet ipv6;
+        Destination = maskSubnet intranetCfg.subnets."${network}".ipv6;
         Scope = "host";
         Type = "local";
       };
@@ -56,7 +56,7 @@ in {
       makeAccessibleSet = ipProto:
         { internal, network, ... }: [
           internal.interface."${ipProto}"
-          (maskSubnet network."${ipProto}")
+          (maskSubnet intranetCfg.subnets."${network}"."${ipProto}")
         ];
 
       accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
@@ -66,14 +66,14 @@ in {
         (builtins.attrValues otherPeers);
     in ''
       ${addToSet "vpn_internal_ipv4"
-      (maskSubnet intranetCfg.subnets.internal.ipv4)}
+      (maskSubnet intranetCfg.subnets.vpn-internal.ipv4)}
       ${addToSet "vpn_internal_ipv6"
-      (maskSubnet intranetCfg.subnets.internal.ipv6)}
+      (maskSubnet intranetCfg.subnets.vpn-internal.ipv6)}
 
       ${addToSet "vpn_isolated_ipv4"
-      (maskSubnet intranetCfg.subnets.isolated.ipv4)}
+      (maskSubnet intranetCfg.subnets.vpn-isolated.ipv4)}
       ${addToSet "vpn_isolated_ipv6"
-      (maskSubnet intranetCfg.subnets.isolated.ipv6)}
+      (maskSubnet intranetCfg.subnets.vpn-isolated.ipv6)}
 
       ${lib.concatMapStringsSep "\n" (addToSet "vpn_accessible_ipv4")
       accessibleIPv4}
