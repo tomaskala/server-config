@@ -8,6 +8,7 @@ let
 
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers."${hostName}";
+  vpnInterface = peerCfg.internal.interface.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.home-private;
@@ -63,6 +64,54 @@ in {
       enable = true;
       ruleset = import ./nftables-ruleset.nix { inherit config; };
       checkRuleset = true;
+    };
+
+    systemd.network = {
+      enable = true;
+
+      netdevs."90-${vpnInterface}" = {
+        netdevConfig = {
+          Name = vpnInterface;
+          Kind = "wireguard";
+        };
+
+        wireguardConfig = {
+          PrivateKeyFile = config.age.secrets."wg-${hostName}-pk".path;
+        };
+
+        wireguardPeers = [{
+          wireguardPeerConfig = {
+            # whitelodge
+            PublicKey = intranetCfg.peers.whitelodge.publicKey;
+            PresharedKeyFile =
+              config.age.secrets."wg-${hostName}2whitelodge-psk".path;
+            AllowedIPs = [
+              (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv4)
+              (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv6)
+            ];
+            Endpoint = "${intranetCfg.peers.whitelodge.external.ipv4}:${
+                builtins.toString intranetCfg.peers.whitelodge.port
+              }";
+            PersistentKeepalive = 25;
+          };
+        }];
+      };
+
+      networks."90-${vpnInterface}" = {
+        matchConfig.Name = vpnInterface;
+
+        # Enable IP forwarding (system-wide).
+        networkConfig.IPForward = true;
+
+        address = [
+          "${peerCfg.internal.interface.ipv4}/${
+            builtins.toString vpnSubnet.ipv4.mask
+          }"
+          "${peerCfg.internal.interface.ipv6}/${
+            builtins.toString vpnSubnet.ipv6.mask
+          }"
+        ];
+      };
     };
 
     fileSystems."${musicDir}" = {
@@ -126,7 +175,5 @@ in {
         '';
       };
     };
-
-    # TODO: overlay network
   };
 }

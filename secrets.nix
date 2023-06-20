@@ -27,6 +27,8 @@ in (setKeys [ whitelodge ] [
 ]) // (setKeys [ bob ] [
   # tomas@bob password
   "users-tomas-password-bob"
+  # bob WireGuard private key
+  "wg-bob-pk"
 ]) // (setKeys [ whitelodge bob ] [
   # bob2whitelodge WireGuard preshared key
   "wg-bob2whitelodge-psk"
