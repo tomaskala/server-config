@@ -18,8 +18,8 @@ let
         PresharedKeyFile =
           config.age.secrets."wg-${peerName}2${hostName}-psk".path;
         AllowedIPs = [
-          internal.interface.ipv4
-          internal.interface.ipv6
+          "${internal.interface.ipv4}/32"
+          "${internal.interface.ipv6}/128"
           (maskSubnet intranetCfg.subnets."${network}".ipv4)
           (maskSubnet intranetCfg.subnets."${network}".ipv6)
         ];
