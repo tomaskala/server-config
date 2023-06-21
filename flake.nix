@@ -13,7 +13,7 @@
     unbound-blocker.url = "github:tomaskala/unbound-blocker";
   };
 
-  outputs = { self, nixpkgs, agenix, vps-admin-os, unbound-blocker }:
+  outputs = { nixpkgs, agenix, vps-admin-os, unbound-blocker, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -83,5 +83,11 @@
             find . -type f -name '*.nix' -exec nixfmt {} \+
           '';
         });
+
+      checks = forAllSystems (pkgs: {
+        deadnix = pkgs.callPackage ./checks/deadnix.nix { };
+        statix = pkgs.callPackage ./checks/statix.nix { };
+        nixfmt = pkgs.callPackage ./checks/nixfmt.nix { };
+      });
     };
 }
