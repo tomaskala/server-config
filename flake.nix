@@ -17,7 +17,9 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
-      nixpkgsPin = {
+      commonConfig = {
+        config.system.stateVersion = "23.05";
+
         # Pin the nixpkgs flake to the same exact version used to build
         # the system. This has two benefits:
         # 1. No version mismatch between system packages and those
@@ -48,7 +50,7 @@
 
           modules = [
             ./machines/whitelodge/configuration.nix
-            nixpkgsPin
+            commonConfig
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
           ];
@@ -62,7 +64,7 @@
 
           modules = [
             ./machines/bob/configuration.nix
-            nixpkgsPin
+            commonConfig
             agenix.nixosModules.default
           ];
         };

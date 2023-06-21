@@ -18,8 +18,6 @@ in {
     [ ./secrets-management.nix ../intranet.nix ../../services/openssh.nix ];
 
   config = {
-    system.stateVersion = "23.05";
-
     nix = {
       gc = {
         automatic = true;

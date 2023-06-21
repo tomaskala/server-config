@@ -27,8 +27,6 @@ in {
   ];
 
   config = {
-    system.stateVersion = "23.05";
-
     nix = {
       gc = {
         automatic = true;
