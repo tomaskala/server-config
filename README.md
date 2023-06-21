@@ -18,13 +18,15 @@ following.
 5. Put the host key and any secrets inside `secrets.nix`.
 6. Define all secrets.
    ```
-   $ nix run 'github:ryantm/agenix' -- -e <secret.age>
+   $ nix develop
+   [nix-develop]$ agenix -e <secret.age>
    ```
    Note that for secrets holding the user passwords (to be used with
    `config.users.users.<name>.passwordFile`), the content of the age-encrypted
    file should be SHA-512 of the password. That is, create the secret as
    ```
-   $ openssl passwd -6 -in <password-file> | nix run 'github:ryantm/agenix' -- -e <password-name>
+   $ nix develop
+   [nix-develop]$ openssl passwd -6 -in <password-file> | agenix -e <password-name>
    ```
 7. Copy all secrets into `/root/secrets` on the machine.
 8. SSH into the machine and enter a Nix shell with git (the flake setup needs 

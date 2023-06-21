@@ -65,8 +65,14 @@
       };
 
       devShells = forAllSystems (pkgs: {
-        default =
-          pkgs.mkShell { packages = with pkgs; [ deadnix nixfmt statix ]; };
+        default = pkgs.mkShell {
+          packages = with pkgs; [
+            deadnix
+            nixfmt
+            statix
+            agenix.packages."${system}".agenix
+          ];
+        };
       });
 
       formatter = forAllSystems (pkgs:
