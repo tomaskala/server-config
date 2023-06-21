@@ -5,7 +5,7 @@ let
 
   cfg = config.networking.overlay-network;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers."${hostName}";
+  peerCfg = intranetCfg.peers.${hostName};
   otherPeers =
     lib.filterAttrs (peerName: _: peerName != hostName) intranetCfg.peers;
 
@@ -20,8 +20,8 @@ let
         AllowedIPs = [
           "${internal.interface.ipv4}/32"
           "${internal.interface.ipv6}/128"
-          (maskSubnet intranetCfg.subnets."${network}".ipv4)
-          (maskSubnet intranetCfg.subnets."${network}".ipv6)
+          (maskSubnet intranetCfg.subnets.${network}.ipv4)
+          (maskSubnet intranetCfg.subnets.${network}.ipv6)
         ];
       };
     };
@@ -29,14 +29,14 @@ let
   makeRoute = network: [
     {
       routeConfig = {
-        Destination = maskSubnet intranetCfg.subnets."${network}".ipv4;
+        Destination = maskSubnet intranetCfg.subnets.${network}.ipv4;
         Scope = "host";
         Type = "local";
       };
     }
     {
       routeConfig = {
-        Destination = maskSubnet intranetCfg.subnets."${network}".ipv6;
+        Destination = maskSubnet intranetCfg.subnets.${network}.ipv6;
         Scope = "host";
         Type = "local";
       };
@@ -55,8 +55,8 @@ in {
 
       makeAccessibleSet = ipProto:
         { internal, network, ... }: [
-          internal.interface."${ipProto}"
-          (maskSubnet intranetCfg.subnets."${network}"."${ipProto}")
+          internal.interface.${ipProto}
+          (maskSubnet intranetCfg.subnets.${network}.${ipProto})
         ];
 
       accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")

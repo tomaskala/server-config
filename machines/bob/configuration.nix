@@ -7,7 +7,7 @@ let
   musicDir = "/mnt/Music";
 
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers."${hostName}";
+  peerCfg = intranetCfg.peers.${hostName};
   vpnInterface = peerCfg.internal.interface.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
@@ -112,7 +112,7 @@ in {
       };
     };
 
-    fileSystems."${musicDir}" = {
+    fileSystems.${musicDir} = {
       device = "${nasAddr}:/volume1/Music";
       fsType = "nfs";
       options = [

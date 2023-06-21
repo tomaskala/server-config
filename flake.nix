@@ -70,7 +70,7 @@
             deadnix
             nixfmt
             statix
-            agenix.packages."${system}".agenix
+            agenix.packages.${system}.agenix
           ];
         };
       });

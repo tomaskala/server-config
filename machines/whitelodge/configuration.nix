@@ -11,7 +11,7 @@ let
   rssListenPort = 7070;
 
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers."${hostName}";
+  peerCfg = intranetCfg.peers.${hostName};
   vpnInterface = peerCfg.internal.interface.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
