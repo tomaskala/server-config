@@ -1,8 +1,6 @@
 { config, pkgs, ... }:
 
 let
-  hostName = "whitelodge";
-
   publicDomain = "tomaskala.com";
   publicDomainWebroot = "/var/www/${publicDomain}";
   acmeEmail = "public+acme@${publicDomain}";
@@ -11,7 +9,7 @@ let
   rssListenPort = 7070;
 
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.${hostName};
+  peerCfg = intranetCfg.peers.whitelodge;
   vpnInterface = peerCfg.internal.interface.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
@@ -46,9 +44,9 @@ in {
     users.users.tomas = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
-      passwordFile = config.age.secrets."users-tomas-password-${hostName}".path;
+      passwordFile = config.age.secrets."users-tomas-password-whitelodge".path;
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2${hostName}"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2whitelodge"
       ];
     };
 
@@ -60,8 +58,8 @@ in {
       shell = "${pkgs.git}/bin/git-shell";
       group = "git";
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2${hostName}-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf blacklodge2${hostName}-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2whitelodge-git"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf blacklodge2whitelodge-git"
       ];
     };
 
@@ -85,7 +83,7 @@ in {
       git.config.init.defaultBranch = "master";
     };
 
-    networking.hostName = hostName;
+    networking.hostName = "whitelodge";
     networking.dhcpcd.enable = false;
     networking.firewall.enable = false;
     networking.nftables = {
@@ -114,7 +112,7 @@ in {
         };
 
         wireguardConfig = {
-          PrivateKeyFile = config.age.secrets."wg-${hostName}-pk".path;
+          PrivateKeyFile = config.age.secrets."wg-whitelodge-pk".path;
           ListenPort = peerCfg.internal.port;
         };
 
@@ -124,7 +122,7 @@ in {
               # tomas-phone
               PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
               PresharedKeyFile =
-                config.age.secrets."wg-tomas-phone2${hostName}-psk".path;
+                config.age.secrets."wg-tomas-phone2whitelodge-psk".path;
               AllowedIPs = [ "10.100.100.2/32" "fd25:6f6:a9f:1100::2/128" ];
             };
           }
@@ -133,7 +131,7 @@ in {
               # martin-windows
               PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
               PresharedKeyFile =
-                config.age.secrets."wg-martin-windows2${hostName}-psk".path;
+                config.age.secrets."wg-martin-windows2whitelodge-psk".path;
               AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
             };
           }
@@ -142,7 +140,7 @@ in {
               # blacklodge
               PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
               PresharedKeyFile =
-                config.age.secrets."wg-blacklodge2${hostName}-psk".path;
+                config.age.secrets."wg-blacklodge2whitelodge-psk".path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
           }

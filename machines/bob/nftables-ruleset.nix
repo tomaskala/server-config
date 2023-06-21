@@ -2,7 +2,7 @@
 
 let
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.${config.networking.hostName};
+  peerCfg = intranetCfg.peers.bob;
 
   vpnInterface = peerCfg.internal.interface.name;
   lanInterface = peerCfg.external.name;

@@ -1,13 +1,11 @@
 { config, pkgs, ... }:
 
 let
-  hostName = "bob";
-
   nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
   musicDir = "/mnt/Music";
 
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.${hostName};
+  peerCfg = intranetCfg.peers.bob;
   vpnInterface = peerCfg.internal.interface.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
@@ -33,7 +31,7 @@ in {
     users.users.tomas = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
-      passwordFile = config.age.secrets."users-tomas-password-${hostName}".path;
+      passwordFile = config.age.secrets."users-tomas-password-bob".path;
       openssh.authorizedKeys.keys = [
         # TODO
       ];
@@ -56,7 +54,7 @@ in {
 
     programs.vim.defaultEditor = true;
 
-    networking.hostName = hostName;
+    networking.hostName = "bob";
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
@@ -74,15 +72,14 @@ in {
         };
 
         wireguardConfig = {
-          PrivateKeyFile = config.age.secrets."wg-${hostName}-pk".path;
+          PrivateKeyFile = config.age.secrets."wg-bob-pk".path;
         };
 
         wireguardPeers = [{
           wireguardPeerConfig = {
             # whitelodge
             PublicKey = intranetCfg.peers.whitelodge.publicKey;
-            PresharedKeyFile =
-              config.age.secrets."wg-${hostName}2whitelodge-psk".path;
+            PresharedKeyFile = config.age.secrets."wg-bob2whitelodge-psk".path;
             AllowedIPs = [
               (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv4)
               (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv6)

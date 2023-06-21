@@ -17,17 +17,17 @@
       };
 
     secrets = builtins.map makeSecret [
-      "users-tomas-password-${config.networking.hostName}"
+      "users-tomas-password-whitelodge"
       "miniflux-admin-credentials"
     ];
 
     systemdNetworkReadableSecrets =
       builtins.map makeSystemdNetworkReadableSecret [
-        "wg-${config.networking.hostName}-pk"
-        "wg-bob2${config.networking.hostName}-psk"
-        "wg-tomas-phone2${config.networking.hostName}-psk"
-        "wg-martin-windows2${config.networking.hostName}-psk"
-        "wg-blacklodge2${config.networking.hostName}-psk"
+        "wg-whitelodge-pk"
+        "wg-bob2whitelodge-psk"
+        "wg-tomas-phone2whitelodge-psk"
+        "wg-martin-windows2whitelodge-psk"
+        "wg-blacklodge2whitelodge-psk"
       ];
   in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
 }

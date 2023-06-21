@@ -1,13 +1,11 @@
 { config, pkgs, lib, ... }:
 
 let
-  inherit (config.networking) hostName;
-
   cfg = config.networking.overlay-network;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.${hostName};
+  peerCfg = intranetCfg.peers.whitelodge;
   otherPeers =
-    lib.filterAttrs (peerName: _: peerName != hostName) intranetCfg.peers;
+    lib.filterAttrs (peerName: _: peerName != "whitelodge") intranetCfg.peers;
 
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
@@ -16,7 +14,7 @@ let
       wireguardPeerConfig = {
         PublicKey = internal.publicKey;
         PresharedKeyFile =
-          config.age.secrets."wg-${peerName}2${hostName}-psk".path;
+          config.age.secrets."wg-${peerName}2whitelodge-psk".path;
         AllowedIPs = [
           "${internal.interface.ipv4}/32"
           "${internal.interface.ipv6}/128"

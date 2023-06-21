@@ -16,13 +16,12 @@
         };
       };
 
-    secrets = builtins.map makeSecret
-      [ "users-tomas-password-${config.networking.hostName}" ];
+    secrets = builtins.map makeSecret [ "users-tomas-password-bob" ];
 
     systemdNetworkReadableSecrets =
       builtins.map makeSystemdNetworkReadableSecret [
-        "wg-${config.networking.hostName}-pk"
-        "wg-${config.networking.hostName}2whitelodge-psk"
+        "wg-bob-pk"
+        "wg-bob2whitelodge-psk"
       ];
   in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
 }
