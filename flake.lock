@@ -81,11 +81,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1687288566,
-        "narHash": "sha256-VckkiJ88Gzdc2cstm0z5eFcrHbvkm4VjxavHBGssvZI=",
+        "lastModified": 1687466461,
+        "narHash": "sha256-oupXI7g7RPzlpGUfAu1xG4KBK53GrZH8/xeKgKDB4+Q=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b6c73c5fe53bb3afbf65e870541e0645e9145171",
+        "rev": "ecb441f22067ba1d6312f4932a7c64efa8d19a7b",
         "type": "github"
       },
       "original": {
@@ -139,11 +139,11 @@
     },
     "vps-admin-os": {
       "locked": {
-        "lastModified": 1686913029,
-        "narHash": "sha256-c1e6Ts6wXJQF+ywxRhczUMxmKD8Tp7fFpxuiXpjHHow=",
+        "lastModified": 1687526379,
+        "narHash": "sha256-BllGsCYnOr381X9LVPhhIJTdgIteOB6jJ8dCWwoJyao=",
         "owner": "vpsfreecz",
         "repo": "vpsadminos",
-        "rev": "5846cf5b9f19356bd4b1831b86508e5d77a79849",
+        "rev": "49bb07cf5b26aca4011745fad8c3574305545da4",
         "type": "github"
       },
       "original": {
