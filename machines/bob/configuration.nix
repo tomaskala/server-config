@@ -33,7 +33,7 @@ in {
       extraGroups = [ "wheel" ];
       passwordFile = config.age.secrets."users-tomas-password-bob".path;
       openssh.authorizedKeys.keys = [
-        # TODO
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF9wbboIeutdnZFbYT5zwJNBf4fJy9njfEMwxOnJKh4z blacklodge2bob"
       ];
     };
 
