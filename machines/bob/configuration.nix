@@ -57,6 +57,7 @@ in {
       git
       htop
       ldns
+      libraspberrypi
       rsync
       tmux
       tree
