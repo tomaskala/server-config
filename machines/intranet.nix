@@ -254,7 +254,7 @@
         };
 
         external = {
-          name = "eth0";
+          name = "end0";
           ipv4 = "10.0.0.2";
           ipv6 = "fd25:6f6:a9f:2000::2";
         };
