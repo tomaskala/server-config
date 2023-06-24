@@ -27,15 +27,15 @@ let
     {
       routeConfig = {
         Destination = maskSubnet intranetCfg.subnets.${network}.ipv4;
-        Scope = "host";
-        Type = "local";
+        Scope = "link";
+        Type = "unicast";
       };
     }
     {
       routeConfig = {
         Destination = maskSubnet intranetCfg.subnets.${network}.ipv6;
-        Scope = "host";
-        Type = "local";
+        Scope = "link";
+        Type = "unicast";
       };
     }
   ];
