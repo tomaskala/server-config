@@ -18,6 +18,7 @@ in ''
       type inet_service
       elements = {
         22,
+        53,
         80,
       }
     }
