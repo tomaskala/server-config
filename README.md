@@ -19,16 +19,16 @@ following.
 6. Define all secrets.
    ```
    $ nix develop
-   [nix-develop]$ agenix -e <secret.age>
+   [nix-develop]$ agenix -e secrets/subdir/secret.age
    ```
    Note that for secrets holding the user passwords (to be used with
    `config.users.users.<name>.passwordFile`), the content of the age-encrypted
    file should be SHA-512 of the password. That is, create the secret as
    ```
    $ nix develop
-   [nix-develop]$ openssl passwd -6 -in <password-file> | agenix -e <password-name>
+   [nix-develop]$ openssl passwd -6 -in <password-file> | agenix -e secrets/users/user-twinpeaks.age
    ```
-7. Copy all secrets into `/root/secrets` on the machine.
+7. Copy the `secrets` directory to `/root` on the machine.
 8. SSH into the machine and enter a Nix shell with git (the flake setup needs 
    it).
    ```

@@ -1,27 +1,19 @@
-{ config, lib, ... }:
-
 {
-  config.age.secrets = let
-    makeSecret = name: {
-      inherit name;
-      value.file = "/root/secrets/${name}.age";
+  config.age.secrets = {
+    users-tomas-password-bob.file = "/root/secrets/users/tomas-bob.age";
+
+    wg-pk = {
+      file = "/root/secrets/wg-pk/bob.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
     };
 
-    makeSystemdNetworkReadableSecret = name:
-      lib.recursiveUpdate (makeSecret name) {
-        value = {
-          mode = "0640";
-          owner = "root";
-          group = "systemd-network";
-        };
-      };
-
-    secrets = builtins.map makeSecret [ "users-tomas-password-bob" ];
-
-    systemdNetworkReadableSecrets =
-      builtins.map makeSystemdNetworkReadableSecret [
-        "wg-bob-pk"
-        "wg-bob2whitelodge-psk"
-      ];
-  in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
+    wg-bob2whitelodge = {
+      file = "/root/secrets/wg-psk/bob2whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
+  };
 }

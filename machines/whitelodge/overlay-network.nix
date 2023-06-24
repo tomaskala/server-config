@@ -13,8 +13,7 @@ let
     { internal, network, ... }: {
       wireguardPeerConfig = {
         PublicKey = internal.publicKey;
-        PresharedKeyFile =
-          config.age.secrets."wg-${peerName}2whitelodge-psk".path;
+        PresharedKeyFile = config.age.secrets."wg-${peerName}2whitelodge".path;
         AllowedIPs = [
           "${internal.interface.ipv4}/32"
           "${internal.interface.ipv6}/128"

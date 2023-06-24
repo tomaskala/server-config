@@ -1,33 +1,43 @@
-{ config, lib, ... }:
-
 {
-  config.age.secrets = let
-    makeSecret = name: {
-      inherit name;
-      value.file = "/root/secrets/${name}.age";
+  config.age.secrets = {
+    users-tomas-password-whitelodge.file =
+      "/root/secrets/users/tomas-whitelodge.age";
+    miniflux-admin-credentials.file =
+      "/root/secrets/other/miniflux-whitelodge.age";
+
+    wg-pk = {
+      file = "/root/secrets/wg-pk/whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
     };
 
-    makeSystemdNetworkReadableSecret = name:
-      lib.recursiveUpdate (makeSecret name) {
-        value = {
-          mode = "0640";
-          owner = "root";
-          group = "systemd-network";
-        };
-      };
+    wg-bob2whitelodge = {
+      file = "/root/secrets/wg-psk/bob2whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
 
-    secrets = builtins.map makeSecret [
-      "users-tomas-password-whitelodge"
-      "miniflux-admin-credentials"
-    ];
+    wg-tomas-phone2whitelodge = {
+      file = "/root/secrets/wg-psk/tomas-phone2whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
 
-    systemdNetworkReadableSecrets =
-      builtins.map makeSystemdNetworkReadableSecret [
-        "wg-whitelodge-pk"
-        "wg-bob2whitelodge-psk"
-        "wg-tomas-phone2whitelodge-psk"
-        "wg-martin-windows2whitelodge-psk"
-        "wg-blacklodge2whitelodge-psk"
-      ];
-  in builtins.listToAttrs (secrets ++ systemdNetworkReadableSecrets);
+    wg-blacklodge2whitelodge = {
+      file = "/root/secrets/wg-psk/blacklodge2whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
+
+    wg-martin-windows2whitelodge = {
+      file = "/root/secrets/wg-psk/martin-windows2whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
+  };
 }

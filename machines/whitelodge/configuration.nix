@@ -112,7 +112,7 @@ in {
         };
 
         wireguardConfig = {
-          PrivateKeyFile = config.age.secrets."wg-whitelodge-pk".path;
+          PrivateKeyFile = config.age.secrets.wg-pk.path;
           ListenPort = peerCfg.internal.port;
         };
 
@@ -122,7 +122,7 @@ in {
               # tomas-phone
               PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
               PresharedKeyFile =
-                config.age.secrets."wg-tomas-phone2whitelodge-psk".path;
+                config.age.secrets.wg-tomas-phone2whitelodge.path;
               AllowedIPs = [ "10.100.100.2/32" "fd25:6f6:a9f:1100::2/128" ];
             };
           }
@@ -131,7 +131,7 @@ in {
               # martin-windows
               PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
               PresharedKeyFile =
-                config.age.secrets."wg-martin-windows2whitelodge-psk".path;
+                config.age.secrets.wg-martin-windows2whitelodge.path;
               AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
             };
           }
@@ -140,7 +140,7 @@ in {
               # blacklodge
               PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
               PresharedKeyFile =
-                config.age.secrets."wg-blacklodge2whitelodge-psk".path;
+                config.age.secrets.wg-blacklodge2whitelodge.path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
             };
           }

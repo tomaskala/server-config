@@ -71,15 +71,13 @@ in {
           Kind = "wireguard";
         };
 
-        wireguardConfig = {
-          PrivateKeyFile = config.age.secrets."wg-bob-pk".path;
-        };
+        wireguardConfig = { PrivateKeyFile = config.age.secrets.wg-pk.path; };
 
         wireguardPeers = [{
           wireguardPeerConfig = {
             # whitelodge
             PublicKey = intranetCfg.peers.whitelodge.publicKey;
-            PresharedKeyFile = config.age.secrets."wg-bob2whitelodge-psk".path;
+            PresharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
             AllowedIPs = [
               (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv4)
               (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv6)
