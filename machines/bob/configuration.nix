@@ -130,15 +130,7 @@ in {
       ];
     };
 
-    services.openssh = {
-      enable = true;
-      listenAddresses = [
-        { addr = peerCfg.internal.interface.ipv4; }
-        { addr = peerCfg.internal.interface.ipv6; }
-        { addr = peerCfg.external.ipv4; }
-        { addr = peerCfg.external.ipv6; }
-      ];
-    };
+    services.openssh.enable = true;
 
     services.navidrome = {
       enable = true;
