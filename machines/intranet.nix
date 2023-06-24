@@ -249,7 +249,7 @@
             ipv6 = "fd25:6f6:a9f:1000::10";
           };
 
-          publicKey = "AA8z9EaVsdss2agi0V7Hho8xe+mMlVUJpqgZcp4D5Eg=";
+          publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
           port = null;
         };
 
