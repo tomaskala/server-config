@@ -201,8 +201,8 @@
           mask = 24;
         };
         ipv6 = {
-          subnet = "fd25:6f6:a9f:2000::";
-          mask = 52;
+          subnet = "fd25:6f6:a9f:2100::";
+          mask = 56;
         };
       };
     };
