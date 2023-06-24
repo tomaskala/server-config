@@ -12,10 +12,19 @@ let
   privateSubnet = intranetCfg.subnets.home-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
-  imports =
-    [ ./secrets-management.nix ../intranet.nix ../../services/openssh.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ./secrets-management.nix
+    ../intranet.nix
+    ../../services/openssh.nix
+  ];
 
   config = {
+    boot.loader = {
+      grub.enable = false;
+      generic-extlinux-compatible.enable = true;
+    };
+
     nix = {
       gc = {
         automatic = true;
