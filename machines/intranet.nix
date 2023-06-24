@@ -205,6 +205,18 @@
           mask = 56;
         };
       };
+
+      # Isolated home subnet containing untrusted devices.
+      home-isolated = {
+        ipv4 = {
+          subnet = "10.0.4.0";
+          mask = 24;
+        };
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:2200::";
+          mask = 56;
+        };
+      };
     };
 
     peers = {
