@@ -85,14 +85,14 @@ in {
         wireguardPeers = [{
           wireguardPeerConfig = {
             # whitelodge
-            PublicKey = intranetCfg.peers.whitelodge.publicKey;
+            PublicKey = intranetCfg.peers.whitelodge.internal.publicKey;
             PresharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
             AllowedIPs = [
-              (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv4)
-              (maskSubnet intranetCfg.peers.whitelodge.internal.interface.ipv6)
+              "${intranetCfg.peers.whitelodge.internal.interface.ipv4}/32"
+              "${intranetCfg.peers.whitelodge.internal.interface.ipv6}/128"
             ];
             Endpoint = "${intranetCfg.peers.whitelodge.external.ipv4}:${
-                builtins.toString intranetCfg.peers.whitelodge.port
+                builtins.toString intranetCfg.peers.whitelodge.internal.port
               }";
             PersistentKeepalive = 25;
           };
