@@ -2,7 +2,8 @@ let
   whitelodge =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPqZXcy8lb24LirRJ4X77olNBGZkSnB6EGHwXF3MYbi8";
 
-  bob = ""; # TODO
+  bob =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIEQcZR1q25+ZASKxM2L0xuTZu2w9zQ25lIySG08n4/Q";
 in {
   # Users
   "secrets/users/tomas-whitelodge.age".publicKeys = [ whitelodge ];
