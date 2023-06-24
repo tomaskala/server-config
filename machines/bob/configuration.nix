@@ -17,6 +17,8 @@ in {
     ./secrets-management.nix
     ../intranet.nix
     ../../services/openssh.nix
+    ../../services/unbound-blocker.nix
+    ../../services/unbound.nix
   ];
 
   config = {
@@ -169,5 +171,24 @@ in {
         '';
       };
     };
+
+    services.unbound = {
+      enable = true;
+
+      settings.server = {
+        interface =
+          [ "127.0.0.1" "::1" peerCfg.external.ipv4 peerCfg.external.ipv6 ];
+        access-control = [
+          "127.0.0.1/8 allow"
+          "::1/128 allow"
+          "${maskSubnet privateSubnet.ipv4} allow"
+          "${maskSubnet privateSubnet.ipv6} allow"
+        ];
+      };
+
+      inherit (intranetCfg) localDomains;
+    };
+
+    services.unbound-blocker.enable = true;
   };
 }

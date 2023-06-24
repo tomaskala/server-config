@@ -25,6 +25,7 @@ in ''
     set udp_accepted_lan {
       type inet_service
       elements = {
+        53,
       }
     }
 
