@@ -58,6 +58,7 @@ in {
       htop
       ldns
       libraspberrypi
+      raspberrypi-eeprom
       rsync
       tmux
       tree
