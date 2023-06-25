@@ -4,9 +4,11 @@ let
   cfg = config.networking.overlay-network;
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers.whitelodge;
+  vpnInterface = peerCfg.internal.interface.name;
   otherPeers =
     lib.filterAttrs (peerName: _: peerName != "whitelodge") intranetCfg.peers;
 
+  vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
   makePeer = peerName:
@@ -85,13 +87,34 @@ in {
       enable = true;
 
       # Add each peer's gateway as a Wireguard peer.
-      netdevs."90-${peerCfg.internal.interface.name}" = {
+      netdevs."90-${vpnInterface}" = {
+        netdevConfig = {
+          Name = vpnInterface;
+          Kind = "wireguard";
+        };
+
+        wireguardConfig = {
+          PrivateKeyFile = config.age.secrets.wg-pk.path;
+          ListenPort = peerCfg.internal.port;
+        };
+
         wireguardPeers = lib.mapAttrsToList makePeer otherPeers;
       };
 
-      networks."90-${peerCfg.internal.interface.name}" = {
+      networks."90-${vpnInterface}" = {
+        matchConfig.Name = vpnInterface;
+
         # Enable IP forwarding (system-wide).
         networkConfig.IPForward = true;
+
+        address = [
+          "${peerCfg.internal.interface.ipv4}/${
+            builtins.toString vpnSubnet.ipv4.mask
+          }"
+          "${peerCfg.internal.interface.ipv6}/${
+            builtins.toString vpnSubnet.ipv6.mask
+          }"
+        ];
 
         # Route traffic to each peer's network to the Wireguard interface.
         # Wireguard takes care of routing to the correct gateway within the
