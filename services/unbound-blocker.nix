@@ -106,6 +106,8 @@ in {
 
     systemd.services.unbound-blocker = {
       description = "DNS blocklist filling script";
+      after = [ "unbound.service" ];
+      wantedBy = [ "unbound.service" ];
       startAt = "Sun *-*-* 05:00:00";
 
       serviceConfig = {
