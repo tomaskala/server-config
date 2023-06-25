@@ -128,20 +128,20 @@ in {
           }
           {
             wireguardPeerConfig = {
-              # martin-windows
-              PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
-              PresharedKeyFile =
-                config.age.secrets.wg-martin-windows2whitelodge.path;
-              AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
-            };
-          }
-          {
-            wireguardPeerConfig = {
               # blacklodge
               PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
               PresharedKeyFile =
                 config.age.secrets.wg-blacklodge2whitelodge.path;
               AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
+            };
+          }
+          {
+            wireguardPeerConfig = {
+              # martin-windows
+              PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
+              PresharedKeyFile =
+                config.age.secrets.wg-martin-windows2whitelodge.path;
+              AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
             };
           }
         ];
