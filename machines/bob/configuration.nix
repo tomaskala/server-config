@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
@@ -120,10 +120,14 @@ in {
       };
     };
 
+    # NFSv4 does not need rpcbind.
+    services.rpcbind.enable = lib.mkForce false;
     fileSystems.${musicDir} = {
       device = "${nasAddr}:/volume1/Music";
       fsType = "nfs";
       options = [
+        # Use NFSv4.1 (the highest my NAS supports).
+        "nfsvers=4.1"
         # Lazily mount the filesystem upon first access.
         "x-systemd.automount"
         "noauto"
