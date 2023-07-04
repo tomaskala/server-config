@@ -46,6 +46,7 @@ in {
       extraGroups = [ "wheel" ];
       passwordFile = config.age.secrets."users-tomas-password-whitelodge".path;
       openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMvN19BcNTeaVAF291lBG0z9ROD6J91XAMyy+0VP6CdL cooper2whitelodge"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2whitelodge"
       ];
     };
@@ -58,6 +59,7 @@ in {
       shell = "${pkgs.git}/bin/git-shell";
       group = "git";
       openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGbhtSz3s/zgTVWg7d37J9qeKk+u4H+jJhwvj/QXjaIW cooper2whitelodge-git"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2whitelodge-git"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf blacklodge2whitelodge-git"
       ];
@@ -117,6 +119,14 @@ in {
         };
 
         wireguardPeers = [
+          {
+            wireguardPeerConfig = {
+              # cooper
+              PublicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
+              PresharedKeyFile = config.age.secrets.wg-cooper2whitelodge.path;
+              AllowedIPs = [ "10.100.100.1/32" "fd25:6f6:a9f:1100::1/128" ];
+            };
+          }
           {
             wireguardPeerConfig = {
               # tomas-phone
