@@ -9,12 +9,14 @@
             type = lib.types.str;
             description = "Subnet IP range";
             example = "10.0.0.0";
+            readOnly = true;
           };
 
           mask = lib.mkOption {
             type = lib.types.int;
             description = "Subnet mask";
             example = "16";
+            readOnly = true;
           };
         };
       };
@@ -23,11 +25,13 @@
         ipv4 = lib.mkOption {
           type = ipRange;
           description = "IPv4 range of the subnet";
+          readOnly = true;
         };
 
         ipv6 = lib.mkOption {
           type = ipRange;
           description = "IPv6 range of the subnet";
+          readOnly = true;
         };
       };
     };
@@ -38,18 +42,21 @@
           type = lib.types.str;
           description = "Name of the network interface";
           example = "eth0";
+          readOnly = true;
         };
 
         ipv4 = lib.mkOption {
           type = lib.types.str;
           description = "IPv4 address of the network interface";
           example = "192.168.0.1";
+          readOnly = true;
         };
 
         ipv6 = lib.mkOption {
           type = lib.types.str;
           description = "IPv6 address of the network interface";
           example = "fe80::1";
+          readOnly = true;
         };
       };
     };
@@ -59,18 +66,21 @@
         interface = lib.mkOption {
           type = networkInterface;
           description = "WireGuard interface of this peer";
+          readOnly = true;
         };
 
         publicKey = lib.mkOption {
           type = lib.types.str;
           description = "WireGuard public key of this peer";
           example = "C5sNSz31K8ihEavapHZp5ppfjyq3Q1vcTSvAhy2t+Eo=";
+          readOnly = true;
         };
 
         port = lib.mkOption {
           type = lib.types.nullOr lib.types.port;
           description = "WireGuard port (unless to be automatically selected)";
           example = 51820;
+          readOnly = true;
         };
       };
     };
@@ -78,6 +88,7 @@
     subnets = lib.mkOption {
       type = lib.types.attrsOf subnet;
       description = "Subnets inside the VPN";
+      readOnly = true;
     };
 
     peers = lib.mkOption {
@@ -86,16 +97,19 @@
           internal = lib.mkOption {
             type = wireguardInterface;
             description = "Configuration of the WireGuard interface";
+            readOnly = true;
           };
 
           external = lib.mkOption {
             type = networkInterface;
             description = "Configuration of the main external interface";
+            readOnly = true;
           };
 
           network = lib.mkOption {
             type = lib.types.str;
             description = "Network in 'subnets' this peer is a gateway to";
+            readOnly = true;
           };
         };
       });
@@ -105,6 +119,7 @@
         (public IP address in case of the server, LAN interface in case of
         a peer behind a NAT), and the network that the peer is a gateway to.
       '';
+      readOnly = true;
     };
 
     localDomains = lib.mkOption {
@@ -114,16 +129,19 @@
             type = lib.types.str;
             description = "IPv4 address the domain resolves to";
             example = "192.168.0.1";
+            readOnly = true;
           };
 
           ipv6 = lib.mkOption {
             type = lib.types.str;
             description = "IPv6 address the domain resolves to";
             example = "fe80::1";
+            readOnly = true;
           };
         };
       });
       description = "Locally-resolvable domains and their addresses";
+      readOnly = true;
     };
   };
 
