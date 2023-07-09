@@ -19,6 +19,7 @@ in {
     ./overlay-network.nix
     ./secrets-management.nix
     ../intranet.nix
+    ../../services/monitoring.nix
     ../../services/openssh.nix
     ../../services/unbound-blocker.nix
     ../../services/unbound.nix
@@ -264,5 +265,7 @@ in {
     };
 
     services.unbound-blocker.enable = true;
+
+    services.monitoring.enable = true;
   };
 }
