@@ -49,6 +49,17 @@ in {
   config = lib.mkIf cfg.enable {
     services.grafana = {
       enable = true;
+
+      provision = {
+        enable = true;
+        datasources = [{
+          name = "Prometheus";
+          type = "prometheus";
+          access = "proxy";
+          url = "http://127.0.0.1:${builtins.toString cfg.prometheus.port}";
+        }];
+      };
+
       settings = {
         server = {
           inherit domain;
@@ -61,16 +72,6 @@ in {
           feedback_links_enabled = false;
           check_for_updates = false;
           check_for_plugin_updates = false;
-        };
-
-        provision = {
-          enable = true;
-          datasources = [{
-            name = "Prometheus";
-            type = "prometheus";
-            access = "proxy";
-            url = "http://127.0.0.1:${builtins.toString cfg.prometheus.port}";
-          }];
         };
 
         database = {
