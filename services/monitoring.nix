@@ -73,13 +73,13 @@ in {
           host = "/run/postgresql";
           name = dbName;
           user = dbUser;
-          passwordFile = config.age.secrets.postgresql-grafana-password;
+          passwordFile = config.age.secrets.postgresql-grafana-password.path;
         };
 
         security = {
           disable_gravatar = true;
           admin_password =
-            "$__file{${config.age.secrets.grafana-admin-password}}";
+            "$__file{${config.age.secrets.grafana-admin-password.path}}";
         };
 
         # TODO: Make Prometheus listen on a Unix socket?
