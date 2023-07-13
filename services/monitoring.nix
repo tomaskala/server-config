@@ -92,13 +92,6 @@ in {
         # TODO: Make grafana listen on Unix socket? Prometheus as well?
         # TODO: Disable postgres localhost altogether, sockets are used both
         # TODO: here as well as at miniflux.
-
-        # TODO
-        # "auth.anonymous".enabled = true;
-        # "auth.anonymous".org_name = "Main Org.";
-        # "auth.anonymous".org_role = "Viewer";
-
-        # TODO: https://github.com/Mic92/dotfiles/blob/main/nixos/eve/modules/grafana.nix
       };
     };
 
