@@ -4,6 +4,8 @@
       "/root/secrets/users/tomas-whitelodge.age";
     miniflux-admin-credentials.file =
       "/root/secrets/other/miniflux-whitelodge.age";
+    postgresql-grafana-password.file =
+      "/root/secrets/other/postgresql-grafana.age";
 
     wg-pk = {
       file = "/root/secrets/wg-pk/whitelodge.age";

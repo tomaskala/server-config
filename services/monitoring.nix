@@ -6,6 +6,9 @@ let
   inherit (config.networking) hostName;
   domain = "${hostName}.home.arpa";
 
+  dbName = "grafana";
+  dbUser = "grafana";
+
   intranetCfg = config.networking.intranet;
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -62,29 +65,41 @@ in {
 
         provision = {
           enable = true;
-          datasources = [
-            {
-              name = "Prometheus";
-              type = "prometheus";
-              access = "proxy";
-              url = "http://127.0.0.1:${builtins.toString cfg.prometheus.port}";
-            }
-          ];
+          datasources = [{
+            name = "Prometheus";
+            type = "prometheus";
+            access = "proxy";
+            url = "http://127.0.0.1:${builtins.toString cfg.prometheus.port}";
+          }];
         };
 
-        # TODO: postgres, use Unix socket for access
         database = {
+          type = "postgres";
+          host = "/run/postgresql";
+          name = dbName;
+          user = dbUser;
+          passwordFile = config.age.secrets.postgresql-grafana-password;
         };
 
         # TODO
-			  # "auth.anonymous".enabled = true;
+        # "auth.anonymous".enabled = true;
         # "auth.anonymous".org_name = "Main Org.";
         # "auth.anonymous".org_role = "Viewer";
 
-				# TODO: settings.security
+        # TODO: settings.security
 
-				# TODO: https://github.com/Mic92/dotfiles/blob/main/nixos/eve/modules/grafana.nix
+        # TODO: https://github.com/Mic92/dotfiles/blob/main/nixos/eve/modules/grafana.nix
+
+        # TODO: settings.{server,paths,smtp,users,security,analytics}
       };
+    };
+
+    services.postgresql = {
+      ensureDatabases = [ dbName ];
+      ensureUsers = [{
+        name = dbUser;
+        ensurePermissions = { "DATABASE ${dbName}" = "ALL PRIVILEGES"; };
+      }];
     };
 
     services.prometheus = {

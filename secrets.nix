@@ -25,4 +25,6 @@ in {
   # ADMIN_USERNAME=admin username
   # ADMIN_PASSWORD=correct horse battery staple
   "secrets/other/miniflux-whitelodge.age".publicKeys = [ whitelodge ];
+  # grafana user in PostgreSQL password
+  "secrets/other/postgresql-grafana.age".publicKeys = [ whitelodge ];
 }
