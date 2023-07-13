@@ -65,6 +65,7 @@ in {
           inherit domain;
           http_addr = "127.0.0.1";
           http_port = cfg.grafanaPort;
+          enable_gzip = true;
         };
 
         analytics = {
@@ -82,6 +83,8 @@ in {
           passwordFile = config.age.secrets.postgresql-grafana-password;
         };
 
+        # TODO: Make grafana listen on Unix socket?
+
         # TODO
         # "auth.anonymous".enabled = true;
         # "auth.anonymous".org_name = "Main Org.";
@@ -90,8 +93,6 @@ in {
         # TODO: settings.security
 
         # TODO: https://github.com/Mic92/dotfiles/blob/main/nixos/eve/modules/grafana.nix
-
-        # TODO: settings.{server,paths,smtp,users,security,analytics}
       };
     };
 
