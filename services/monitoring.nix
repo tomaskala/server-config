@@ -16,13 +16,6 @@ in {
   options.services.monitoring = {
     enable = lib.mkEnableOption "monitoring";
 
-    grafanaPort = lib.mkOption {
-      type = lib.types.port;
-      description = "Port that Grafana listens on";
-      example = 3000;
-      default = 3000;
-    };
-
     prometheus = lib.mkOption {
       type = lib.types.submodule {
         options = {
@@ -63,8 +56,8 @@ in {
       settings = {
         server = {
           inherit domain;
-          http_addr = "127.0.0.1";
-          http_port = cfg.grafanaPort;
+          protocol = "socket";
+          socket_gid = config.users.groups.${config.services.caddy.group}.gid;
           enable_gzip = true;
         };
 
@@ -89,7 +82,7 @@ in {
             "$__file{${config.age.secrets.grafana-admin-password}}";
         };
 
-        # TODO: Make grafana listen on Unix socket? Prometheus as well?
+        # TODO: Make Prometheus listen on a Unix socket?
         # TODO: Disable postgres localhost altogether, sockets are used both
         # TODO: here as well as at miniflux.
       };
@@ -158,9 +151,7 @@ in {
     services.caddy = {
       virtualHosts."http://${domain}" = {
         extraConfig = ''
-          reverse_proxy :${
-            builtins.toString config.services.grafana.settings.server.http_port
-          }
+          reverse_proxy unix//${config.services.grafana.settings.server.socket}
 
           @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
             maskSubnet vpnSubnet.ipv6
