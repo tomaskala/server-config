@@ -89,7 +89,9 @@ in {
             "$__file{${config.age.secrets.grafana-admin-password}}";
         };
 
-        # TODO: Make grafana listen on Unix socket?
+        # TODO: Make grafana listen on Unix socket? Prometheus as well?
+        # TODO: Disable postgres localhost altogether, sockets are used both
+        # TODO: here as well as at miniflux.
 
         # TODO
         # "auth.anonymous".enabled = true;
