@@ -83,14 +83,18 @@ in {
           passwordFile = config.age.secrets.postgresql-grafana-password;
         };
 
+        security = {
+          disable_gravatar = true;
+          admin_password =
+            "$__file{${config.age.secrets.grafana-admin-password}}";
+        };
+
         # TODO: Make grafana listen on Unix socket?
 
         # TODO
         # "auth.anonymous".enabled = true;
         # "auth.anonymous".org_name = "Main Org.";
         # "auth.anonymous".org_role = "Viewer";
-
-        # TODO: settings.security
 
         # TODO: https://github.com/Mic92/dotfiles/blob/main/nixos/eve/modules/grafana.nix
       };

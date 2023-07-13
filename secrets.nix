@@ -27,4 +27,6 @@ in {
   "secrets/other/miniflux-whitelodge.age".publicKeys = [ whitelodge ];
   # grafana user in PostgreSQL password
   "secrets/other/postgresql-grafana.age".publicKeys = [ whitelodge ];
+  # grafana admin password
+  "secrets/other/grafana-admin.age".publicKeys = [ whitelodge ];
 }
