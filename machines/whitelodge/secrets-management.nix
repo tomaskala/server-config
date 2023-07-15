@@ -4,9 +4,15 @@
       "/root/secrets/users/tomas-whitelodge.age";
     miniflux-admin-credentials.file =
       "/root/secrets/other/miniflux-whitelodge.age";
-    grafana-admin-password.file = "/root/secrets/other/grafana-admin.age";
     postgresql-grafana-password.file =
       "/root/secrets/other/postgresql-grafana.age";
+
+    grafana-admin-password = {
+      file = "/root/secrets/other/grafana-admin.age";
+      mode = "0640";
+      owner = "root";
+      group = "grafana";
+    };
 
     wg-pk = {
       file = "/root/secrets/wg-pk/whitelodge.age";
