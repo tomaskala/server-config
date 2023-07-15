@@ -45,11 +45,25 @@ in {
 
       provision = {
         enable = true;
+
         datasources.settings.datasources = [{
           name = "Prometheus";
           type = "prometheus";
           access = "proxy";
           url = "http://127.0.0.1:${builtins.toString cfg.prometheus.port}";
+        }];
+
+        dashboards.settings.providers = [{
+          name = "Grafana dashboards";
+          # It's useless to check the dashboard directory for updates because
+          # it lives on a readonly file system, but grafana doesn't allow to
+          # disable the checking completely. Even setting this value to zero
+          # doesn't help, because in that case, it gets silently converted
+          # to 10 anyway:
+          # https://github.com/grafana/grafana/blob/bc2813ef0661eb0fd317a7ed2dff4db056cbe7e6/pkg/services/provisioning/dashboards/config_reader.go#L107-L109
+          # Setting to a large value instead to not check too often.
+          updateIntervalSeconds = 60 * 60 * 24;
+          options.path = "${./grafana-dashboards}";
         }];
       };
 
