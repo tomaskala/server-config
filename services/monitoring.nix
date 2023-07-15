@@ -16,6 +16,13 @@ in {
   options.services.monitoring = {
     enable = lib.mkEnableOption "monitoring";
 
+    grafanaPort = lib.mkOption {
+      type = lib.types.port;
+      description = "Port that Grafana listens on";
+      example = 3000;
+      default = 3000;
+    };
+
     prometheus = lib.mkOption {
       type = lib.types.submodule {
         options = {
@@ -70,8 +77,8 @@ in {
       settings = {
         server = {
           inherit domain;
-          protocol = "socket";
-          socket_gid = config.users.groups.${config.services.caddy.group}.gid;
+          http_addr = "127.0.0.1";
+          http_port = cfg.grafanaPort;
           enable_gzip = true;
         };
 
@@ -133,7 +140,9 @@ in {
     services.caddy = {
       virtualHosts."http://${domain}" = {
         extraConfig = ''
-          reverse_proxy unix//${config.services.grafana.settings.server.socket}
+          reverse_proxy :${
+            builtins.toString config.services.grafana.settings.server.http_port
+          }
 
           @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
             maskSubnet vpnSubnet.ipv6
