@@ -293,6 +293,9 @@
         ipv4 = "10.0.0.10";
         ipv6 = "fd25:6f6:a9f:2000::a";
       };
-    };
+    } // lib.mapAttrs' (name: value: {
+      name = "${name}.home.arpa";
+      value = { inherit (value.internal.interface) ipv4 ipv6; };
+    }) peers;
   };
 }
