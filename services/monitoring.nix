@@ -126,34 +126,6 @@ in {
           listenAddress = "127.0.0.1";
           port = cfg.prometheus.nodeExporterPort;
           openFirewall = false;
-          extraFlags = [ "--collector.disable-defaults" ];
-          enabledCollectors = [
-            "arp"
-            "bcache"
-            "boottime"
-            "conntrack"
-            "cpu"
-            "cpufreq"
-            "diskstats"
-            "exec"
-            "filefd"
-            "filesystem"
-            "hwmon"
-            "loadavg"
-            "meminfo"
-            "netclass"
-            "netdev"
-            "netstat"
-            "nfs"
-            "powersupplyclass"
-            "sockstat"
-            "stat"
-            "thermal"
-            "thermal_zone"
-            "udp_queues"
-            "vmstat"
-          ] ++ lib.optionals
-            (builtins.elem "zfs" config.boot.supportedFilesystems) [ "zfs" ];
         };
       };
     };
