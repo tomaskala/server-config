@@ -102,6 +102,12 @@ in {
           admin_password =
             "$__file{${config.age.secrets.grafana-admin-password.path}}";
         };
+
+        "auth.anonymous" = {
+          enabled = true;
+          org_name = "Main Org.";
+          org_role = "Viewer";
+        };
       };
     };
 
