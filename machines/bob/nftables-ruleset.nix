@@ -23,6 +23,17 @@ in ''
       }
     }
 
+    set tcp_accepted_vpn {
+      type inet_service
+      elements = {
+        ${
+          lib.concatStringsSep ''
+            ,
+          '' (builtins.attrValues peerCfg.exporters)
+        }
+      }
+    }
+
     set udp_accepted_lan {
       type inet_service
       elements = {
@@ -84,6 +95,7 @@ in ''
       # Allow the specified TCP and UDP ports from the VPN.
       iifname ${vpnInterface} tcp dport @tcp_accepted_lan ct state new accept
       iifname ${vpnInterface} udp dport @udp_accepted_lan ct state new accept
+      iifname ${vpnInterface} tcp dport @tcp_accepted_vpn ct state new accept
     }
 
     chain forward {

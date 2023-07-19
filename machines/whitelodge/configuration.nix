@@ -16,6 +16,7 @@ let
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
+    ./monitoring-hub.nix
     ./overlay-network.nix
     ./secrets-management.nix
     ../intranet.nix
@@ -265,6 +266,8 @@ in {
     };
 
     services.unbound-blocker.enable = true;
+
+    services.monitoring-hub.enable = true;
 
     services.monitoring.enable = true;
   };

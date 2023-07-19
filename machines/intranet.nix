@@ -111,6 +111,13 @@
             description = "Network in 'subnets' this peer is a gateway to";
             readOnly = true;
           };
+
+          exporters = lib.mkOption {
+            type = lib.types.attrsOf lib.types.port;
+            description = "Names and ports of Prometheus exporters";
+            example = { node = 9100; };
+            readOnly = true;
+          };
         };
       });
       description = ''
@@ -257,6 +264,8 @@
         };
 
         network = "vpn";
+
+        exporters = { node = 9100; };
       };
 
       bob = {
@@ -278,6 +287,8 @@
         };
 
         network = "home";
+
+        exporters = { node = 9100; };
       };
     };
 
@@ -293,9 +304,6 @@
         ipv4 = "10.0.0.10";
         ipv6 = "fd25:6f6:a9f:2000::a";
       };
-    } // lib.mapAttrs' (name: value: {
-      name = "${name}.home.arpa";
-      value = { inherit (value.internal.interface) ipv4 ipv6; };
-    }) peers;
+    };
   };
 }
