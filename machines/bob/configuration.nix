@@ -15,6 +15,7 @@ let
 in {
   imports = [
     ./hardware-configuration.nix
+    ./modules/firewall.nix
     ./secrets-management.nix
     ../intranet.nix
     ../../modules/openssh.nix
@@ -50,8 +51,6 @@ in {
     };
 
     time.timeZone = "Europe/Prague";
-    services.ntp.enable = false;
-    services.timesyncd.enable = true;
 
     environment.systemPackages = with pkgs; [
       curl
@@ -69,12 +68,6 @@ in {
     programs.vim.defaultEditor = true;
 
     networking.hostName = "bob";
-    networking.firewall.enable = false;
-    networking.nftables = {
-      enable = true;
-      ruleset = import ./modules/nftables-ruleset.nix { inherit config; };
-      checkRuleset = true;
-    };
 
     systemd.network = {
       enable = true;
@@ -121,8 +114,6 @@ in {
       };
     };
 
-    # NFSv4 does not need rpcbind.
-    services.rpcbind.enable = lib.mkForce false;
     fileSystems.${musicDir} = {
       device = "${nasAddr}:/volume1/Music";
       fsType = "nfs";
@@ -139,63 +130,71 @@ in {
       ];
     };
 
-    services.openssh.enable = true;
+    services = {
+      ntp.enable = false;
+      timesyncd.enable = true;
 
-    services.navidrome = {
-      enable = true;
-      settings = {
-        MusicFolder = musicDir;
-        LogLevel = "warn";
-        Address = "127.0.0.1";
-        AutoImportPlaylists = false;
-        EnableCoverAnimation = false;
-        EnableExternalServices = false;
-        EnableFavourites = false;
-        EnableGravatar = false;
-        EnableStarRating = false;
-        EnableTranscodingConfig = false;
-        "LastFM.Enabled" = false;
-        "ListenBrainz.Enabled" = false;
-        "Prometheus.Enabled" = false;
-        ScanSchedule = "@every 24h";
-      };
-    };
+      # NFSv4 does not need rpcbind.
+      rpcbind.enable = lib.mkForce false;
 
-    services.caddy = {
-      enable = true;
-      # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from private subnets.
-      virtualHosts."http://music.home.arpa" = {
-        extraConfig = ''
-          reverse_proxy :${
-            builtins.toString config.services.navidrome.settings.Port
-          }
+      firewall.enable = true;
+      openssh.enable = true;
+      unbound-blocker.enable = true;
 
-          @blocked not remote_ip ${maskSubnet privateSubnet.ipv4} ${
-            maskSubnet privateSubnet.ipv6
-          } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
-          respond @blocked "Forbidden" 403
-        '';
-      };
-    };
-
-    services.unbound = {
-      enable = true;
-
-      settings.server = {
-        interface =
-          [ "127.0.0.1" "::1" peerCfg.external.ipv4 peerCfg.external.ipv6 ];
-        access-control = [
-          "127.0.0.1/8 allow"
-          "::1/128 allow"
-          "${maskSubnet privateSubnet.ipv4} allow"
-          "${maskSubnet privateSubnet.ipv6} allow"
-        ];
+      navidrome = {
+        enable = true;
+        settings = {
+          MusicFolder = musicDir;
+          LogLevel = "warn";
+          Address = "127.0.0.1";
+          AutoImportPlaylists = false;
+          EnableCoverAnimation = false;
+          EnableExternalServices = false;
+          EnableFavourites = false;
+          EnableGravatar = false;
+          EnableStarRating = false;
+          EnableTranscodingConfig = false;
+          "LastFM.Enabled" = false;
+          "ListenBrainz.Enabled" = false;
+          "Prometheus.Enabled" = false;
+          ScanSchedule = "@every 24h";
+        };
       };
 
-      inherit (intranetCfg) localDomains;
-    };
+      caddy = {
+        enable = true;
+        # Explicitly specify HTTP to disable automatic TLS certificate creation,
+        # since this is an internal domain only accessible from private subnets.
+        virtualHosts."http://music.home.arpa" = {
+          extraConfig = ''
+            reverse_proxy :${
+              builtins.toString config.services.navidrome.settings.Port
+            }
 
-    services.unbound-blocker.enable = true;
+            @blocked not remote_ip ${maskSubnet privateSubnet.ipv4} ${
+              maskSubnet privateSubnet.ipv6
+            } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
+            respond @blocked "Forbidden" 403
+          '';
+        };
+      };
+
+      unbound = {
+        enable = true;
+
+        settings.server = {
+          interface =
+            [ "127.0.0.1" "::1" peerCfg.external.ipv4 peerCfg.external.ipv6 ];
+          access-control = [
+            "127.0.0.1/8 allow"
+            "::1/128 allow"
+            "${maskSubnet privateSubnet.ipv4} allow"
+            "${maskSubnet privateSubnet.ipv6} allow"
+          ];
+        };
+
+        inherit (intranetCfg) localDomains;
+      };
+    };
   };
 }
