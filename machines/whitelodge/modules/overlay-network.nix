@@ -4,6 +4,7 @@ let
   cfg = config.services.overlay-network;
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers.whitelodge;
+
   vpnInterface = peerCfg.internal.interface.name;
   otherPeers =
     lib.filterAttrs (peerName: _: peerName != "whitelodge") intranetCfg.peers;

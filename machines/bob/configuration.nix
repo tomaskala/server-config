@@ -1,11 +1,12 @@
 { config, pkgs, lib, ... }:
 
 let
+  intranetCfg = config.networking.intranet;
+  peerCfg = intranetCfg.peers.bob;
+
   nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
   musicDir = "/mnt/Music";
 
-  intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.bob;
   vpnInterface = peerCfg.internal.interface.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;

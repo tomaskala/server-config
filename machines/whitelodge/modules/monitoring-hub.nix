@@ -2,12 +2,12 @@
 
 let
   cfg = config.services.monitoring-hub;
+  intranetCfg = config.networking.intranet;
+  peerCfg = intranetCfg.peers.whitelodge;
 
   dbName = "grafana";
   dbUser = "grafana";
 
-  intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {

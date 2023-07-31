@@ -4,8 +4,8 @@ let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers.whitelodge;
-  vpnInterface = peerCfg.internal.interface.name;
 
+  vpnInterface = peerCfg.internal.interface.name;
   vpnSubnet = intranetCfg.subnets.vpn;
 in {
   options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
