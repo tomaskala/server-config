@@ -149,8 +149,11 @@ in {
       };
     };
 
-    services.unbound.localDomains.${cfg.domain} = {
-      inherit (peerCfg.internal.interface) ipv4 ipv6;
+    services.unbound = {
+      enable = true;
+      localDomains.${cfg.domain} = {
+        inherit (peerCfg.internal.interface) ipv4 ipv6;
+      };
     };
   };
 }
