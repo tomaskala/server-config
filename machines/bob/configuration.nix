@@ -1,19 +1,16 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers.bob;
 
-  nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
-  musicDir = "/mnt/Music";
-
-  vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.home-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
     ./hardware-configuration.nix
     ./modules/firewall.nix
+    ./modules/music.nix
     ./modules/vpn.nix
     ./secrets-management.nix
     ../intranet.nix
@@ -68,70 +65,19 @@ in {
 
     networking.hostName = "bob";
 
-    fileSystems.${musicDir} = {
-      device = "${nasAddr}:/volume1/Music";
-      fsType = "nfs";
-      options = [
-        # Use NFSv4.1 (the highest my NAS supports).
-        "nfsvers=4.1"
-        # Lazily mount the filesystem upon first access.
-        "x-systemd.automount"
-        "noauto"
-        # Disconnect from the NFS server after 1 hour of no access.
-        "x-systemd.idle-timeout=3600"
-        # Mount as a read-only filesystem.
-        "ro"
-      ];
-    };
-
     services = {
       ntp.enable = false;
       timesyncd.enable = true;
-
-      # NFSv4 does not need rpcbind.
-      rpcbind.enable = lib.mkForce false;
 
       firewall.enable = true;
       openssh.enable = true;
       unbound-blocker.enable = true;
       vpn.enable = true;
 
-      navidrome = {
+      music = {
         enable = true;
-        settings = {
-          MusicFolder = musicDir;
-          LogLevel = "warn";
-          Address = "127.0.0.1";
-          AutoImportPlaylists = false;
-          EnableCoverAnimation = false;
-          EnableExternalServices = false;
-          EnableFavourites = false;
-          EnableGravatar = false;
-          EnableStarRating = false;
-          EnableTranscodingConfig = false;
-          "LastFM.Enabled" = false;
-          "ListenBrainz.Enabled" = false;
-          "Prometheus.Enabled" = false;
-          ScanSchedule = "@every 24h";
-        };
-      };
-
-      caddy = {
-        enable = true;
-        # Explicitly specify HTTP to disable automatic TLS certificate creation,
-        # since this is an internal domain only accessible from private subnets.
-        virtualHosts."http://music.home.arpa" = {
-          extraConfig = ''
-            reverse_proxy :${
-              builtins.toString config.services.navidrome.settings.Port
-            }
-
-            @blocked not remote_ip ${maskSubnet privateSubnet.ipv4} ${
-              maskSubnet privateSubnet.ipv6
-            } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
-            respond @blocked "Forbidden" 403
-          '';
-        };
+        domain = "music.home.arpa";
+        musicDir = "/mnt/Music";
       };
 
       unbound = {
