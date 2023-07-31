@@ -63,8 +63,6 @@ in {
     };
 
     time.timeZone = "Europe/Prague";
-    services.ntp.enable = false;
-    services.timesyncd.enable = true;
 
     environment.systemPackages = with pkgs; [
       curl
@@ -101,54 +99,54 @@ in {
       '';
     };
 
-    services.vpn.enable = true;
+    services = {
+      ntp.enable = false;
+      timesyncd.enable = true;
 
-    services.overlay-network.enable = true;
+      monitoring-hub.enable = true;
+      monitoring.enable = true;
+      overlay-network.enable = true;
+      unbound-blocker.enable = true;
+      vpn.enable = true;
 
-    services.openssh = {
-      enable = true;
-      listenAddresses = [
-        { addr = peerCfg.internal.interface.ipv4; }
-        { addr = peerCfg.internal.interface.ipv6; }
-      ];
-    };
-
-    services.rss = {
-      enable = true;
-      domain = "rss.home.arpa";
-      port = 7070;
-    };
-
-    services.website = {
-      enable = true;
-      domain = "tomaskala.com";
-      webroot = "/var/www/tomaskala.com";
-      acmeEmail = "public+acme@tomaskala.com";
-    };
-
-    services.unbound = {
-      enable = true;
-
-      settings.server = {
-        interface = [
-          "127.0.0.1"
-          "::1"
-          peerCfg.internal.interface.ipv4
-          peerCfg.internal.interface.ipv6
-        ];
-        access-control = [
-          "127.0.0.1/8 allow"
-          "::1/128 allow"
-          "${maskSubnet vpnSubnet.ipv4} allow"
-          "${maskSubnet vpnSubnet.ipv6} allow"
+      openssh = {
+        enable = true;
+        listenAddresses = [
+          { addr = peerCfg.internal.interface.ipv4; }
+          { addr = peerCfg.internal.interface.ipv6; }
         ];
       };
+
+      rss = {
+        enable = true;
+        domain = "rss.home.arpa";
+        port = 7070;
+      };
+
+      unbound = {
+        enable = true;
+        settings.server = {
+          interface = [
+            "127.0.0.1"
+            "::1"
+            peerCfg.internal.interface.ipv4
+            peerCfg.internal.interface.ipv6
+          ];
+          access-control = [
+            "127.0.0.1/8 allow"
+            "::1/128 allow"
+            "${maskSubnet vpnSubnet.ipv4} allow"
+            "${maskSubnet vpnSubnet.ipv6} allow"
+          ];
+        };
+      };
+
+      website = {
+        enable = true;
+        domain = "tomaskala.com";
+        webroot = "/var/www/tomaskala.com";
+        acmeEmail = "public+acme@tomaskala.com";
+      };
     };
-
-    services.unbound-blocker.enable = true;
-
-    services.monitoring-hub.enable = true;
-
-    services.monitoring.enable = true;
   };
 }
