@@ -5,9 +5,6 @@ let
   publicDomainWebroot = "/var/www/${publicDomain}";
   acmeEmail = "public+acme@${publicDomain}";
 
-  rssDomain = "rss.home.arpa";
-  rssListenPort = 7070;
-
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers.whitelodge;
   vpnInterface = peerCfg.internal.interface.name;
@@ -16,6 +13,7 @@ let
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
+    ./modules/rss.nix
     ./modules/monitoring-hub.nix
     ./modules/overlay-network.nix
     ./secrets-management.nix
@@ -183,15 +181,10 @@ in {
       ];
     };
 
-    services.miniflux = {
+    services.rss = {
       enable = true;
-      adminCredentialsFile = config.age.secrets.miniflux-admin-credentials.path;
-      config = {
-        POLLING_FREQUENCY = "1440";
-        LISTEN_ADDR = "127.0.0.1:${builtins.toString rssListenPort}";
-        BASE_URL = "http://${rssDomain}";
-        CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
-      };
+      domain = "rss.home.arpa";
+      port = 7070;
     };
 
     services.caddy = {
@@ -226,19 +219,6 @@ in {
           }
         '';
       };
-
-      # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from the VPN.
-      virtualHosts."http://${rssDomain}" = {
-        extraConfig = ''
-          reverse_proxy :${builtins.toString rssListenPort}
-
-          @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
-            maskSubnet vpnSubnet.ipv6
-          }
-          respond @blocked "Forbidden" 403
-        '';
-      };
     };
 
     services.unbound = {
@@ -261,7 +241,6 @@ in {
 
       localDomains = {
         "${publicDomain}" = { inherit (peerCfg.internal.interface) ipv4 ipv6; };
-        "${rssDomain}" = { inherit (peerCfg.internal.interface) ipv4 ipv6; };
       };
     };
 
