@@ -168,7 +168,7 @@ in {
       };
     };
 
-    networking.overlay-network.enable = true;
+    services.overlay-network.enable = true;
 
     services.openssh = {
       enable = true;

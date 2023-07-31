@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  cfg = config.networking.overlay-network;
+  cfg = config.services.overlay-network;
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers.whitelodge;
   vpnInterface = peerCfg.internal.interface.name;
@@ -42,7 +42,7 @@ let
     }
   ];
 in {
-  options.networking.overlay-network = {
+  options.services.overlay-network = {
     enable = lib.mkEnableOption "overlay-network";
   };
 
