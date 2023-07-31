@@ -7,8 +7,6 @@ let
   nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
   musicDir = "/mnt/Music";
 
-  vpnInterface = peerCfg.internal.interface.name;
-
   vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.home-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -16,6 +14,7 @@ in {
   imports = [
     ./hardware-configuration.nix
     ./modules/firewall.nix
+    ./modules/vpn.nix
     ./secrets-management.nix
     ../intranet.nix
     ../../modules/openssh.nix
@@ -69,51 +68,6 @@ in {
 
     networking.hostName = "bob";
 
-    systemd.network = {
-      enable = true;
-
-      netdevs."90-${vpnInterface}" = {
-        netdevConfig = {
-          Name = vpnInterface;
-          Kind = "wireguard";
-        };
-
-        wireguardConfig = { PrivateKeyFile = config.age.secrets.wg-pk.path; };
-
-        wireguardPeers = [{
-          wireguardPeerConfig = {
-            # whitelodge
-            PublicKey = intranetCfg.peers.whitelodge.internal.publicKey;
-            PresharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
-            AllowedIPs = [
-              "${intranetCfg.peers.whitelodge.internal.interface.ipv4}/32"
-              "${intranetCfg.peers.whitelodge.internal.interface.ipv6}/128"
-            ];
-            Endpoint = "${intranetCfg.peers.whitelodge.external.ipv4}:${
-                builtins.toString intranetCfg.peers.whitelodge.internal.port
-              }";
-            PersistentKeepalive = 25;
-          };
-        }];
-      };
-
-      networks."90-${vpnInterface}" = {
-        matchConfig.Name = vpnInterface;
-
-        # Enable IP forwarding (system-wide).
-        networkConfig.IPForward = true;
-
-        address = [
-          "${peerCfg.internal.interface.ipv4}/${
-            builtins.toString vpnSubnet.ipv4.mask
-          }"
-          "${peerCfg.internal.interface.ipv6}/${
-            builtins.toString vpnSubnet.ipv6.mask
-          }"
-        ];
-      };
-    };
-
     fileSystems.${musicDir} = {
       device = "${nasAddr}:/volume1/Music";
       fsType = "nfs";
@@ -140,6 +94,7 @@ in {
       firewall.enable = true;
       openssh.enable = true;
       unbound-blocker.enable = true;
+      vpn.enable = true;
 
       navidrome = {
         enable = true;
