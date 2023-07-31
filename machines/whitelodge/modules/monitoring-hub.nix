@@ -60,7 +60,7 @@ in {
           # https://github.com/grafana/grafana/blob/bc2813ef0661eb0fd317a7ed2dff4db056cbe7e6/pkg/services/provisioning/dashboards/config_reader.go#L107-L109
           # Setting to a large value instead to not check too often.
           updateIntervalSeconds = 60 * 60 * 24;
-          options.path = "${./grafana-dashboards}";
+          options.path = "${../grafana-dashboards}";
         }];
       };
 

@@ -16,14 +16,14 @@ let
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
-    ./monitoring-hub.nix
-    ./overlay-network.nix
+    ./modules/monitoring-hub.nix
+    ./modules/overlay-network.nix
     ./secrets-management.nix
     ../intranet.nix
-    ../../services/monitoring.nix
-    ../../services/openssh.nix
-    ../../services/unbound-blocker.nix
-    ../../services/unbound.nix
+    ../../modules/monitoring.nix
+    ../../modules/openssh.nix
+    ../../modules/unbound-blocker.nix
+    ../../modules/unbound.nix
   ];
 
   config = {
@@ -92,7 +92,7 @@ in {
     networking.firewall.enable = false;
     networking.nftables = {
       enable = true;
-      ruleset = import ./nftables-ruleset.nix { inherit config; };
+      ruleset = import ./modules/nftables-ruleset.nix { inherit config; };
 
       # Ruleset checking reports errors with chains defined on top of the
       # ingress hook. This hook must be interface-specific, and the ruleset
