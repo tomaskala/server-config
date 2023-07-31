@@ -1,10 +1,6 @@
 { config, pkgs, ... }:
 
 let
-  publicDomain = "tomaskala.com";
-  publicDomainWebroot = "/var/www/${publicDomain}";
-  acmeEmail = "public+acme@${publicDomain}";
-
   intranetCfg = config.networking.intranet;
   peerCfg = intranetCfg.peers.whitelodge;
   vpnInterface = peerCfg.internal.interface.name;
@@ -13,9 +9,10 @@ let
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
-    ./modules/rss.nix
     ./modules/monitoring-hub.nix
     ./modules/overlay-network.nix
+    ./modules/rss.nix
+    ./modules/website.nix
     ./secrets-management.nix
     ../intranet.nix
     ../../modules/monitoring.nix
@@ -187,38 +184,11 @@ in {
       port = 7070;
     };
 
-    services.caddy = {
+    services.website = {
       enable = true;
-      email = acmeEmail;
-
-      virtualHosts.${publicDomain} = {
-        extraConfig = ''
-          root * ${publicDomainWebroot}
-          encode gzip
-          file_server
-
-          header {
-            # Disable FLoC tracking.
-            Permissions-Policy interest-cohort=()
-
-            # Enable HSTS.
-            Strict-Transport-Security max-age=31536000
-
-            # Disable clients from sniffing the media type.
-            X-Content-Type-Options nosniff
-
-            # Clickjacking protection.
-            X-Frame-Options DENY
-
-            # Keep referrer data off third parties.
-            Referrer-Policy same-origin
-
-            # Content should come from the site's origin (excludes subdomains).
-            # Prevent the framing of this site by other sites.
-            Content-Security-Policy "default-src 'self'; frame-ancestors 'none'"
-          }
-        '';
-      };
+      domain = "tomaskala.com";
+      webroot = "/var/www/tomaskala.com";
+      acmeEmail = "public+acme@tomaskala.com";
     };
 
     services.unbound = {
@@ -237,10 +207,6 @@ in {
           "${maskSubnet vpnSubnet.ipv4} allow"
           "${maskSubnet vpnSubnet.ipv6} allow"
         ];
-      };
-
-      localDomains = {
-        "${publicDomain}" = { inherit (peerCfg.internal.interface) ipv4 ipv6; };
       };
     };
 
