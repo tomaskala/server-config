@@ -8,6 +8,7 @@ let
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
+    ./modules/firewall.nix
     ./modules/monitoring-hub.nix
     ./modules/overlay-network.nix
     ./modules/rss.nix
@@ -82,27 +83,12 @@ in {
 
     networking.hostName = "whitelodge";
     networking.dhcpcd.enable = false;
-    networking.firewall.enable = false;
-    networking.nftables = {
-      enable = true;
-      ruleset = import ./modules/nftables-ruleset.nix { inherit config; };
-
-      # Ruleset checking reports errors with chains defined on top of the
-      # ingress hook. This hook must be interface-specific, and the ruleset
-      # check always fails as it runs in a sandbox. A solution is to rename
-      # all occurrences of the WAN interface to the loopback interface, which
-      # is available even inside the sandbox.
-      # Source: https://github.com/NixOS/nixpkgs/pull/223283/files.
-      checkRuleset = true;
-      preCheckRuleset = ''
-        ${pkgs.gnused}/bin/sed -i 's/${peerCfg.external.name}/lo/g' ruleset.conf
-      '';
-    };
 
     services = {
       ntp.enable = false;
       timesyncd.enable = true;
 
+      firewall.enable = true;
       monitoring-hub.enable = true;
       monitoring.enable = true;
       overlay-network.enable = true;
