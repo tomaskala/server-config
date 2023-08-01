@@ -9,12 +9,12 @@ moved to a plugin as well.
 
 ## What does it do?
 
-* Deploys NixOS system configuration to remote machines.
-* The entire configuration is built on the local machine before being copied 
+- Deploys NixOS system configuration to remote machines.
+- The entire configuration is built on the local machine before being copied 
   to the remote machines.
-* In case of configuration errors, the whole operation is aborted.
-* The state is tracked in a local SQLite database.
-* The following NixOS configuration to start nginx hosting NixOS manual 
+- In case of configuration errors, the whole operation is aborted.
+- The state is tracked in a local SQLite database.
+- The following NixOS configuration to start nginx hosting NixOS manual 
   (`webserver.nix`)
   ```
   { config, pkgs, ... }:
@@ -49,14 +49,14 @@ moved to a plugin as well.
 
 ## Creating a deployment
 
-* To use this configuration, we need to tell NixOps about it by creating a 
+- To use this configuration, we need to tell NixOps about it by creating a 
   deployment:
   ```
   $ nixops create -d <deployment-name> <deployment-file(s)>
   ```
   This will create a deployment, but not actually deploy anything. It only has 
   to be done once.
-  * Specifically:
+  - Specifically:
     ```
     $ nixops create -d demo webserver.nix
     $ nixops info -d demo
@@ -64,29 +64,29 @@ moved to a plugin as well.
 
 ## Deploying
 
-* To deploy an existing configuration, run
+- To deploy an existing configuration, run
   ```
   $ nixops deploy -d <deployment-name>
   ```
-  * Specifically:
+  - Specifically:
     ```
     $ nixops deploy -d demo
     ```
-* This must be done every time we make a change to our configuration.
-* During deployment, NixOps performs the following tasks:
+- This must be done every time we make a change to our configuration.
+- During deployment, NixOps performs the following tasks:
   1. Check state to see whether all declared resources have been provisioned.
   2. If a resource is missing, it is provisioned.
-    * In the case of a machine, it gets instantiated and NixOps waits for SSH 
+    - In the case of a machine, it gets instantiated and NixOps waits for SSH 
       access to the machine.
   3. The configuration is built and its closure gets copied to the server.
   4. The configuration gets activated.
 
 ## Split deployments
 
-* We can split the physical specification (the deployment information) and the 
+- We can split the physical specification (the deployment information) and the 
   logical specification (the machine configuration) into as many files as we 
   want. They will get merged together into a single specification.
-  * `webserver_logical.nix`:
+  - `webserver_logical.nix`:
     ```
     {
       webserver =
@@ -101,7 +101,7 @@ moved to a plugin as well.
           };
         }
     ```
-  * `webserver_physical.nix`:
+  - `webserver_physical.nix`:
     ```
     {
       webserver =
@@ -112,18 +112,18 @@ moved to a plugin as well.
         };
     }
     ```
-* We just have to tell NixOps about both files when creating a deployment:
+- We just have to tell NixOps about both files when creating a deployment:
   ```
   $ nixops create -d demo webserver_logical.nix webserver_physical.nix
   ```
-* We can reuse the same logical specification in multiple deployments:
+- We can reuse the same logical specification in multiple deployments:
   ```
   $ nixops create -d testing webserver_logical.nix webserver_physical_testing.nix
   $ nixops create -d production webserver_logical.nix webserver_physical_production.nix
   ```
-* Since it's all Nix, we can also reuse any host specification within a 
+- Since it's all Nix, we can also reuse any host specification within a 
   deployment:
-  * `webserver_logical.nix`
+  - `webserver_logical.nix`
     ```
     let
       webserver =
@@ -141,18 +141,18 @@ moved to a plugin as well.
 
 ## Communication between hosts
 
-* Hosts in a deployment can refer to each other by name, because NixOps updates 
+- Hosts in a deployment can refer to each other by name, because NixOps updates 
   the `/etc/hosts` file.
-* If we wanted to put haproxy in front of our webservers, the config would look 
+- If we wanted to put haproxy in front of our webservers, the config would look 
   like this:
   ```
   backend site
     server server1 webserver1:80 check send-proxy
     server server2 webserver2:80 check send-proxy
   ```
-* We can also let NixOps set up encrypted tunnels to the specified hosts by 
+- We can also let NixOps set up encrypted tunnels to the specified hosts by 
   setting `deployment.encryptedLinksTo`:
-  * `load_balancer_logical.nix`:
+  - `load_balancer_logical.nix`:
     ```
     deployment.encryptedLinksTo = [ "webserver1" "webserver2" ];
 
@@ -167,20 +167,20 @@ moved to a plugin as well.
 
 ## Handling secrets
 
-* Specifying secrets as regular strings is a bad idea, because they will be put 
+- Specifying secrets as regular strings is a bad idea, because they will be put 
   into the world-readable Nix store.
   ```
   services.gitlab.databasePassword = "1234";  # World-readable.
   ```
-* Instead, we often use paths to files outside the Nix store which contain the 
+- Instead, we often use paths to files outside the Nix store which contain the 
   secrets:
   ```
   services.gitlab.databasePasswordFile = "/var/lib/gitlab_db_pw";
   ```
-* Each NixOps deployment can define a special attribute set called 
+- Each NixOps deployment can define a special attribute set called 
   `deployment.keys` where each attribute corresponds to a file to be placed 
   outside the Nix store on the target hosts:
-  * `webserver_logical.nix`:
+  - `webserver_logical.nix`:
     ```
     services.nginx.virtualHosts."example" = {
       forceSSL = true;
@@ -200,12 +200,12 @@ moved to a plugin as well.
 
 ## Example
 
-* Set up a deployment with two webservers and a load balancer.
-  * The webservers share the same logical and physical specification.
-  * The load balancer uses the same physical specification as the webservers.
-  * The load balancer communicates with the webservers over encrypted tunnels.
-  * It's all deployed to a new VPC on AWS.
-* `webserver_logical.nix`:
+- Set up a deployment with two webservers and a load balancer.
+  - The webservers share the same logical and physical specification.
+  - The load balancer uses the same physical specification as the webservers.
+  - The load balancer communicates with the webservers over encrypted tunnels.
+  - It's all deployed to a new VPC on AWS.
+- `webserver_logical.nix`:
   ```
   let
     webserver =
@@ -283,7 +283,7 @@ moved to a plugin as well.
     inherit loadBalancer;
   };
   ```
-* `webserver_physical_production_redacted.nix`:
+- `webserver_physical_production_redacted.nix`:
   ```
   let
     accessKeyId = "XXXXXXXXXXXXXXXXXXXX";  # Symbolic name looked up in ~/.aws/credentials
@@ -448,7 +448,7 @@ moved to a plugin as well.
     webserver2 = php-host;
   };
   ```
-* Create and deploy using
+- Create and deploy using
   ```
   $ nixops create -d aws-demo webserver_logical.nix webserver_physical_production.nix
   $ nixops deploy -d aws-demo
@@ -456,16 +456,16 @@ moved to a plugin as well.
 
 ## Other interesting NixOps commands
 
-* `nixops ssh -d <deployment> <host>`
-  * Connect to a machine in a deployment over SSH.
-  * Useful for troubleshooting, since we don't have to keep track of IP address 
+- `nixops ssh -d <deployment> <host>`
+  - Connect to a machine in a deployment over SSH.
+  - Useful for troubleshooting, since we don't have to keep track of IP address 
     to host mapping.
-* `nixops destroy -d <deployment>`
-  * Take down everything in a deployment's physical specification.
-* `nixops start -d <deployment>`
-  * Start all machines in a deployment.
-* `nixops stop -d <deployment>`
-  * Stop all machines in a deployment.
-* `nixops <command> -d <deployment> --include <host>
-  * Only run the command on a single host within a deployment.
-  * There is also `--exclude`.
+- `nixops destroy -d <deployment>`
+  - Take down everything in a deployment's physical specification.
+- `nixops start -d <deployment>`
+  - Start all machines in a deployment.
+- `nixops stop -d <deployment>`
+  - Stop all machines in a deployment.
+- `nixops <command> -d <deployment> --include <host>
+  - Only run the command on a single host within a deployment.
+  - There is also `--exclude`.

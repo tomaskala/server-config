@@ -211,10 +211,10 @@ in
 ## Package management
 
 There are two distinct styles of package management:
-* Declarative: The desired packages are specified in `configuration.nix`. Upon 
+- Declarative: The desired packages are specified in `configuration.nix`. Upon 
   every `nixos-rebuild`, NixOS will ensure that you get a consistent set of 
   binares corresponding to the specification.
-* Ad hoc: The packages are installed and uninstalled via the `nix-env` command. 
+- Ad hoc: The packages are installed and uninstalled via the `nix-env` command. 
   This style allows mixing packages from different nixpkgs versions. It is also 
   the only way of package management for non-root users.
 
