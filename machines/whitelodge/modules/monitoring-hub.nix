@@ -114,8 +114,9 @@ in {
       scrapeConfigs = let
         exporters = builtins.concatLists (lib.mapAttrsToList (peer:
           { internal, exporters, ... }:
-          lib.mapAttrsToList (name: port: {
-            inherit peer name port;
+          lib.mapAttrsToList (name: exporter: {
+            inherit peer name;
+            inherit (exporter) port;
             addr = internal.interface.ipv4;
           }) exporters) intranetCfg.peers);
 

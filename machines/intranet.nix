@@ -84,6 +84,19 @@
         };
       };
     };
+
+    exporter = lib.types.submodule {
+      freeformType = lib.types.attrs;
+
+      options = {
+        port = lib.mkOption {
+          type = lib.types.port;
+          description = "Port the Prometheus exporter listens on";
+          example = 9100;
+          readOnly = true;
+        };
+      };
+    };
   in {
     subnets = lib.mkOption {
       type = lib.types.attrsOf subnet;
@@ -113,9 +126,9 @@
           };
 
           exporters = lib.mkOption {
-            type = lib.types.attrsOf lib.types.port;
-            description = "Names and ports of Prometheus exporters";
-            example = { node = 9100; };
+            type = lib.types.attrsOf exporter;
+            description = "Prometheus exporters configuration";
+            example = { node.port = 9100; };
             readOnly = true;
           };
         };
@@ -265,7 +278,7 @@
 
         network = "vpn";
 
-        exporters = { node = 9100; };
+        exporters = { node.port = 9100; };
       };
 
       bob = {
@@ -288,7 +301,7 @@
 
         network = "home";
 
-        exporters = { node = 9100; };
+        exporters = { node.port = 9100; };
       };
     };
 
