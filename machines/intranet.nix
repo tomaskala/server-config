@@ -278,7 +278,12 @@
 
         network = "vpn";
 
-        exporters = { node.port = 9100; };
+        exporters = {
+          node = {
+            port = 9100;
+            enabledCollectors = [ "processes" "systemd" ];
+          };
+        };
       };
 
       bob = {
