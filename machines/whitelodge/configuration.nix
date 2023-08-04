@@ -89,11 +89,17 @@ in {
       timesyncd.enable = true;
 
       firewall.enable = true;
-      monitoring-hub.enable = true;
       monitoring.enable = true;
       overlay-network.enable = true;
       unbound-blocker.enable = true;
       vpn.enable = true;
+
+      monitoring-hub = {
+        enable = true;
+        domain = "monitoring.home.arpa";
+        grafanaPort = 3000;
+        prometheusPort = 9090;
+      };
 
       openssh = {
         enable = true;

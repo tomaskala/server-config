@@ -18,21 +18,18 @@ in {
       type = lib.types.str;
       description = "Domain hosting Grafana";
       example = "monitoring.home.arpa";
-      default = "monitoring.home.arpa";
     };
 
     grafanaPort = lib.mkOption {
       type = lib.types.port;
       description = "Port that Grafana listens on";
       example = 3000;
-      default = 3000;
     };
 
     prometheusPort = lib.mkOption {
       type = lib.types.port;
       description = "Port that Prometheus listens on";
       example = 9090;
-      default = 9090;
     };
   };
 
