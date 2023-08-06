@@ -99,6 +99,7 @@ in {
     };
 
     services.postgresql = {
+      enable = true;
       ensureDatabases = [ dbName ];
       ensureUsers = [{
         name = dbUser;
