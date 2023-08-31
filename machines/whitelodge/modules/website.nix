@@ -32,6 +32,12 @@ in {
       enable = true;
       email = cfg.acmeEmail;
 
+      globalConfig = lib.optionalString config.services.prometheus.enable ''
+        servers {
+          metrics
+        }
+      '';
+
       virtualHosts.${cfg.domain} = {
         extraConfig = ''
           root * ${cfg.webroot}
@@ -68,5 +74,14 @@ in {
         inherit (peerCfg.internal.interface) ipv4 ipv6;
       };
     };
+
+    services.prometheus.scrapeConfigs =
+      lib.mkIf config.services.prometheus.enable [{
+        job_name = "caddy";
+        static_configs = [{
+          targets = [ "127.0.0.1:2019" ];
+          labels = { peer = "whitelodge"; };
+        }];
+      }];
   };
 }
