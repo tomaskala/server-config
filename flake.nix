@@ -4,12 +4,20 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
-    agenix.url = "github:ryantm/agenix";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
-    unbound-blocker.url = "github:tomaskala/unbound-blocker";
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    unbound-blocker = {
+      url = "github:tomaskala/unbound-blocker";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, agenix, vps-admin-os, unbound-blocker, ... }:
+  outputs = { nixpkgs, vps-admin-os, agenix, unbound-blocker, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
