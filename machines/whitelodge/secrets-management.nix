@@ -1,7 +1,6 @@
 {
   config.age.secrets = {
-    users-tomas-password-whitelodge.file =
-      "/root/secrets/users/tomas-whitelodge.age";
+    users-tomas-password.file = "/root/secrets/users/tomas-whitelodge.age";
     miniflux-admin-credentials.file =
       "/root/secrets/other/miniflux-whitelodge.age";
     postgresql-grafana-password.file =

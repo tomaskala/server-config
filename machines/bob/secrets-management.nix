@@ -1,6 +1,6 @@
 {
   config.age.secrets = {
-    users-tomas-password-bob.file = "/root/secrets/users/tomas-bob.age";
+    users-tomas-password.file = "/root/secrets/users/tomas-bob.age";
 
     wg-pk = {
       file = "/root/secrets/wg-pk/bob.age";

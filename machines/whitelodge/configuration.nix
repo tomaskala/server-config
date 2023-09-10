@@ -42,7 +42,7 @@ in {
     users.users.tomas = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
-      passwordFile = config.age.secrets."users-tomas-password-whitelodge".path;
+      passwordFile = config.age.secrets.users-tomas-password.path;
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMvN19BcNTeaVAF291lBG0z9ROD6J91XAMyy+0VP6CdL cooper2whitelodge"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2whitelodge"
