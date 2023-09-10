@@ -38,7 +38,8 @@ in {
               ${
                 lib.concatStringsSep ''
                   ,
-                '' (builtins.attrValues gatewayCfg.exporters)
+                '' (builtins.map ({ port, ... }: builtins.toString port)
+                  (builtins.attrValues gatewayCfg.exporters))
               }
             }
           }
