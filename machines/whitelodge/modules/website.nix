@@ -3,7 +3,7 @@
 let
   cfg = config.services.website;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
+  gatewayCfg = intranetCfg.gateways.whitelodge;
 in {
   options.services.website = {
     enable = lib.mkEnableOption "website";
@@ -71,7 +71,7 @@ in {
     services.unbound = {
       enable = true;
       localDomains.${cfg.domain} = {
-        inherit (peerCfg.internal.interface) ipv4 ipv6;
+        inherit (gatewayCfg.internal.interface) ipv4 ipv6;
       };
     };
 

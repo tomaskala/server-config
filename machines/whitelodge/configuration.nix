@@ -2,7 +2,7 @@
 
 let
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
+  gatewayCfg = intranetCfg.gateways.whitelodge;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -104,8 +104,8 @@ in {
       openssh = {
         enable = true;
         listenAddresses = [
-          { addr = peerCfg.internal.interface.ipv4; }
-          { addr = peerCfg.internal.interface.ipv6; }
+          { addr = gatewayCfg.internal.interface.ipv4; }
+          { addr = gatewayCfg.internal.interface.ipv6; }
         ];
       };
 
@@ -121,8 +121,8 @@ in {
           interface = [
             "127.0.0.1"
             "::1"
-            peerCfg.internal.interface.ipv4
-            peerCfg.internal.interface.ipv6
+            gatewayCfg.internal.interface.ipv4
+            gatewayCfg.internal.interface.ipv6
           ];
           access-control = [
             "127.0.0.1/8 allow"

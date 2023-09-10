@@ -3,10 +3,10 @@
 let
   cfg = config.services.firewall;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
+  gatewayCfg = intranetCfg.gateways.whitelodge;
 
-  vpnInterface = peerCfg.internal.interface.name;
-  wanInterface = peerCfg.external.name;
+  vpnInterface = gatewayCfg.internal.interface.name;
+  wanInterface = gatewayCfg.external.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -26,7 +26,7 @@ in {
       # Source: https://github.com/NixOS/nixpkgs/pull/223283/files.
       checkRuleset = true;
       preCheckRuleset = ''
-        ${pkgs.gnused}/bin/sed -i 's/${peerCfg.external.name}/lo/g' ruleset.conf
+        ${pkgs.gnused}/bin/sed -i 's/${gatewayCfg.external.name}/lo/g' ruleset.conf
       '';
 
       ruleset = ''
@@ -55,7 +55,7 @@ in {
           set udp_accepted_wan {
             type inet_service
             elements = {
-              ${builtins.toString peerCfg.internal.port},
+              ${builtins.toString gatewayCfg.internal.port},
             }
           }
 

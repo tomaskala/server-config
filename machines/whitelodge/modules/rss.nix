@@ -3,7 +3,7 @@
 let
   cfg = config.services.rss;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
+  gatewayCfg = intranetCfg.gateways.whitelodge;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -56,7 +56,7 @@ in {
     services.unbound = {
       enable = true;
       localDomains.${cfg.domain} = {
-        inherit (peerCfg.internal.interface) ipv4 ipv6;
+        inherit (gatewayCfg.internal.interface) ipv4 ipv6;
       };
     };
   };

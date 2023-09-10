@@ -104,7 +104,7 @@
       readOnly = true;
     };
 
-    peers = lib.mkOption {
+    gateways = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           internal = lib.mkOption {
@@ -121,7 +121,7 @@
 
           network = lib.mkOption {
             type = lib.types.str;
-            description = "Network in 'subnets' this peer is a gateway to";
+            description = "Network in 'subnets' this gateway leads to";
             readOnly = true;
           };
 
@@ -134,10 +134,10 @@
         };
       });
       description = ''
-        Peers connected to the intranet. Each consists of the WireGuard
+        Gateways connected to the intranet. Each consists of the WireGuard
         interface used to connect to the intranet, the main external interface
         (public IP address in case of the server, LAN interface in case of
-        a peer behind a NAT), and the network that the peer is a gateway to.
+        a gateway behind a NAT), and the network that the gateway leads to.
       '';
       readOnly = true;
     };
@@ -257,7 +257,7 @@
       };
     };
 
-    peers = {
+    gateways = {
       whitelodge = {
         internal = {
           interface = {
@@ -316,7 +316,7 @@
         ipv6 = "fd25:6f6:a9f:2000::1";
       };
 
-      "music.home.arpa" = { inherit (peers.bob.external) ipv4 ipv6; };
+      "music.home.arpa" = { inherit (gateways.bob.external) ipv4 ipv6; };
 
       "nas.home.arpa" = {
         ipv4 = "10.0.0.10";

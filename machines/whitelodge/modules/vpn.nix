@@ -3,9 +3,9 @@
 let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
+  gatewayCfg = intranetCfg.gateways.whitelodge;
 
-  vpnInterface = peerCfg.internal.interface.name;
+  vpnInterface = gatewayCfg.internal.interface.name;
   vpnSubnet = intranetCfg.subnets.vpn;
 in {
   options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
@@ -22,7 +22,7 @@ in {
 
         wireguardConfig = {
           PrivateKeyFile = config.age.secrets.wg-pk.path;
-          ListenPort = peerCfg.internal.port;
+          ListenPort = gatewayCfg.internal.port;
         };
 
         wireguardPeers = [
@@ -68,10 +68,10 @@ in {
         matchConfig.Name = vpnInterface;
 
         address = [
-          "${peerCfg.internal.interface.ipv4}/${
+          "${gatewayCfg.internal.interface.ipv4}/${
             builtins.toString vpnSubnet.ipv4.mask
           }"
-          "${peerCfg.internal.interface.ipv6}/${
+          "${gatewayCfg.internal.interface.ipv6}/${
             builtins.toString vpnSubnet.ipv6.mask
           }"
         ];

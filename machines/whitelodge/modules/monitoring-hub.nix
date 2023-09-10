@@ -3,7 +3,7 @@
 let
   cfg = config.services.monitoring-hub;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
+  gatewayCfg = intranetCfg.gateways.whitelodge;
 
   dbName = "grafana";
   dbUser = "grafana";
@@ -113,21 +113,21 @@ in {
       port = cfg.prometheusPort;
 
       scrapeConfigs = let
-        exporters = builtins.concatLists (lib.mapAttrsToList (peer:
+        exporters = builtins.concatLists (lib.mapAttrsToList (gateway:
           { internal, exporters, ... }:
           lib.mapAttrsToList (name: exporter: {
-            inherit peer name;
+            inherit gateway name;
             inherit (exporter) port;
             addr = internal.interface.ipv4;
-          }) exporters) intranetCfg.peers);
+          }) exporters) intranetCfg.gateways);
 
         exporterGroups = builtins.groupBy ({ name, ... }: name) exporters;
-      in lib.mapAttrsToList (job_name: peers: {
+      in lib.mapAttrsToList (job_name: gateways: {
         inherit job_name;
-        static_configs = builtins.map ({ peer, addr, port, ... }: {
+        static_configs = builtins.map ({ gateway, addr, port, ... }: {
           targets = [ "${addr}:${builtins.toString port}" ];
-          labels = { inherit peer; };
-        }) peers;
+          labels = { peer = gateway; };
+        }) gateways;
       }) exporterGroups;
     };
 
@@ -151,7 +151,7 @@ in {
     services.unbound = {
       enable = true;
       localDomains.${cfg.domain} = {
-        inherit (peerCfg.internal.interface) ipv4 ipv6;
+        inherit (gatewayCfg.internal.interface) ipv4 ipv6;
       };
     };
   };

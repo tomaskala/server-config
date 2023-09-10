@@ -3,9 +3,9 @@
 let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.bob;
+  gatewayCfg = intranetCfg.gateways.bob;
 
-  vpnInterface = peerCfg.internal.interface.name;
+  vpnInterface = gatewayCfg.internal.interface.name;
   vpnSubnet = intranetCfg.subnets.vpn;
 in {
   options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
@@ -25,14 +25,14 @@ in {
         wireguardPeers = [{
           wireguardPeerConfig = {
             # whitelodge
-            PublicKey = intranetCfg.peers.whitelodge.internal.publicKey;
+            PublicKey = intranetCfg.gateways.whitelodge.internal.publicKey;
             PresharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
             AllowedIPs = [
-              "${intranetCfg.peers.whitelodge.internal.interface.ipv4}/32"
-              "${intranetCfg.peers.whitelodge.internal.interface.ipv6}/128"
+              "${intranetCfg.gateways.whitelodge.internal.interface.ipv4}/32"
+              "${intranetCfg.gateways.whitelodge.internal.interface.ipv6}/128"
             ];
-            Endpoint = "${intranetCfg.peers.whitelodge.external.ipv4}:${
-                builtins.toString intranetCfg.peers.whitelodge.internal.port
+            Endpoint = "${intranetCfg.gateways.whitelodge.external.ipv4}:${
+                builtins.toString intranetCfg.gateways.whitelodge.internal.port
               }";
             PersistentKeepalive = 25;
           };
@@ -46,10 +46,10 @@ in {
         networkConfig.IPForward = true;
 
         address = [
-          "${peerCfg.internal.interface.ipv4}/${
+          "${gatewayCfg.internal.interface.ipv4}/${
             builtins.toString vpnSubnet.ipv4.mask
           }"
-          "${peerCfg.internal.interface.ipv6}/${
+          "${gatewayCfg.internal.interface.ipv6}/${
             builtins.toString vpnSubnet.ipv6.mask
           }"
         ];

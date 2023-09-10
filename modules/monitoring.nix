@@ -3,7 +3,7 @@
 let
   cfg = config.services.monitoring;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.${config.networking.hostName};
+  gatewayCfg = intranetCfg.gateways.${config.networking.hostName};
 in {
   options.services.monitoring = { enable = lib.mkEnableOption "monitoring"; };
 
@@ -12,7 +12,7 @@ in {
       {
         enable = true;
         openFirewall = false;
-        listenAddress = peerCfg.internal.interface.ipv4;
-      } // exporter) peerCfg.exporters;
+        listenAddress = gatewayCfg.internal.interface.ipv4;
+      } // exporter) gatewayCfg.exporters;
   };
 }

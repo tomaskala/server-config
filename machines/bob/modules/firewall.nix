@@ -3,10 +3,10 @@
 let
   cfg = config.services.firewall;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.bob;
+  gatewayCfg = intranetCfg.gateways.bob;
 
-  vpnInterface = peerCfg.internal.interface.name;
-  lanInterface = peerCfg.external.name;
+  vpnInterface = gatewayCfg.internal.interface.name;
+  lanInterface = gatewayCfg.external.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.home-private;
@@ -38,7 +38,7 @@ in {
               ${
                 lib.concatStringsSep ''
                   ,
-                '' (builtins.attrValues peerCfg.exporters)
+                '' (builtins.attrValues gatewayCfg.exporters)
               }
             }
           }

@@ -2,7 +2,7 @@
 
 let
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.bob;
+  gatewayCfg = intranetCfg.gateways.bob;
 
   privateSubnet = intranetCfg.subnets.home-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -84,8 +84,12 @@ in {
         enable = true;
 
         settings.server = {
-          interface =
-            [ "127.0.0.1" "::1" peerCfg.external.ipv4 peerCfg.external.ipv6 ];
+          interface = [
+            "127.0.0.1"
+            "::1"
+            gatewayCfg.external.ipv4
+            gatewayCfg.external.ipv6
+          ];
           access-control = [
             "127.0.0.1/8 allow"
             "::1/128 allow"

@@ -3,7 +3,7 @@
 let
   cfg = config.services.music;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.bob;
+  gatewayCfg = intranetCfg.gateways.bob;
 
   nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
 
@@ -88,7 +88,7 @@ in {
 
     services.unbound = {
       enable = true;
-      localDomains.${cfg.domain} = { inherit (peerCfg.external) ipv4 ipv6; };
+      localDomains.${cfg.domain} = { inherit (gatewayCfg.external) ipv4 ipv6; };
     };
   };
 }

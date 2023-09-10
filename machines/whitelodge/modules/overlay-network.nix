@@ -3,11 +3,11 @@
 let
   cfg = config.services.overlay-network;
   intranetCfg = config.networking.intranet;
-  peerCfg = intranetCfg.peers.whitelodge;
+  gatewayCfg = intranetCfg.gateways.whitelodge;
 
-  vpnInterface = peerCfg.internal.interface.name;
-  otherPeers =
-    lib.filterAttrs (peerName: _: peerName != "whitelodge") intranetCfg.peers;
+  vpnInterface = gatewayCfg.internal.interface.name;
+  otherGateways = lib.filterAttrs (gatewayName: _: gatewayName != "whitelodge")
+    intranetCfg.gateways;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -60,10 +60,10 @@ in {
         ];
 
       accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
-        (builtins.attrValues otherPeers);
+        (builtins.attrValues otherGateways);
 
       accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6")
-        (builtins.attrValues otherPeers);
+        (builtins.attrValues otherGateways);
     in ''
       ${addToSet "vpn_internal_ipv4"
       (maskSubnet intranetCfg.subnets.vpn-internal.ipv4)}
@@ -87,7 +87,7 @@ in {
     systemd.network = {
       enable = true;
 
-      # Add each peer's gateway as a Wireguard peer.
+      # Add each gateway as a Wireguard peer.
       netdevs."90-${vpnInterface}" = {
         netdevConfig = {
           Name = vpnInterface;
@@ -96,10 +96,10 @@ in {
 
         wireguardConfig = {
           PrivateKeyFile = config.age.secrets.wg-pk.path;
-          ListenPort = peerCfg.internal.port;
+          ListenPort = gatewayCfg.internal.port;
         };
 
-        wireguardPeers = lib.mapAttrsToList makePeer otherPeers;
+        wireguardPeers = lib.mapAttrsToList makePeer otherGateways;
       };
 
       networks."90-${vpnInterface}" = {
@@ -109,21 +109,21 @@ in {
         networkConfig.IPForward = true;
 
         address = [
-          "${peerCfg.internal.interface.ipv4}/${
+          "${gatewayCfg.internal.interface.ipv4}/${
             builtins.toString vpnSubnet.ipv4.mask
           }"
-          "${peerCfg.internal.interface.ipv6}/${
+          "${gatewayCfg.internal.interface.ipv6}/${
             builtins.toString vpnSubnet.ipv6.mask
           }"
         ];
 
-        # Route traffic to each peer's network to the Wireguard interface.
+        # Route traffic to each gateway's network to the Wireguard interface.
         # Wireguard takes care of routing to the correct gateway within the
         # tunnel thanks to the AllowedIPs clause of each gateway peer.
         routes = let
-          peerValues = builtins.attrValues otherPeers;
+          gatewayValues = builtins.attrValues otherGateways;
 
-          networks = builtins.catAttrs "network" peerValues;
+          networks = builtins.catAttrs "network" gatewayValues;
         in builtins.concatMap makeRoute networks;
       };
     };
