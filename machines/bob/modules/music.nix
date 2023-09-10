@@ -5,7 +5,7 @@ let
   intranetCfg = config.networking.intranet;
   gatewayCfg = intranetCfg.gateways.bob;
 
-  nasAddr = intranetCfg.localDomains."nas.home.arpa".ipv4;
+  nasAddr = intranetCfg.services.nas.ipv4;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.home-private;

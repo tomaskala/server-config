@@ -82,7 +82,11 @@ in {
     '';
 
     # Local DNS records.
-    services.unbound.localDomains = intranetCfg.localDomains;
+    services.unbound.localDomains = lib.mapAttrs' (_:
+      { url, ipv4, ipv6 }: {
+        name = url;
+        value = { inherit ipv4 ipv6; };
+      }) intranetCfg.services;
 
     systemd.network = {
       enable = true;

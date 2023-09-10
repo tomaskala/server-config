@@ -15,7 +15,7 @@
           mask = lib.mkOption {
             type = lib.types.int;
             description = "Subnet mask";
-            example = "16";
+            example = 16;
             readOnly = true;
           };
         };
@@ -148,25 +148,32 @@
       readOnly = true;
     };
 
-    localDomains = lib.mkOption {
+    services = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
+          url = lib.mkOption {
+            type = lib.types.str;
+            description = "URL of the service";
+            example = "service.home.arpa";
+            readOnly = true;
+          };
+
           ipv4 = lib.mkOption {
             type = lib.types.str;
-            description = "IPv4 address the domain resolves to";
-            example = "192.168.0.1";
+            description = "IPv4 address of the service";
+            example = "10.0.0.1";
             readOnly = true;
           };
 
           ipv6 = lib.mkOption {
             type = lib.types.str;
-            description = "IPv6 address the domain resolves to";
-            example = "fe80::1";
+            description = "IPv6 address of the service";
+            example = "fd25:6f6:a9f:2000::1";
             readOnly = true;
           };
         };
       });
-      description = "Locally-resolvable domains and their addresses";
+      description = "Services running within the intranet";
       readOnly = true;
     };
   };
@@ -316,9 +323,6 @@
       };
     };
 
-    # TODO: Also create an 'appliances' configuration for router & NAS?
-    # Each would have a URL and IPs.
-    # TODO Could also be 'services' to include music.home.arpa, which is on bob
     devices = {
       cooper = {
         interface = {
@@ -365,15 +369,22 @@
       };
     };
 
-    localDomains = {
-      "router.home.arpa" = {
+    # TODO: Move each service into the subnet it's running in?
+    # TODO: Could do the same with gateways.
+    services = {
+      router = {
+        url = "router.home.arpa";
         ipv4 = "10.0.0.1";
         ipv6 = "fd25:6f6:a9f:2000::1";
       };
 
-      "music.home.arpa" = { inherit (gateways.bob.external) ipv4 ipv6; };
+      music = {
+        url = "music.home.arpa";
+        inherit (gateways.bob.external) ipv4 ipv6;
+      };
 
-      "nas.home.arpa" = {
+      nas = {
+        url = "nas.home.arpa";
         ipv4 = "10.0.0.10";
         ipv6 = "fd25:6f6:a9f:2000::a";
       };

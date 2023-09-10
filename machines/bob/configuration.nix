@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   intranetCfg = config.networking.intranet;
@@ -98,7 +98,11 @@ in {
           ];
         };
 
-        inherit (intranetCfg) localDomains;
+        localDomains = lib.mapAttrs' (_:
+          { url, ipv4, ipv6 }: {
+            name = url;
+            value = { inherit ipv4 ipv6; };
+          }) intranetCfg.services;
       };
     };
   };
