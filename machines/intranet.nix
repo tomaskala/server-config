@@ -142,6 +142,12 @@
       readOnly = true;
     };
 
+    devices = lib.mkOption {
+      type = lib.types.attrsOf wireguardInterface;
+      description = "Devices connected to the network not serving as gateways";
+      readOnly = true;
+    };
+
     localDomains = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
@@ -307,6 +313,55 @@
         network = "home";
 
         exporters = { node.port = 9100; };
+      };
+    };
+
+    # TODO: Also create an 'appliances' configuration for router & NAS?
+    # Each would have a URL and IPs.
+    # TODO Could also be 'services' to include music.home.arpa, which is on bob
+    devices = {
+      cooper = {
+        interface = {
+          name = "wg0";
+          ipv4 = "10.100.100.1";
+          ipv6 = "fd25:6f6:a9f:1100::1";
+        };
+
+        publicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
+        port = null;
+      };
+
+      tomas-phone = {
+        interface = {
+          name = "wg0";
+          ipv4 = "10.100.100.2";
+          ipv6 = "fd25:6f6:a9f:1100::2";
+        };
+
+        publicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
+        port = null;
+      };
+
+      blacklodge = {
+        interface = {
+          name = "wg0";
+          ipv4 = "10.100.100.3";
+          ipv6 = "fd25:6f6:a9f:1100::3";
+        };
+
+        publicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
+        port = null;
+      };
+
+      martin-windows = {
+        interface = {
+          name = "wg0";
+          ipv4 = "10.100.104.1";
+          ipv6 = "fd25:6f6:a9f:1200::1";
+        };
+
+        publicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
+        port = null;
       };
     };
 

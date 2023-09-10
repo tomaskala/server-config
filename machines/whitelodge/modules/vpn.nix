@@ -29,36 +29,48 @@ in {
           {
             wireguardPeerConfig = {
               # cooper
-              PublicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
+              PublicKey = intranetCfg.devices.cooper.publicKey;
               PresharedKeyFile = config.age.secrets.wg-cooper2whitelodge.path;
-              AllowedIPs = [ "10.100.100.1/32" "fd25:6f6:a9f:1100::1/128" ];
+              AllowedIPs = [
+                "${intranetCfg.devices.cooper.interface.ipv4}/32"
+                "${intranetCfg.devices.cooper.interface.ipv6}/128"
+              ];
             };
           }
           {
             wireguardPeerConfig = {
               # tomas-phone
-              PublicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
+              PublicKey = intranetCfg.devices.tomas-phone.publicKey;
               PresharedKeyFile =
                 config.age.secrets.wg-tomas-phone2whitelodge.path;
-              AllowedIPs = [ "10.100.100.2/32" "fd25:6f6:a9f:1100::2/128" ];
+              AllowedIPs = [
+                "${intranetCfg.devices.tomas-phone.interface.ipv4}/32"
+                "${intranetCfg.devices.tomas-phone.interface.ipv6}/128"
+              ];
             };
           }
           {
             wireguardPeerConfig = {
               # blacklodge
-              PublicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
+              PublicKey = intranetCfg.devices.blacklodge.publicKey;
               PresharedKeyFile =
                 config.age.secrets.wg-blacklodge2whitelodge.path;
-              AllowedIPs = [ "10.100.100.3/32" "fd25:6f6:a9f:1100::3/128" ];
+              AllowedIPs = [
+                "${intranetCfg.devices.blacklodge.interface.ipv4}/32"
+                "${intranetCfg.devices.blacklodge.interface.ipv6}/128"
+              ];
             };
           }
           {
             wireguardPeerConfig = {
               # martin-windows
-              PublicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
+              PublicKey = intranetCfg.devices.martin-windows.publicKey;
               PresharedKeyFile =
                 config.age.secrets.wg-martin-windows2whitelodge.path;
-              AllowedIPs = [ "10.100.104.1/32" "fd25:6f6:a9f:1200::1/128" ];
+              AllowedIPs = [
+                "${intranetCfg.devices.martin-windows.interface.ipv4}/32"
+                "${intranetCfg.devices.martin-windows.interface.ipv6}/128"
+              ];
             };
           }
         ];
