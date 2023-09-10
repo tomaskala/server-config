@@ -20,6 +20,31 @@
           };
         };
       };
+
+      service = lib.types.submodule {
+        options = {
+          url = lib.mkOption {
+            type = lib.types.str;
+            description = "URL of the service";
+            example = "service.home.arpa";
+            readOnly = true;
+          };
+
+          ipv4 = lib.mkOption {
+            type = lib.types.str;
+            description = "IPv4 address of the service";
+            example = "10.0.0.1";
+            readOnly = true;
+          };
+
+          ipv6 = lib.mkOption {
+            type = lib.types.str;
+            description = "IPv6 address of the service";
+            example = "fd25:6f6:a9f:2000::1";
+            readOnly = true;
+          };
+        };
+      };
     in lib.types.submodule {
       options = {
         ipv4 = lib.mkOption {
@@ -32,6 +57,12 @@
           type = ipRange;
           description = "IPv6 range of the subnet";
           readOnly = true;
+        };
+
+        services = lib.mkOption {
+          type = lib.types.attrsOf service;
+          description = "Services running inside this subnet";
+          default = { };
         };
       };
     };
@@ -147,35 +178,6 @@
       description = "Devices connected to the network not serving as gateways";
       readOnly = true;
     };
-
-    services = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
-        options = {
-          url = lib.mkOption {
-            type = lib.types.str;
-            description = "URL of the service";
-            example = "service.home.arpa";
-            readOnly = true;
-          };
-
-          ipv4 = lib.mkOption {
-            type = lib.types.str;
-            description = "IPv4 address of the service";
-            example = "10.0.0.1";
-            readOnly = true;
-          };
-
-          ipv6 = lib.mkOption {
-            type = lib.types.str;
-            description = "IPv6 address of the service";
-            example = "fd25:6f6:a9f:2000::1";
-            readOnly = true;
-          };
-        };
-      });
-      description = "Services running within the intranet";
-      readOnly = true;
-    };
   };
 
   config.networking.intranet = rec {
@@ -213,6 +215,7 @@
           subnet = "10.100.100.0";
           mask = 24;
         };
+
         ipv6 = {
           subnet = "fd25:6f6:a9f:1100::";
           mask = 56;
@@ -226,6 +229,7 @@
           subnet = "10.100.104.0";
           mask = 24;
         };
+
         ipv6 = {
           subnet = "fd25:6f6:a9f:1200::";
           mask = 56;
@@ -251,9 +255,29 @@
           subnet = "10.0.0.0";
           mask = 24;
         };
+
         ipv6 = {
           subnet = "fd25:6f6:a9f:2100::";
           mask = 56;
+        };
+
+        services = {
+          router = {
+            url = "router.home.arpa";
+            ipv4 = "10.0.0.1";
+            ipv6 = "fd25:6f6:a9f:2000::1";
+          };
+
+          music = {
+            url = "music.home.arpa";
+            inherit (gateways.bob.external) ipv4 ipv6;
+          };
+
+          nas = {
+            url = "nas.home.arpa";
+            ipv4 = "10.0.0.10";
+            ipv6 = "fd25:6f6:a9f:2000::a";
+          };
         };
       };
 
@@ -263,6 +287,7 @@
           subnet = "10.0.4.0";
           mask = 24;
         };
+
         ipv6 = {
           subnet = "fd25:6f6:a9f:2200::";
           mask = 56;
@@ -270,6 +295,7 @@
       };
     };
 
+    # TODO: Move each gateway into its subnet like services?
     gateways = {
       whitelodge = {
         internal = {
@@ -366,27 +392,6 @@
 
         publicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
         port = null;
-      };
-    };
-
-    # TODO: Move each service into the subnet it's running in?
-    # TODO: Could do the same with gateways.
-    services = {
-      router = {
-        url = "router.home.arpa";
-        ipv4 = "10.0.0.1";
-        ipv6 = "fd25:6f6:a9f:2000::1";
-      };
-
-      music = {
-        url = "music.home.arpa";
-        inherit (gateways.bob.external) ipv4 ipv6;
-      };
-
-      nas = {
-        url = "nas.home.arpa";
-        ipv4 = "10.0.0.10";
-        ipv6 = "fd25:6f6:a9f:2000::a";
       };
     };
   };

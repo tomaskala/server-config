@@ -98,11 +98,14 @@ in {
           ];
         };
 
-        localDomains = lib.mapAttrs' (_:
-          { url, ipv4, ipv6 }: {
-            name = url;
-            value = { inherit ipv4 ipv6; };
-          }) intranetCfg.services;
+        localDomains = let
+          homeServices =
+            builtins.attrValues intranetCfg.subnets.home-private.services;
+
+          urlsToIPs = builtins.map
+            ({ url, ipv4, ipv6 }: lib.nameValuePair url { inherit ipv4 ipv6; })
+            homeServices;
+        in builtins.listToAttrs urlsToIPs;
       };
     };
   };

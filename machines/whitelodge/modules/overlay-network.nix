@@ -82,11 +82,17 @@ in {
     '';
 
     # Local DNS records.
-    services.unbound.localDomains = lib.mapAttrs' (_:
-      { url, ipv4, ipv6 }: {
-        name = url;
-        value = { inherit ipv4 ipv6; };
-      }) intranetCfg.services;
+    services.unbound.localDomains = let
+      allSubnets = builtins.attrValues intranetCfg.subnets;
+
+      allServices = builtins.catAttrs "services" allSubnets;
+
+      flatServices = builtins.concatMap builtins.attrValues allServices;
+
+      urlsToIPs = builtins.map
+        ({ url, ipv4, ipv6 }: lib.nameValuePair url { inherit ipv4 ipv6; })
+        flatServices;
+    in builtins.listToAttrs urlsToIPs;
 
     systemd.network = {
       enable = true;
