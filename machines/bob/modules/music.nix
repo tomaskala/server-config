@@ -74,6 +74,11 @@ in {
       # since this is an internal domain only accessible from private subnets.
       virtualHosts."http://${cfg.domain}" = {
         extraConfig = ''
+          encode {
+            zstd
+            gzip 5
+          }
+
           reverse_proxy :${
             builtins.toString config.services.navidrome.settings.Port
           }

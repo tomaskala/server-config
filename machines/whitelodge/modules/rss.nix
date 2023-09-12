@@ -43,6 +43,11 @@ in {
       # since this is an internal domain only accessible from the VPN.
       virtualHosts."http://${cfg.domain}" = {
         extraConfig = ''
+          encode {
+            zstd
+            gzip 5
+          }
+
           reverse_proxy :${builtins.toString cfg.port}
 
           @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${

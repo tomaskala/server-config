@@ -40,9 +40,13 @@ in {
 
       virtualHosts.${cfg.domain} = {
         extraConfig = ''
-          root * ${cfg.webroot}
-          encode gzip
           file_server
+          root * ${cfg.webroot}
+
+          encode {
+            zstd
+            gzip 5
+          }
 
           header {
             # Disable FLoC tracking.
