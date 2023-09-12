@@ -65,6 +65,22 @@
         "type": "github"
       }
     },
+    "nixos-hardware": {
+      "locked": {
+        "lastModified": 1695109627,
+        "narHash": "sha256-4rpyoVzmunIG6xWA/EonnSSqC69bDBzciFi6SjBze/0=",
+        "owner": "nixos",
+        "repo": "nixos-hardware",
+        "rev": "cb4dc98f776ddb6af165e6f06b2902efe31ca67a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixos-hardware",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1694048570,
@@ -84,6 +100,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "unbound-blocker": "unbound-blocker",
         "vps-admin-os": "vps-admin-os"

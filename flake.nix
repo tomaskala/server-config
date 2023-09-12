@@ -4,6 +4,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    nixos-hardware.url = "github:nixos/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
 
     agenix = {
@@ -17,7 +18,8 @@
     };
   };
 
-  outputs = { nixpkgs, vps-admin-os, agenix, unbound-blocker, ... }:
+  outputs =
+    { nixpkgs, nixos-hardware, vps-admin-os, agenix, unbound-blocker, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -67,6 +69,7 @@
           modules = [
             ./machines/bob/configuration.nix
             commonConfig
+            nixos-hardware.nixosModules.raspberry-pi-4
             agenix.nixosModules.default
           ];
         };
