@@ -86,9 +86,9 @@ in {
       };
     };
 
-    services.unbound = {
-      enable = true;
-      localDomains.${cfg.domain} = { inherit (gatewayCfg.external) ipv4 ipv6; };
+    networking.intranet.subnets.home-private.services.music = {
+      url = cfg.domain;
+      inherit (gatewayCfg.external) ipv4 ipv6;
     };
   };
 }

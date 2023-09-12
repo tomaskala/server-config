@@ -53,11 +53,9 @@ in {
       };
     };
 
-    services.unbound = {
-      enable = true;
-      localDomains.${cfg.domain} = {
-        inherit (gatewayCfg.internal.interface) ipv4 ipv6;
-      };
+    networking.intranet.subnets.vpn.services.rss = {
+      url = cfg.domain;
+      inherit (gatewayCfg.internal.interface) ipv4 ipv6;
     };
   };
 }

@@ -27,21 +27,18 @@
             type = lib.types.str;
             description = "URL of the service";
             example = "service.home.arpa";
-            readOnly = true;
           };
 
           ipv4 = lib.mkOption {
             type = lib.types.str;
             description = "IPv4 address of the service";
             example = "10.0.0.1";
-            readOnly = true;
           };
 
           ipv6 = lib.mkOption {
             type = lib.types.str;
             description = "IPv6 address of the service";
             example = "fd25:6f6:a9f:2000::1";
-            readOnly = true;
           };
         };
       };
@@ -132,7 +129,6 @@
     subnets = lib.mkOption {
       type = lib.types.attrsOf subnet;
       description = "Subnets inside the VPN";
-      readOnly = true;
     };
 
     gateways = lib.mkOption {
