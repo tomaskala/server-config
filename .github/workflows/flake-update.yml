@@ -1,0 +1,36 @@
+name: 'Flake update'
+
+on:
+  # Allow triggering the job manually from the UI.
+  workflow_dispatch:
+
+  # Run every Sunday at 00:30 UTC.
+  schedule:
+    - cron: '30 0 * * 0'
+
+jobs:
+  flake-update:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Checkout the repository'
+        uses: 'actions/checkout@v4'
+
+      - name: 'Install Nix'
+        uses: 'cachix/install-nix-action@v22'
+        with:
+          github_access_token: '${{ secrets.GITHUB_TOKEN }}'
+
+      - name: 'Update flake.lock'
+        run: 'nix flake update'
+
+      - name: 'Run checks'
+        run: 'nix flake check --all-systems'
+
+      - name: 'Commit & push flake.lock'
+        run: |
+          git config --global user.name 'Github Actions'
+          git config --global user.email '7727887+tomaskala@users.noreply.github.com'
+
+          git add flake.lock
+          git commit -m 'Github Actions: Update flake.lock'
+          git push
