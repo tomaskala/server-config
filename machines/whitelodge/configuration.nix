@@ -39,6 +39,22 @@ in {
       };
     };
 
+    system.autoUpgrade = {
+      enable = true;
+      operation = "switch";
+      flake = "github:tomaskala/infra";
+
+      # Run after the automatic flake.lock update configured in Github Actions.
+      dates = "Sun *-*-* 03:00:00";
+
+      # The system runs in a container, sharing the Linux kernel with other
+      # containers. As such, no kernel upgrades can happen during a system
+      # upgrade, and no reboot is necessary. When enabled, this broke the
+      # nixos-upgrade service because it attempted to read non-existent
+      # files under /run/booted-system.
+      allowReboot = false;
+    };
+
     users.users.tomas = {
       isNormalUser = true;
       extraGroups = [ "wheel" ];
