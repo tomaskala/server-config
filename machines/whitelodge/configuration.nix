@@ -63,7 +63,7 @@ in {
       ];
     };
 
-    time.timeZone = "Europe/Prague";
+    time.timeZone = "Etc/UTC";
 
     environment.systemPackages = with pkgs; [
       curl
