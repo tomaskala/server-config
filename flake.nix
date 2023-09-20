@@ -115,6 +115,20 @@
 
           specialArgs = { inherit secrets; };
         };
+
+        cooper = let system = "x86_64-linux";
+        in nixpkgs.lib.nixosSystem {
+          inherit system;
+          pkgs = forOneSystem (pkgs: pkgs) system;
+          modules = [
+            ./machines/cooper/configuration.nix
+            commonConfig
+            nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
+            agenix.nixosModules.default
+            home-manager.nixosModules.default
+            { home-manager.useGlobalPkgs = true; }
+          ];
+        };
       };
 
       darwinConfigurations = {
