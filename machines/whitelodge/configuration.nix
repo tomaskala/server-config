@@ -8,6 +8,7 @@ let
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
+    ./modules/dav.nix
     ./modules/firewall.nix
     ./modules/monitoring-hub.nix
     ./modules/overlay-network.nix
@@ -109,6 +110,12 @@ in {
       overlay-network.enable = true;
       unbound-blocker.enable = true;
       vpn.enable = true;
+
+      dav = {
+        enable = true;
+        domain = "dav.home.arpa";
+        port = 5232;
+      };
 
       monitoring-hub = {
         enable = true;

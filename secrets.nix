@@ -29,4 +29,8 @@ in {
   "secrets/other/postgresql-grafana.age".publicKeys = [ whitelodge ];
   # grafana admin password
   "secrets/other/grafana-admin.age".publicKeys = [ whitelodge ];
+  # radicale htpasswd of the following form
+  # user1:password1
+  # user2:password2
+  "secrets/other/radicale-htpasswd.age".publicKeys = [ whitelodge ];
 }

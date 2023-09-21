@@ -5,6 +5,7 @@
       "/root/secrets/other/miniflux-whitelodge.age";
     postgresql-grafana-password.file =
       "/root/secrets/other/postgresql-grafana.age";
+    radicale-htpasswd.file = "/root/secrets/other/radicale-htpasswd.age";
 
     grafana-admin-password = {
       file = "/root/secrets/other/grafana-admin.age";
