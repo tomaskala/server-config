@@ -3,7 +3,6 @@
 {
   # TODO: https://codeberg.org/davidak/nixos-config
   # TODO: home-manager
-  # TODO: systemd-boot
 
   imports = [
     ./modules/audio.nix
@@ -24,9 +23,20 @@
     };
 
     boot = {
+      plymouth.enable = true;
+
       tmp = {
         cleanOnBoot = true;
         useTmpfs = true;
+      };
+
+      loader = {
+        grub.enable = false;
+
+        systemd-boot = {
+          enable = true;
+          editor = false;
+        };
       };
     };
 
