@@ -56,28 +56,37 @@ in {
       allowReboot = false;
     };
 
-    users.users.tomas = {
-      isNormalUser = true;
-      extraGroups = [ "wheel" ];
-      passwordFile = config.age.secrets.users-tomas-password.path;
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMvN19BcNTeaVAF291lBG0z9ROD6J91XAMyy+0VP6CdL cooper2whitelodge"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2whitelodge"
-      ];
-    };
+    users = {
+      mutableUsers = false;
 
-    users.groups.git = { };
-    users.users.git = {
-      isSystemUser = true;
-      createHome = true;
-      home = "/home/git";
-      shell = "${pkgs.git}/bin/git-shell";
-      group = "git";
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGbhtSz3s/zgTVWg7d37J9qeKk+u4H+jJhwvj/QXjaIW cooper2whitelodge-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2whitelodge-git"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf blacklodge2whitelodge-git"
-      ];
+      users = {
+        root.passwordFile = config.age.secrets.users-root-password.path;
+
+        tomas = {
+          isNormalUser = true;
+          extraGroups = [ "wheel" ];
+          passwordFile = config.age.secrets.users-tomas-password.path;
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMvN19BcNTeaVAF291lBG0z9ROD6J91XAMyy+0VP6CdL cooper2whitelodge"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2whitelodge"
+          ];
+        };
+
+        git = {
+          isSystemUser = true;
+          createHome = true;
+          home = "/home/git";
+          shell = "${pkgs.git}/bin/git-shell";
+          group = "git";
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGbhtSz3s/zgTVWg7d37J9qeKk+u4H+jJhwvj/QXjaIW cooper2whitelodge-git"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2whitelodge-git"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf blacklodge2whitelodge-git"
+          ];
+        };
+      };
+
+      groups.git = { };
     };
 
     time.timeZone = "Etc/UTC";

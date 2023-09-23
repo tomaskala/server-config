@@ -7,6 +7,7 @@ let
 in {
   # Users
   "secrets/users/tomas-whitelodge.age".publicKeys = [ whitelodge ];
+  "secrets/users/root-whitelodge.age".publicKeys = [ whitelodge ];
   "secrets/users/tomas-bob.age".publicKeys = [ bob ];
 
   # WireGuard private keys
