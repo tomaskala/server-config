@@ -6,7 +6,7 @@ let
 in {
   services.printing = {
     enable = true;
-    drivers = with pkgs; [ hplip ];
+    drivers = [ pkgs.hplip ];
     startWhenNeeded = true;
 
     listenAddresses = [ "localhost:631" ];

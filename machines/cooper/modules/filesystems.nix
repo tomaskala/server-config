@@ -69,7 +69,7 @@
   };
 
   environment = {
-    systemPackages = with pkgs; [ btrfs-progs ];
+    systemPackages = [ pkgs.btrfs-progs ];
 
     persistence."/persistent" = {
       hideMounts = true;
