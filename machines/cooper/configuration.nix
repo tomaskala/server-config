@@ -9,6 +9,7 @@
     ./modules/filesystems.nix
     ./modules/fonts.nix
     ./modules/network.nix
+    ./modules/printing.nix
     ./modules/virtualisation.nix
     ./modules/vpn.nix
     ./modules/xserver.nix
