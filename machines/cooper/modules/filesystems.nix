@@ -106,6 +106,7 @@
           ".local/share/wallpaper"
           ".local/share/zathura"
           ".mozilla"
+          ".thunderbird"
           "Documents"
           "Downloads"
           "Mail"
