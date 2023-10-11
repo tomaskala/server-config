@@ -84,6 +84,8 @@
             agenix.packages.${system}.agenix
           ];
         };
+
+        tf = pkgs.mkShell { packages = [ pkgs.terraform ]; };
       });
 
       formatter = forAllSystems (pkgs:
