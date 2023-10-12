@@ -91,16 +91,19 @@ in {
 
     time.timeZone = "Etc/UTC";
 
-    environment.systemPackages = with pkgs; [
-      curl
-      git
-      htop
-      ldns
-      rsync
-      tmux
-      tree
-      wireguard-tools
-    ];
+    environment = {
+      noXlibs = true;
+      systemPackages = with pkgs; [
+        curl
+        git
+        htop
+        ldns
+        rsync
+        tmux
+        tree
+        wireguard-tools
+      ];
+    };
 
     programs = {
       vim.defaultEditor = true;
