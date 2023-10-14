@@ -2,13 +2,12 @@
 <opml version="2.0">
     <head>
         <title>Miniflux</title>
-        <dateCreated>Fri, 18 Aug 2023 00:09:42 CEST</dateCreated>
+        <dateCreated>Sat, 14 Oct 2023 12:11:35 UTC</dateCreated>
     </head>
     <body>
         <outline text="Dev">
             <outline title="Andreas Kling" text="Andreas Kling" xmlUrl="https://awesomekling.github.io/feed.xml" htmlUrl="https://awesomekling.github.io/"></outline>
             <outline title="beepb00p" text="beepb00p" xmlUrl="https://beepb00p.xyz/atom.xml" htmlUrl="https://beepb00p.xyz"></outline>
-            <outline title="Daniel Lemire&#39;s blog" text="Daniel Lemire&#39;s blog" xmlUrl="https://lemire.me/blog/feed/" htmlUrl="https://lemire.me/blog"></outline>
             <outline title="Eli Bendersky&#39;s website" text="Eli Bendersky&#39;s website" xmlUrl="https://eli.thegreenplace.net/feeds/all.atom.xml" htmlUrl="https://eli.thegreenplace.net/"></outline>
             <outline title="Insanity Industries" text="Insanity Industries" xmlUrl="https://insanity.industries/atom.xml" htmlUrl="https://insanity.industries/atom.xml"></outline>
             <outline title="journal.stuffwithstuff.com" text="journal.stuffwithstuff.com" xmlUrl="https://journal.stuffwithstuff.com/rss.xml" htmlUrl="http://journal.stuffwithstuff.com/"></outline>
@@ -31,7 +30,6 @@
             <outline title="Filippo Valsorda" text="Filippo Valsorda" xmlUrl="https://words.filippo.io/rss/" htmlUrl="https://words.filippo.io/"></outline>
         </outline>
         <outline text="Tech">
-            <outline title="Drew DeVault&#39;s blog" text="Drew DeVault&#39;s blog" xmlUrl="https://drewdevault.com/blog/index.xml" htmlUrl="https://drewdevault.com"></outline>
             <outline title="Fabien Sanglard" text="Fabien Sanglard" xmlUrl="https://fabiensanglard.net/rss.xml" htmlUrl="https://fabiensanglard.net"></outline>
             <outline title="Michael Stapelbergs Website" text="Michael Stapelbergs Website" xmlUrl="https://michael.stapelberg.ch/feed.xml" htmlUrl="https://michael.stapelberg.ch/"></outline>
             <outline title="sdomi&#39;s weblog" text="sdomi&#39;s weblog" xmlUrl="https://sdomi.pl/weblog/atom/" htmlUrl="https://sdomi.pl/weblog/atom/"></outline>
@@ -41,8 +39,6 @@
             <outline title="Retro Nation" text="Retro Nation" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCj06o0LOFU-lFLwGaEOSM7g" htmlUrl="https://www.youtube.com/channel/UCj06o0LOFU-lFLwGaEOSM7g"></outline>
         </outline>
         <outline text="YouTube Misc">
-            <outline title="bald and bankrupt" text="bald and bankrupt" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCxDZs_ltFFvn0FDHT6kmoXA" htmlUrl="https://www.youtube.com/channel/UCxDZs_ltFFvn0FDHT6kmoXA"></outline>
-            <outline title="Harald Baldr" text="Harald Baldr" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKr68ZJ4vv6VloNdnS2hjhA" htmlUrl="https://www.youtube.com/channel/UCKr68ZJ4vv6VloNdnS2hjhA"></outline>
             <outline title="Luke Smith" text="Luke Smith" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA" htmlUrl="https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA"></outline>
             <outline title="Modern History TV" text="Modern History TV" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCMjlDOf0UO9wSijFqPE9wBw" htmlUrl="https://www.youtube.com/channel/UCMjlDOf0UO9wSijFqPE9wBw"></outline>
             <outline title="Primitive Technology" text="Primitive Technology" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCAL3JXZSzSm8AlZyD3nQdBA" htmlUrl="https://www.youtube.com/channel/UCAL3JXZSzSm8AlZyD3nQdBA"></outline>
