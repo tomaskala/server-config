@@ -98,6 +98,13 @@ resource "inwx_nameserver_record" "tomaskala_com_aaaa" {
   ttl     = 3600
 }
 
+resource "inwx_nameserver_record" "tomaskala_com_caa" {
+  domain  = local.domain
+  type    = "CAA"
+  content = "0 issue \"letsencrypt.org\""
+  ttl     = 3600
+}
+
 resource "inwx_nameserver_record" "tomaskala_com_mx" {
   count = length(local.mx_records)
 
