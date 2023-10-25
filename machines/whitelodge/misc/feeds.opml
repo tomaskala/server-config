@@ -2,7 +2,7 @@
 <opml version="2.0">
     <head>
         <title>Miniflux</title>
-        <dateCreated>Sat, 14 Oct 2023 12:11:35 UTC</dateCreated>
+        <dateCreated>Wed, 25 Oct 2023 17:13:35 UTC</dateCreated>
     </head>
     <body>
         <outline text="Dev">
@@ -11,6 +11,7 @@
             <outline title="Eli Bendersky&#39;s website" text="Eli Bendersky&#39;s website" xmlUrl="https://eli.thegreenplace.net/feeds/all.atom.xml" htmlUrl="https://eli.thegreenplace.net/"></outline>
             <outline title="Insanity Industries" text="Insanity Industries" xmlUrl="https://insanity.industries/atom.xml" htmlUrl="https://insanity.industries/atom.xml"></outline>
             <outline title="journal.stuffwithstuff.com" text="journal.stuffwithstuff.com" xmlUrl="https://journal.stuffwithstuff.com/rss.xml" htmlUrl="http://journal.stuffwithstuff.com/"></outline>
+            <outline title="Notes on software development" text="Notes on software development" xmlUrl="https://notes.eatonphil.com/rss.xml" htmlUrl="http://notes.eatonphil.com/"></outline>
             <outline title="null program" text="null program" xmlUrl="https://nullprogram.com/feed/" htmlUrl="https://nullprogram.com"></outline>
             <outline title="Phoboslab" text="Phoboslab" xmlUrl="https://phoboslab.org/log/feed" htmlUrl="https://phoboslab.org/log"></outline>
             <outline title="Project Nayuki" text="Project Nayuki" xmlUrl="https://www.nayuki.io/rss20.xml" htmlUrl="https://www.nayuki.io/"></outline>
