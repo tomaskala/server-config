@@ -364,7 +364,7 @@
           ipv6 = "fd25:6f6:a9f:1100::2";
         };
 
-        publicKey = "DTJ3VeQGDehQBkYiteIpxtatvgqy2Ux/KjQEmXaEoEQ=";
+        publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
         port = null;
       };
 
