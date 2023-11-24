@@ -45,10 +45,10 @@ in {
     services.caddy = {
       enable = true;
 
-      # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from the VPN.
-      virtualHosts."http://${cfg.domain}" = {
+      virtualHosts.${cfg.domain} = {
         extraConfig = ''
+          tls internal
+
           encode {
             zstd
             gzip 5
