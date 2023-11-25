@@ -5,17 +5,18 @@
   # TODO: home-manager
 
   imports = [
+    ../intranet.nix
     ./modules/audio.nix
     ./modules/filesystems.nix
     ./modules/firewall.nix
     ./modules/fonts.nix
     ./modules/network.nix
+    ./modules/phone.nix
     ./modules/printing.nix
     ./modules/virtualisation.nix
     ./modules/vpn.nix
     ./modules/xserver.nix
     ./secrets-management.nix
-    ../intranet.nix
   ];
 
   config = {
