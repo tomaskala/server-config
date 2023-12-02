@@ -11,6 +11,7 @@ in {
     ./hardware-configuration.nix
     ./modules/firewall.nix
     ./modules/music.nix
+    ./modules/network.nix
     ./modules/vpn.nix
     ./secrets-management.nix
     ../intranet.nix
@@ -41,12 +42,12 @@ in {
       mutableUsers = false;
 
       users = {
-        root.passwordFile = config.age.secrets.users-root-password.path;
+        root.hashedPasswordFile = config.age.secrets.users-root-password.path;
 
         tomas = {
           isNormalUser = true;
           extraGroups = [ "wheel" ];
-          passwordFile = config.age.secrets.users-tomas-password.path;
+          hashedPasswordFile = config.age.secrets.users-tomas-password.path;
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF9wbboIeutdnZFbYT5zwJNBf4fJy9njfEMwxOnJKh4z blacklodge2bob"
           ];

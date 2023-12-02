@@ -60,12 +60,12 @@ in {
       mutableUsers = false;
 
       users = {
-        root.passwordFile = config.age.secrets.users-root-password.path;
+        root.hashedPasswordFile = config.age.secrets.users-root-password.path;
 
         tomas = {
           isNormalUser = true;
           extraGroups = [ "wheel" ];
-          passwordFile = config.age.secrets.users-tomas-password.path;
+          hashedPasswordFile = config.age.secrets.users-tomas-password.path;
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMvN19BcNTeaVAF291lBG0z9ROD6J91XAMyy+0VP6CdL cooper2whitelodge"
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2whitelodge"
@@ -110,8 +110,10 @@ in {
       git.config.init.defaultBranch = "master";
     };
 
-    networking.hostName = "whitelodge";
-    networking.dhcpcd.enable = false;
+    networking = {
+      hostName = "whitelodge";
+      useDHCP = false;
+    };
 
     services = {
       ntp.enable = false;
@@ -139,8 +141,14 @@ in {
       openssh = {
         enable = true;
         listenAddresses = [
-          { addr = gatewayCfg.internal.interface.ipv4; }
-          { addr = gatewayCfg.internal.interface.ipv6; }
+          {
+            addr = gatewayCfg.internal.interface.ipv4;
+            port = 22;
+          }
+          {
+            addr = gatewayCfg.internal.interface.ipv6;
+            port = 22;
+          }
         ];
       };
 

@@ -3,7 +3,7 @@
   nixConfig.bash-prompt = "[nix-develop]$ ";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
 
@@ -85,7 +85,7 @@
           ];
         };
 
-        tf = pkgs.mkShell { packages = [ pkgs.terraform ]; };
+        tf = pkgs.mkShell { packages = [ pkgs.opentofu ]; };
       });
 
       formatter = forAllSystems (pkgs:

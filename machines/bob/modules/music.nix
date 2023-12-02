@@ -28,9 +28,6 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    # NFSv4 does not need rpcbind.
-    services.rpcbind.enable = lib.mkForce false;
-
     fileSystems.${cfg.musicDir} = {
       device = "${nasAddr}:/volume1/Music";
       fsType = "nfs";
@@ -47,47 +44,52 @@ in {
       ];
     };
 
-    services.navidrome = {
-      enable = true;
-      settings = {
-        MusicFolder = cfg.musicDir;
-        LogLevel = "warn";
-        Address = "127.0.0.1";
-        AutoImportPlaylists = false;
-        EnableCoverAnimation = false;
-        EnableExternalServices = false;
-        EnableFavourites = false;
-        EnableGravatar = false;
-        EnableStarRating = false;
-        EnableTranscodingConfig = false;
-        "LastFM.Enabled" = false;
-        "ListenBrainz.Enabled" = false;
-        "Prometheus.Enabled" = false;
-        ScanSchedule = "@every 24h";
+    services = {
+      # NFSv4 does not need rpcbind.
+      rpcbind.enable = lib.mkForce false;
+
+      navidrome = {
+        enable = true;
+        settings = {
+          MusicFolder = cfg.musicDir;
+          LogLevel = "warn";
+          Address = "127.0.0.1";
+          AutoImportPlaylists = false;
+          EnableCoverAnimation = false;
+          EnableExternalServices = false;
+          EnableFavourites = false;
+          EnableGravatar = false;
+          EnableStarRating = false;
+          EnableTranscodingConfig = false;
+          "LastFM.Enabled" = false;
+          "ListenBrainz.Enabled" = false;
+          "Prometheus.Enabled" = false;
+          ScanSchedule = "@every 24h";
+        };
       };
-    };
 
-    services.caddy = {
-      enable = true;
+      caddy = {
+        enable = true;
 
-      # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from private subnets.
-      virtualHosts."http://${cfg.domain}" = {
-        extraConfig = ''
-          encode {
-            zstd
-            gzip 5
-          }
+        # Explicitly specify HTTP to disable automatic TLS certificate creation,
+        # since this is an internal domain only accessible from private subnets.
+        virtualHosts."http://${cfg.domain}" = {
+          extraConfig = ''
+            encode {
+              zstd
+              gzip 5
+            }
 
-          reverse_proxy :${
-            builtins.toString config.services.navidrome.settings.Port
-          }
+            reverse_proxy :${
+              builtins.toString config.services.navidrome.settings.Port
+            }
 
-          @blocked not remote_ip ${maskSubnet privateSubnet.ipv4} ${
-            maskSubnet privateSubnet.ipv6
-          } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
-          respond @blocked "Forbidden" 403
-        '';
+            @blocked not remote_ip ${maskSubnet privateSubnet.ipv4} ${
+              maskSubnet privateSubnet.ipv6
+            } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
+            respond @blocked "Forbidden" 403
+          '';
+        };
       };
     };
 

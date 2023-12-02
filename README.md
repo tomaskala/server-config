@@ -21,9 +21,10 @@ following.
    $ nix develop
    [nix-develop]$ agenix -e secrets/subdir/secret.age
    ```
-   Note that for secrets holding the user passwords (to be used with
-   `config.users.users.<name>.passwordFile`), the content of the age-encrypted
-   file should be SHA-512 of the password. That is, create the secret as
+   Note that for secrets holding the user passwords (to be used with 
+   `config.users.users.<name>.hashedPasswordFile`), the content of the 
+   age-encrypted file should be SHA-512 of the password. That is, create the 
+   secret as
    ```
    $ nix develop
    [nix-develop]$ openssl passwd -6 -in <password-file> | agenix -e secrets/users/user-twinpeaks.age

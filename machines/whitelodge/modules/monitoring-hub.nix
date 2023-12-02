@@ -6,7 +6,6 @@ let
   gatewayCfg = intranetCfg.gateways.whitelodge;
 
   dbName = "grafana";
-  dbUser = "grafana";
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -34,122 +33,125 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    services.grafana = {
-      enable = true;
-
-      provision = {
+    services = {
+      grafana = {
         enable = true;
 
-        datasources.settings.datasources = [{
-          name = "Prometheus";
-          type = "prometheus";
-          access = "proxy";
-          url = "http://127.0.0.1:${builtins.toString cfg.prometheusPort}";
-        }];
+        provision = {
+          enable = true;
 
-        dashboards.settings.providers = [{
-          name = "Grafana dashboards";
-          # It's useless to check the dashboard directory for updates because
-          # it lives on a readonly file system, but grafana doesn't allow to
-          # disable the checking completely. Even setting this value to zero
-          # doesn't help, because in that case, it gets silently converted
-          # to 10 anyway:
-          # https://github.com/grafana/grafana/blob/bc2813ef0661eb0fd317a7ed2dff4db056cbe7e6/pkg/services/provisioning/dashboards/config_reader.go#L107-L109
-          # Setting to a large value instead to not check too often.
-          updateIntervalSeconds = 60 * 60 * 24;
-          options.path = "${../grafana-dashboards}";
-        }];
+          datasources.settings.datasources = [{
+            name = "Prometheus";
+            type = "prometheus";
+            access = "proxy";
+            url = "http://127.0.0.1:${builtins.toString cfg.prometheusPort}";
+          }];
+
+          dashboards.settings.providers = [{
+            name = "Grafana dashboards";
+            # It's useless to check the dashboard directory for updates because
+            # it lives on a readonly file system, but grafana doesn't allow to
+            # disable the checking completely. Even setting this value to zero
+            # doesn't help, because in that case, it gets silently converted
+            # to 10 anyway:
+            # https://github.com/grafana/grafana/blob/bc2813ef0661eb0fd317a7ed2dff4db056cbe7e6/pkg/services/provisioning/dashboards/config_reader.go#L107-L109
+            # Setting to a large value instead to not check too often.
+            updateIntervalSeconds = 60 * 60 * 24;
+            options.path = "${../grafana-dashboards}";
+          }];
+        };
+
+        settings = {
+          server = {
+            inherit (cfg) domain;
+            http_addr = "127.0.0.1";
+            http_port = cfg.grafanaPort;
+            enable_gzip = true;
+          };
+
+          analytics = {
+            reporting_enabled = false;
+            feedback_links_enabled = false;
+            check_for_updates = false;
+            check_for_plugin_updates = false;
+          };
+
+          database = {
+            type = "postgres";
+            host = "/run/postgresql";
+            name = dbName;
+            user = dbName;
+            passwordFile = config.age.secrets.postgresql-grafana-password.path;
+          };
+
+          security = {
+            disable_gravatar = true;
+            admin_password =
+              "$__file{${config.age.secrets.grafana-admin-password.path}}";
+          };
+
+          "auth.anonymous" = {
+            enabled = true;
+            org_name = "Main Org.";
+            org_role = "Viewer";
+          };
+        };
       };
 
-      settings = {
-        server = {
-          inherit (cfg) domain;
-          http_addr = "127.0.0.1";
-          http_port = cfg.grafanaPort;
-          enable_gzip = true;
-        };
-
-        analytics = {
-          reporting_enabled = false;
-          feedback_links_enabled = false;
-          check_for_updates = false;
-          check_for_plugin_updates = false;
-        };
-
-        database = {
-          type = "postgres";
-          host = "/run/postgresql";
+      postgresql = {
+        enable = true;
+        ensureDatabases = [ dbName ];
+        ensureUsers = [{
           name = dbName;
-          user = dbUser;
-          passwordFile = config.age.secrets.postgresql-grafana-password.path;
-        };
-
-        security = {
-          disable_gravatar = true;
-          admin_password =
-            "$__file{${config.age.secrets.grafana-admin-password.path}}";
-        };
-
-        "auth.anonymous" = {
-          enabled = true;
-          org_name = "Main Org.";
-          org_role = "Viewer";
-        };
+          ensureDBOwnership = true;
+        }];
       };
-    };
 
-    services.postgresql = {
-      enable = true;
-      ensureDatabases = [ dbName ];
-      ensureUsers = [{
-        name = dbUser;
-        ensurePermissions = { "DATABASE ${dbName}" = "ALL PRIVILEGES"; };
-      }];
-    };
+      prometheus = {
+        enable = true;
+        listenAddress = "127.0.0.1";
+        port = cfg.prometheusPort;
 
-    services.prometheus = {
-      enable = true;
-      listenAddress = "127.0.0.1";
-      port = cfg.prometheusPort;
+        scrapeConfigs = let
+          exporters = builtins.concatLists (lib.mapAttrsToList (gateway:
+            { internal, exporters, ... }:
+            lib.mapAttrsToList (name: exporter: {
+              inherit gateway name;
+              inherit (exporter) port;
+              addr = internal.interface.ipv4;
+            }) exporters) intranetCfg.gateways);
 
-      scrapeConfigs = let
-        exporters = builtins.concatLists (lib.mapAttrsToList (gateway:
-          { internal, exporters, ... }:
-          lib.mapAttrsToList (name: exporter: {
-            inherit gateway name;
-            inherit (exporter) port;
-            addr = internal.interface.ipv4;
-          }) exporters) intranetCfg.gateways);
+          exporterGroups = builtins.groupBy ({ name, ... }: name) exporters;
+        in lib.mapAttrsToList (job_name: gateways: {
+          inherit job_name;
+          static_configs = builtins.map ({ gateway, addr, port, ... }: {
+            targets = [ "${addr}:${builtins.toString port}" ];
+            labels = { peer = gateway; };
+          }) gateways;
+        }) exporterGroups;
+      };
 
-        exporterGroups = builtins.groupBy ({ name, ... }: name) exporters;
-      in lib.mapAttrsToList (job_name: gateways: {
-        inherit job_name;
-        static_configs = builtins.map ({ gateway, addr, port, ... }: {
-          targets = [ "${addr}:${builtins.toString port}" ];
-          labels = { peer = gateway; };
-        }) gateways;
-      }) exporterGroups;
-    };
+      caddy = {
+        # Explicitly specify HTTP to disable automatic TLS certificate creation,
+        # since this is an internal domain only accessible from private subnets.
+        virtualHosts."http://${cfg.domain}" = {
+          extraConfig = ''
+            encode {
+              zstd
+              gzip 5
+            }
 
-    services.caddy = {
-      # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from private subnets.
-      virtualHosts."http://${cfg.domain}" = {
-        extraConfig = ''
-          encode {
-            zstd
-            gzip 5
-          }
+            reverse_proxy :${
+              builtins.toString
+              config.services.grafana.settings.server.http_port
+            }
 
-          reverse_proxy :${
-            builtins.toString config.services.grafana.settings.server.http_port
-          }
-
-          @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
-            maskSubnet vpnSubnet.ipv6
-          }
-          respond @blocked "Forbidden" 403
-        '';
+            @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
+              maskSubnet vpnSubnet.ipv6
+            }
+            respond @blocked "Forbidden" 403
+          '';
+        };
       };
     };
 
