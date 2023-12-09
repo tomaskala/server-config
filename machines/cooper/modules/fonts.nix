@@ -2,11 +2,11 @@
 
 {
   fonts = {
-    fonts = with pkgs; [
+    packages = with pkgs; [
       jetbrains-mono
       (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
       noto-fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       ttf_bitstream_vera
     ];
 

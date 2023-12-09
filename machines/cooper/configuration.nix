@@ -54,7 +54,7 @@
       users.tomas = {
         isNormalUser = true;
         extraGroups = [ "wheel" ];
-        passwordFile = config.age.secrets.users-tomas-password.path;
+        hashedPasswordFile = config.age.secrets.users-tomas-password.path;
       };
     };
 

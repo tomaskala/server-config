@@ -16,7 +16,7 @@ in {
       matchConfig.Name = wiredInterface;
 
       networkConfig = {
-        DHCP = true;
+        DHCP = "yes";
         IPv6AcceptRA = true;
         IPv6PrivacyExtensions = true;
       };
@@ -26,6 +26,7 @@ in {
   };
 
   networking = {
+    dhcpcd.enable = false;
     useDHCP = false;
     useNetworkd = true;
 
