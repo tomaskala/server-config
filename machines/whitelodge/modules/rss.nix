@@ -31,7 +31,7 @@ in {
       config = {
         POLLING_FREQUENCY = "1440";
         LISTEN_ADDR = "127.0.0.1:${builtins.toString cfg.port}";
-        BASE_URL = "http://${cfg.domain}";
+        BASE_URL = "https://${cfg.domain}";
         CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
       };
     };
@@ -39,10 +39,10 @@ in {
     services.caddy = {
       enable = true;
 
-      # Explicitly specify HTTP to disable automatic TLS certificate creation,
-      # since this is an internal domain only accessible from the VPN.
-      virtualHosts."http://${cfg.domain}" = {
+      virtualHosts.${cfg.domain} = {
         extraConfig = ''
+          tls internal
+
           encode {
             zstd
             gzip 5
