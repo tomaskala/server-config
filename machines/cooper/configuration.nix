@@ -71,6 +71,7 @@
       tmux
       tree
       wireguard-tools
+      yubikey-manager-qt
     ];
 
     networking.hostName = "cooper";
