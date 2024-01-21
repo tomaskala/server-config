@@ -132,7 +132,14 @@ in {
       };
 
       caddy = {
+        enable = true;
+
         virtualHosts.${cfg.domain} = {
+          listenAddresses = [
+            gatewayCfg.internal.interface.ipv4
+            "[${gatewayCfg.internal.interface.ipv6}]"
+          ];
+
           extraConfig = ''
             tls internal
 
@@ -141,15 +148,22 @@ in {
               gzip 5
             }
 
-            reverse_proxy :${
-              builtins.toString
-              config.services.grafana.settings.server.http_port
+            @internal {
+              remote_ip ${maskSubnet vpnSubnet.ipv4} ${
+                maskSubnet vpnSubnet.ipv6
+              }
             }
 
-            @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
-              maskSubnet vpnSubnet.ipv6
+            handle @internal {
+              reverse_proxy :${
+                builtins.toString
+                config.services.grafana.settings.server.http_port
+              }
             }
-            respond @blocked "Forbidden" 403
+
+            respond "Access denied" 403 {
+              close
+            }
           '';
         };
       };

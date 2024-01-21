@@ -40,6 +40,11 @@ in {
       enable = true;
 
       virtualHosts.${cfg.domain} = {
+        listenAddresses = [
+          gatewayCfg.internal.interface.ipv4
+          "[${gatewayCfg.internal.interface.ipv6}]"
+        ];
+
         extraConfig = ''
           tls internal
 
@@ -48,12 +53,17 @@ in {
             gzip 5
           }
 
-          reverse_proxy :${builtins.toString cfg.port}
-
-          @blocked not remote_ip ${maskSubnet vpnSubnet.ipv4} ${
-            maskSubnet vpnSubnet.ipv6
+          @internal {
+            remote_ip ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
           }
-          respond @blocked "Forbidden" 403
+
+          handle @internal {
+            reverse_proxy :${builtins.toString cfg.port}
+          }
+
+          respond "Access denied" 403 {
+            close
+          }
         '';
       };
     };
