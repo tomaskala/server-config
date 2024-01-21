@@ -72,6 +72,14 @@ in {
         enable = true;
 
         virtualHosts.${cfg.domain} = {
+          listenAddresses = [
+            gatewayCfg.external.ipv4
+            "[${gatewayCfg.external.ipv6}]"
+
+            gatewayCfg.internal.interface.ipv4
+            "[${gatewayCfg.internal.interface.ipv6}]"
+          ];
+
           extraConfig = ''
             tls internal
 
@@ -80,14 +88,21 @@ in {
               gzip 5
             }
 
-            reverse_proxy :${
-              builtins.toString config.services.navidrome.settings.Port
+            @internal {
+              remote_ip ${maskSubnet privateSubnet.ipv4} ${
+                maskSubnet privateSubnet.ipv6
+              } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
             }
 
-            @blocked not remote_ip ${maskSubnet privateSubnet.ipv4} ${
-              maskSubnet privateSubnet.ipv6
-            } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
-            respond @blocked "Forbidden" 403
+            handle @internal {
+              reverse_proxy :${
+                builtins.toString config.services.navidrome.settings.Port
+              }
+            }
+
+            respond "Access denied" 403 {
+              close
+            }
           '';
         };
       };
