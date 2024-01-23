@@ -74,7 +74,7 @@ in {
 
     networking.intranet.subnets.vpn.services.website = {
       url = cfg.domain;
-      inherit (gatewayCfg.internal.interface) ipv4 ipv6;
+      inherit (gatewayCfg.external) ipv4 ipv6;
     };
 
     services.prometheus.scrapeConfigs =
