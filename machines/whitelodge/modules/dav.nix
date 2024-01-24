@@ -14,13 +14,20 @@ in {
     domain = lib.mkOption {
       type = lib.types.str;
       description = "Domain the DAV server is available on";
-      example = "dav.home.arpa";
+      default = "dav.whitelodge.tomaskala.com";
+      readOnly = true;
     };
 
     port = lib.mkOption {
       type = lib.types.port;
       description = "Port the DAV server listens on";
       example = 5232;
+    };
+
+    acmeEmail = lib.mkOption {
+      type = lib.types.str;
+      description = "ACME account email address";
+      example = "acme@example.com";
     };
   };
 
@@ -42,6 +49,17 @@ in {
       };
     };
 
+    security.acme = {
+      acceptTerms = true;
+
+      certs.${cfg.domain} = {
+        dnsProvider = "cloudflare";
+        email = cfg.acmeEmail;
+        environmentFile =
+          config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
+      };
+    };
+
     services.caddy = {
       enable = true;
 
@@ -51,9 +69,9 @@ in {
           "[${gatewayCfg.internal.interface.ipv6}]"
         ];
 
-        extraConfig = ''
-          tls internal
+        useACMEHost = cfg.domain;
 
+        extraConfig = ''
           encode {
             zstd
             gzip 5

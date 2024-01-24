@@ -24,16 +24,26 @@ in {
   "secrets/wg-psk/martin-windows2whitelodge.age".publicKeys = [ whitelodge ];
 
   # Other
+
   # miniflux admin credentials of the following form (password length >= 6)
   # ADMIN_USERNAME=admin username
   # ADMIN_PASSWORD=correct horse battery staple
   "secrets/other/miniflux-whitelodge.age".publicKeys = [ whitelodge ];
+
   # grafana user in PostgreSQL password
   "secrets/other/postgresql-grafana.age".publicKeys = [ whitelodge ];
+
   # grafana admin password
   "secrets/other/grafana-admin.age".publicKeys = [ whitelodge ];
+
   # radicale htpasswd of the following form
   # user1:password1
   # user2:password2
   "secrets/other/radicale-htpasswd.age".publicKeys = [ whitelodge ];
+
+  # Cloudflare API tokens passed to the lego ACME client
+  # CLOUDFLARE_ZONE_API_TOKEN=<zone-read-token>
+  # CLOUDFLARE_DNS_API_TOKEN=<dns-edit-token>
+  "secrets/other/cloudflare-dns-challenge-api-tokens.age".publicKeys =
+    [ whitelodge ];
 }

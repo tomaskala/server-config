@@ -6,6 +6,8 @@
       "/root/secrets/other/miniflux-whitelodge.age";
     postgresql-grafana-password.file =
       "/root/secrets/other/postgresql-grafana.age";
+    cloudflare-dns-challenge-api-tokens.file =
+      "/root/secrets/other/cloudflare-dns-challenge-api-tokens.age";
 
     radicale-htpasswd = {
       file = "/root/secrets/other/radicale-htpasswd.age";

@@ -16,7 +16,8 @@ in {
     domain = lib.mkOption {
       type = lib.types.str;
       description = "Domain hosting Grafana";
-      example = "monitoring.home.arpa";
+      default = "monitoring.whitelodge.tomaskala.com";
+      readOnly = true;
     };
 
     grafanaPort = lib.mkOption {
@@ -30,9 +31,26 @@ in {
       description = "Port that Prometheus listens on";
       example = 9090;
     };
+
+    acmeEmail = lib.mkOption {
+      type = lib.types.str;
+      description = "ACME account email address";
+      example = "acme@example.com";
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    security.acme = {
+      acceptTerms = true;
+
+      certs.${cfg.domain} = {
+        dnsProvider = "cloudflare";
+        email = cfg.acmeEmail;
+        environmentFile =
+          config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
+      };
+    };
+
     services = {
       grafana = {
         enable = true;
@@ -140,9 +158,9 @@ in {
             "[${gatewayCfg.internal.interface.ipv6}]"
           ];
 
-          extraConfig = ''
-            tls internal
+          useACMEHost = cfg.domain;
 
+          extraConfig = ''
             encode {
               zstd
               gzip 5

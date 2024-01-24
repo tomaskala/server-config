@@ -6,6 +6,8 @@ let
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+
+  acmeEmail = "public+acme@tomaskala.com";
 in {
   imports = [
     ./modules/dav.nix
@@ -127,15 +129,15 @@ in {
 
       dav = {
         enable = true;
-        domain = "dav.home.arpa";
         port = 5232;
+        inherit acmeEmail;
       };
 
       monitoring-hub = {
         enable = true;
-        domain = "monitoring.home.arpa";
         grafanaPort = 3000;
         prometheusPort = 9090;
+        inherit acmeEmail;
       };
 
       openssh = {
@@ -154,8 +156,8 @@ in {
 
       rss = {
         enable = true;
-        domain = "rss.home.arpa";
         port = 7070;
+        inherit acmeEmail;
       };
 
       unbound = {
@@ -180,7 +182,7 @@ in {
         enable = true;
         domain = "tomaskala.com";
         webroot = "/var/www/tomaskala.com";
-        acmeEmail = "public+acme@tomaskala.com";
+        inherit acmeEmail;
       };
     };
   };

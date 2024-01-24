@@ -14,13 +14,20 @@ in {
     domain = lib.mkOption {
       type = lib.types.str;
       description = "Domain RSS is available on";
-      example = "rss.home.arpa";
+      default = "rss.whitelodge.tomaskala.com";
+      readOnly = true;
     };
 
     port = lib.mkOption {
       type = lib.types.port;
       description = "Port RSS listens on";
       example = 7070;
+    };
+
+    acmeEmail = lib.mkOption {
+      type = lib.types.str;
+      description = "ACME account email address";
+      example = "acme@example.com";
     };
   };
 
@@ -36,6 +43,17 @@ in {
       };
     };
 
+    security.acme = {
+      acceptTerms = true;
+
+      certs.${cfg.domain} = {
+        dnsProvider = "cloudflare";
+        email = cfg.acmeEmail;
+        environmentFile =
+          config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
+      };
+    };
+
     services.caddy = {
       enable = true;
 
@@ -45,9 +63,9 @@ in {
           "[${gatewayCfg.internal.interface.ipv6}]"
         ];
 
-        extraConfig = ''
-          tls internal
+        useACMEHost = cfg.domain;
 
+        extraConfig = ''
           encode {
             zstd
             gzip 5
