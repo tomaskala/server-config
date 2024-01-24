@@ -7,6 +7,8 @@ let
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+
+  allowedIPs = builtins.map maskSubnet [ vpnSubnet.ipv4 vpnSubnet.ipv6 ];
 in {
   options.services.dav = {
     enable = lib.mkEnableOption "DAV server";
@@ -78,7 +80,7 @@ in {
           }
 
           @internal {
-            remote_ip ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
+            remote_ip ${builtins.toString allowedIPs}
           }
 
           handle @internal {

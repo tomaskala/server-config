@@ -10,6 +10,13 @@ let
   vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.home-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+
+  allowedIPs = builtins.map maskSubnet [
+    privateSubnet.ipv4
+    privateSubnet.ipv6
+    vpnSubnet.ipv4
+    vpnSubnet.ipv6
+  ];
 in {
   options.services.music = {
     enable = lib.mkEnableOption "music";
@@ -89,9 +96,7 @@ in {
             }
 
             @internal {
-              remote_ip ${maskSubnet privateSubnet.ipv4} ${
-                maskSubnet privateSubnet.ipv6
-              } ${maskSubnet vpnSubnet.ipv4} ${maskSubnet vpnSubnet.ipv6}
+              remote_ip ${builtins.toString allowedIPs}
             }
 
             handle @internal {
