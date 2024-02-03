@@ -200,7 +200,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:1000::";
-          mask = 52;
+          mask = 56;
         };
       };
 
@@ -214,7 +214,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:1100::";
-          mask = 56;
+          mask = 64;
         };
       };
 
@@ -228,7 +228,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:1200::";
-          mask = 56;
+          mask = 64;
         };
       };
 
@@ -241,7 +241,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:2000::";
-          mask = 52;
+          mask = 56;
         };
       };
 
@@ -254,7 +254,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:2000::";
-          mask = 56;
+          mask = 64;
         };
 
         services = {
@@ -281,7 +281,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:2100::";
-          mask = 56;
+          mask = 64;
         };
       };
 
@@ -294,7 +294,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:3000::";
-          mask = 52;
+          mask = 56;
         };
       };
 
@@ -307,7 +307,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:3000::";
-          mask = 56;
+          mask = 64;
         };
 
         services = {
@@ -328,7 +328,7 @@
 
         ipv6 = {
           subnet = "fd25:6f6:a9f:3100::";
-          mask = 56;
+          mask = 64;
         };
       };
     };
