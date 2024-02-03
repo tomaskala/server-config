@@ -5,10 +5,10 @@ let
   intranetCfg = config.networking.intranet;
   gatewayCfg = intranetCfg.gateways.bob;
 
-  nasAddr = intranetCfg.subnets.home-private.services.nas.ipv4;
+  nasAddr = intranetCfg.subnets.l-private.services.nas.ipv4;
 
   vpnSubnet = intranetCfg.subnets.vpn;
-  privateSubnet = intranetCfg.subnets.home-private;
+  privateSubnet = intranetCfg.subnets.l-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
   allowedIPs = builtins.map maskSubnet [
@@ -113,7 +113,7 @@ in {
       };
     };
 
-    networking.intranet.subnets.home-private.services.music = {
+    networking.intranet.subnets.l-private.services.music = {
       url = cfg.domain;
       inherit (gatewayCfg.external) ipv4 ipv6;
     };

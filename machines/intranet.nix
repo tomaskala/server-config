@@ -176,7 +176,7 @@
     };
   };
 
-  config.networking.intranet = rec {
+  config.networking.intranet = {
     subnets = {
       # Range of the entire intranet.
       intranet = {
@@ -232,8 +232,8 @@
         };
       };
 
-      # Accessible by connecting to the home gateway.
-      home = {
+      # Entire L subnet.
+      l = {
         ipv4 = {
           subnet = "10.0.0.0";
           mask = 16;
@@ -245,10 +245,37 @@
         };
       };
 
-      # Private home subnet containing trusted devices.
-      home-private = {
+      # Private L subnet containing trusted devices.
+      l-private = {
         ipv4 = {
           subnet = "10.0.0.0";
+          mask = 24;
+        };
+
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:2000::";
+          mask = 56;
+        };
+
+        services = {
+          router = {
+            url = "router.l.home.arpa";
+            ipv4 = "10.0.0.1";
+            ipv6 = "fd25:6f6:a9f:2000::1";
+          };
+
+          nas = {
+            url = "nas.l.home.arpa";
+            ipv4 = "10.0.0.10";
+            ipv6 = "fd25:6f6:a9f:2000::a";
+          };
+        };
+      };
+
+      # Isolated L subnet containing untrusted devices.
+      l-isolated = {
+        ipv4 = {
+          subnet = "10.0.4.0";
           mask = 24;
         };
 
@@ -256,36 +283,51 @@
           subnet = "fd25:6f6:a9f:2100::";
           mask = 56;
         };
+      };
 
-        services = {
-          router = {
-            url = "router.home.arpa";
-            ipv4 = "10.0.0.1";
-            ipv6 = "fd25:6f6:a9f:2000::1";
-          };
+      # Entire P subnet.
+      p = {
+        ipv4 = {
+          subnet = "10.4.0.0";
+          mask = 16;
+        };
 
-          music = {
-            url = "music.home.arpa";
-            inherit (gateways.bob.external) ipv4 ipv6;
-          };
-
-          nas = {
-            url = "nas.home.arpa";
-            ipv4 = "10.0.0.10";
-            ipv6 = "fd25:6f6:a9f:2000::a";
-          };
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:3000::";
+          mask = 52;
         };
       };
 
-      # Isolated home subnet containing untrusted devices.
-      home-isolated = {
+      # Private P subnet containing trusted devices.
+      p-private = {
         ipv4 = {
-          subnet = "10.0.4.0";
+          subnet = "10.4.0.0";
           mask = 24;
         };
 
         ipv6 = {
-          subnet = "fd25:6f6:a9f:2200::";
+          subnet = "fd25:6f6:a9f:3000::";
+          mask = 56;
+        };
+
+        services = {
+          router = {
+            url = "router.p.home.arpa";
+            ipv4 = "10.4.0.1";
+            ipv6 = "fd25:6f6:a9f:3000::1";
+          };
+        };
+      };
+
+      # Isolated P subnet containing untrusted devices.
+      p-isolated = {
+        ipv4 = {
+          subnet = "10.4.4.0";
+          mask = 24;
+        };
+
+        ipv6 = {
+          subnet = "fd25:6f6:a9f:3100::";
           mask = 56;
         };
       };
@@ -339,7 +381,7 @@
           ipv6 = "fd25:6f6:a9f:2000::2";
         };
 
-        network = "home";
+        network = "l";
 
         exporters = { node.port = 9100; };
       };

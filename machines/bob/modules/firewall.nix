@@ -9,7 +9,7 @@ let
   lanInterface = gatewayCfg.external.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;
-  privateSubnet = intranetCfg.subnets.home-private;
+  privateSubnet = intranetCfg.subnets.l-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   options.services.firewall = { enable = lib.mkEnableOption "firewall"; };

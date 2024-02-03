@@ -4,7 +4,7 @@ let
   intranetCfg = config.networking.intranet;
   gatewayCfg = intranetCfg.gateways.bob;
 
-  privateSubnet = intranetCfg.subnets.home-private;
+  privateSubnet = intranetCfg.subnets.l-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   imports = [
@@ -85,7 +85,7 @@ in {
 
       music = {
         enable = true;
-        domain = "music.home.arpa";
+        domain = "music.l.home.arpa";
         musicDir = "/mnt/Music";
       };
 
@@ -108,12 +108,12 @@ in {
         };
 
         localDomains = let
-          homeServices =
-            builtins.attrValues intranetCfg.subnets.home-private.services;
+          lServices =
+            builtins.attrValues intranetCfg.subnets.l-private.services;
 
           urlsToIPs = builtins.map
             ({ url, ipv4, ipv6 }: lib.nameValuePair url { inherit ipv4 ipv6; })
-            homeServices;
+            lServices;
         in builtins.listToAttrs urlsToIPs;
       };
     };
