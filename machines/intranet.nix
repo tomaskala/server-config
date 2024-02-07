@@ -176,7 +176,32 @@
     };
   };
 
-  config.networking.intranet = {
+  config.networking.intranet = let
+    # IPv4: 10.<location>.<subnet>.0/<mask>
+    mkIpv4Subnet = { location, subnet, mask ? 24 }: {
+      subnet = "10.${builtins.toString location}.${builtins.toString subnet}.0";
+      inherit mask;
+    };
+
+    # IPv6: fd25:6f6:<location>:<subnet>::/<mask>
+    mkIpv6Subnet = { location, subnet, mask ? 64 }: {
+      subnet =
+        "fd25:6f6:${builtins.toString location}:${builtins.toString subnet}::";
+      inherit mask;
+    };
+
+    # IPv4: 10.<location>.<subnet>.<host>
+    mkIpv4Address = { location, subnet, host }:
+      "10.${builtins.toString location}.${builtins.toString subnet}.${
+        builtins.toString host
+      }";
+
+    # IPv6: fd25:6f6:<location>:<subnet>::<host>
+    mkIpv6Address = { location, subnet, host }:
+      "fd25:6f6:${builtins.toString location}:${builtins.toString subnet}::${
+        builtins.toString host
+      }";
+  in {
     subnets = {
       # Range of the entire intranet.
       intranet = {
@@ -234,101 +259,123 @@
 
       # Entire L subnet.
       l = {
-        ipv4 = {
-          subnet = "10.0.0.0";
+        ipv4 = mkIpv4Subnet {
+          location = 0;
+          subnet = 0;
           mask = 16;
         };
-
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:2000::";
+        ipv6 = mkIpv6Subnet {
+          location = 0;
+          subnet = 0;
           mask = 56;
         };
       };
 
       # Private L subnet containing trusted devices.
       l-private = {
-        ipv4 = {
-          subnet = "10.0.0.0";
-          mask = 24;
+        ipv4 = mkIpv4Subnet {
+          location = 0;
+          subnet = 0;
         };
-
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:2000::";
-          mask = 64;
+        ipv6 = mkIpv6Subnet {
+          location = 0;
+          subnet = 0;
         };
 
         services = {
           router = {
             url = "router.l.home.arpa";
-            ipv4 = "10.0.0.1";
-            ipv6 = "fd25:6f6:a9f:2000::1";
+            ipv4 = mkIpv4Address {
+              location = 0;
+              subnet = 0;
+              host = 1;
+            };
+            ipv6 = mkIpv6Address {
+              location = 0;
+              subnet = 0;
+              host = 1;
+            };
           };
 
           nas = {
             url = "nas.l.home.arpa";
-            ipv4 = "10.0.0.10";
-            ipv6 = "fd25:6f6:a9f:2000::a";
+            ipv4 = mkIpv4Address {
+              location = 0;
+              subnet = 0;
+              host = 10;
+            };
+            ipv6 = mkIpv6Address {
+              location = 0;
+              subnet = 0;
+              host = "a";
+            };
           };
         };
       };
 
       # Isolated L subnet containing untrusted devices.
       l-isolated = {
-        ipv4 = {
-          subnet = "10.0.4.0";
-          mask = 24;
+        ipv4 = mkIpv4Subnet {
+          location = 0;
+          subnet = 1;
         };
-
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:2100::";
-          mask = 64;
+        ipv6 = mkIpv6Subnet {
+          location = 0;
+          subnet = 1;
         };
       };
 
       # Entire P subnet.
       p = {
-        ipv4 = {
-          subnet = "10.4.0.0";
+        ipv4 = mkIpv4Subnet {
+          location = 1;
+          subnet = 0;
           mask = 16;
         };
-
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:3000::";
+        ipv6 = mkIpv6Subnet {
+          location = 1;
+          subnet = 0;
           mask = 56;
         };
       };
 
       # Private P subnet containing trusted devices.
       p-private = {
-        ipv4 = {
-          subnet = "10.4.0.0";
-          mask = 24;
+        ipv4 = mkIpv4Subnet {
+          location = 1;
+          subnet = 0;
         };
-
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:3000::";
-          mask = 64;
+        ipv6 = mkIpv6Subnet {
+          location = 1;
+          subnet = 0;
         };
 
         services = {
           router = {
             url = "router.p.home.arpa";
-            ipv4 = "10.4.0.1";
-            ipv6 = "fd25:6f6:a9f:3000::1";
+            ipv4 = mkIpv4Address {
+              location = 1;
+              subnet = 0;
+              host = 1;
+            };
+            ipv6 = mkIpv6Address {
+              location = 1;
+              subnet = 0;
+              host = 1;
+            };
           };
         };
       };
 
       # Isolated P subnet containing untrusted devices.
       p-isolated = {
-        ipv4 = {
-          subnet = "10.4.4.0";
-          mask = 24;
+        ipv4 = mkIpv4Subnet {
+          location = 1;
+          subnet = 1;
         };
-
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:3100::";
-          mask = 64;
+        ipv6 = mkIpv6Subnet {
+          location = 1;
+          subnet = 1;
         };
       };
     };
@@ -378,7 +425,7 @@
         external = {
           name = "end0";
           ipv4 = "10.0.0.2";
-          ipv6 = "fd25:6f6:a9f:2000::2";
+          ipv6 = "fd25:6f6::2";
         };
 
         network = "l";
