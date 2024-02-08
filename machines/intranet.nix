@@ -343,11 +343,11 @@
       p-private = {
         ipv4 = mkIpv4Subnet {
           location = 1;
-          subnet = 0;
+          subnet = 10;
         };
         ipv6 = mkIpv6Subnet {
           location = 1;
-          subnet = 0;
+          subnet = 10;
         };
 
         services = {
@@ -355,12 +355,12 @@
             url = "router.p.home.arpa";
             ipv4 = mkIpv4Address {
               location = 1;
-              subnet = 0;
+              subnet = 10;
               host = 1;
             };
             ipv6 = mkIpv6Address {
               location = 1;
-              subnet = 0;
+              subnet = 10;
               host = 1;
             };
           };
@@ -371,11 +371,11 @@
       p-isolated = {
         ipv4 = mkIpv4Subnet {
           location = 1;
-          subnet = 1;
+          subnet = 20;
         };
         ipv6 = mkIpv6Subnet {
           location = 1;
-          subnet = 1;
+          subnet = 20;
         };
       };
     };
