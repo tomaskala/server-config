@@ -89,34 +89,6 @@ in {
               }
             }
 
-            # VPN IPv4 subnets with full access.
-            # Managed dynamically by the overlay-network service.
-            set vpn_internal_ipv4 {
-              type ipv4_addr
-              flags interval
-            }
-
-            # VPN IPv6 subnets with full access.
-            # Managed dynamically by the overlay-network service.
-            set vpn_internal_ipv6 {
-              type ipv6_addr
-              flags interval
-            }
-
-            # VPN IPv4 subnets with restricted access.
-            # Managed dynamically by the overlay-network service.
-            set vpn_isolated_ipv4 {
-              type ipv4_addr
-              flags interval
-            }
-
-            # VPN IPv6 subnets with restricted access.
-            # Managed dynamically by the overlay-network service.
-            set vpn_isolated_ipv6 {
-              type ipv6_addr
-              flags interval
-            }
-
             # VPN IPv4 subnets accessible by peers.
             # Managed dynamically by the overlay-network service.
             set vpn_accessible_ipv4 {
@@ -191,16 +163,13 @@ in {
               ct state established,related accept
 
               # Allow internal VPN traffic to access the internet via WAN.
-              iifname ${vpnInterface.internal} ip saddr @vpn_internal_ipv4 oifname ${wanInterface} ct state new accept
-              iifname ${vpnInterface.internal} ip6 saddr @vpn_internal_ipv6 oifname ${wanInterface} ct state new accept
+              iifname ${vpnInterface.internal} oifname ${wanInterface} ct state new accept
 
               # Allow internal VPN peers to communicate with each other.
-              iifname ${vpnInterface.internal} ip saddr @vpn_internal_ipv4 oifname ${vpnInterface.internal} ip daddr @vpn_internal_ipv4 ct state new accept
-              iifname ${vpnInterface.internal} ip6 saddr @vpn_internal_ipv6 oifname ${vpnInterface.internal} ip6 daddr @vpn_internal_ipv6 ct state new accept
+              iifname ${vpnInterface.internal} oifname ${vpnInterface.internal} ct state new accept
 
               # Allow isolated VPN peers to communicate with each other.
-              iifname ${vpnInterface.isolated} ip saddr @vpn_isolated_ipv4 oifname ${vpnInterface.isolated} ip daddr @vpn_isolated_ipv4 ct state new accept
-              iifname ${vpnInterface.isolated} ip6 saddr @vpn_isolated_ipv6 oifname ${vpnInterface.isolated} ip6 daddr @vpn_isolated_ipv6 ct state new accept
+              iifname ${vpnInterface.isolated} oifname ${vpnInterface.isolated} ct state new accept
 
               # Allow internal and isolated VPN traffic to the accessible subnets.
               iifname ${vpnInterface.internal} ip daddr @vpn_accessible_ipv4 ct state new accept
