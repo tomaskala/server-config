@@ -61,18 +61,6 @@ in {
               ];
             };
           }
-          {
-            wireguardPeerConfig = {
-              # martin-windows
-              PublicKey = intranetCfg.devices.martin-windows.publicKey;
-              PresharedKeyFile =
-                config.age.secrets.wg-martin-windows2whitelodge.path;
-              AllowedIPs = [
-                "${intranetCfg.devices.martin-windows.interface.ipv4}/32"
-                "${intranetCfg.devices.martin-windows.interface.ipv6}/128"
-              ];
-            };
-          }
         ];
       };
 

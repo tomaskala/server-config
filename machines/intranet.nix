@@ -3,7 +3,7 @@
 {
   options.networking.intranet = let
     subnet = let
-      ipRange = lib.types.submodule {
+      cidr = lib.types.submodule {
         options = {
           subnet = lib.mkOption {
             type = lib.types.str;
@@ -45,13 +45,13 @@
     in lib.types.submodule {
       options = {
         ipv4 = lib.mkOption {
-          type = ipRange;
+          type = cidr;
           description = "IPv4 range of the subnet";
           readOnly = true;
         };
 
         ipv6 = lib.mkOption {
-          type = ipRange;
+          type = cidr;
           description = "IPv6 range of the subnet";
           readOnly = true;
         };
@@ -205,26 +205,30 @@
     subnets = {
       # Range of the entire intranet.
       intranet = {
-        ipv4 = {
-          subnet = "10.0.0.0";
+        ipv4 = mkIpv4Subnet {
+          location = 0;
+          subnet = 0;
           mask = 8;
         };
 
-        ipv6 = {
-          subnet = "fd25:6f6:a9f::";
+        ipv6 = mkIpv6Subnet {
+          location = 0;
+          subnet = 0;
           mask = 48;
         };
       };
 
       # Accessible by connecting to the server.
       vpn = {
-        ipv4 = {
-          subnet = "10.100.0.0";
+        ipv4 = mkIpv4Subnet {
+          location = 100;
+          subnet = 0;
           mask = 16;
         };
 
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:1000::";
+        ipv6 = mkIpv6Subnet {
+          location = 100;
+          subnet = 0;
           mask = 56;
         };
       };
@@ -232,28 +236,28 @@
       # Devices in the internal subnet can communicate with each other
       # as well as access the public internet via the server.
       vpn-internal = {
-        ipv4 = {
-          subnet = "10.100.100.0";
-          mask = 24;
+        ipv4 = mkIpv4Subnet {
+          location = 100;
+          subnet = 100;
         };
 
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:1100::";
-          mask = 64;
+        ipv6 = mkIpv6Subnet {
+          location = 100;
+          subnet = 100;
         };
       };
 
       # Devices in the isolated subnet can communicate with each other,
       # but not access the public internet via the server.
       vpn-isolated = {
-        ipv4 = {
-          subnet = "10.100.104.0";
-          mask = 24;
+        ipv4 = mkIpv4Subnet {
+          location = 100;
+          subnet = 104;
         };
 
-        ipv6 = {
-          subnet = "fd25:6f6:a9f:1200::";
-          mask = 64;
+        ipv6 = mkIpv6Subnet {
+          location = 100;
+          subnet = 104;
         };
       };
 
@@ -264,6 +268,7 @@
           subnet = 0;
           mask = 16;
         };
+
         ipv6 = mkIpv6Subnet {
           location = 0;
           subnet = 0;
@@ -277,6 +282,7 @@
           location = 0;
           subnet = 0;
         };
+
         ipv6 = mkIpv6Subnet {
           location = 0;
           subnet = 0;
@@ -285,11 +291,13 @@
         services = {
           router = {
             url = "router.l.home.arpa";
+
             ipv4 = mkIpv4Address {
               location = 0;
               subnet = 0;
               host = 1;
             };
+
             ipv6 = mkIpv6Address {
               location = 0;
               subnet = 0;
@@ -299,15 +307,17 @@
 
           nas = {
             url = "nas.l.home.arpa";
+
             ipv4 = mkIpv4Address {
               location = 0;
               subnet = 0;
               host = 10;
             };
+
             ipv6 = mkIpv6Address {
               location = 0;
               subnet = 0;
-              host = "a";
+              host = 10;
             };
           };
         };
@@ -319,6 +329,7 @@
           location = 0;
           subnet = 1;
         };
+
         ipv6 = mkIpv6Subnet {
           location = 0;
           subnet = 1;
@@ -332,6 +343,7 @@
           subnet = 0;
           mask = 16;
         };
+
         ipv6 = mkIpv6Subnet {
           location = 1;
           subnet = 0;
@@ -345,6 +357,7 @@
           location = 1;
           subnet = 10;
         };
+
         ipv6 = mkIpv6Subnet {
           location = 1;
           subnet = 10;
@@ -353,11 +366,13 @@
         services = {
           router = {
             url = "router.p.home.arpa";
+
             ipv4 = mkIpv4Address {
               location = 1;
               subnet = 10;
               host = 1;
             };
+
             ipv6 = mkIpv6Address {
               location = 1;
               subnet = 10;
@@ -373,6 +388,7 @@
           location = 1;
           subnet = 20;
         };
+
         ipv6 = mkIpv6Subnet {
           location = 1;
           subnet = 20;
@@ -386,8 +402,18 @@
         internal = {
           interface = {
             name = "wg0";
-            ipv4 = "10.100.0.1";
-            ipv6 = "fd25:6f6:a9f:1000::1";
+
+            ipv4 = mkIpv4Address {
+              location = 100;
+              subnet = 100;
+              host = 1;
+            };
+
+            ipv6 = mkIpv6Address {
+              location = 100;
+              subnet = 100;
+              host = 1;
+            };
           };
 
           publicKey = "a+x1ikWhkKubrcwipwj5UqKL3vE0NcqnjdNNcFXPXho=";
@@ -400,7 +426,7 @@
           ipv6 = "2a01:430:17:1::ffff:1108";
         };
 
-        network = "vpn";
+        network = "vpn-internal";
 
         exporters = {
           node = {
@@ -414,8 +440,18 @@
         internal = {
           interface = {
             name = "wg0";
-            ipv4 = "10.100.0.10";
-            ipv6 = "fd25:6f6:a9f:1000::10";
+
+            ipv4 = mkIpv4Address {
+              location = 100;
+              subnet = 100;
+              host = 10;
+            };
+
+            ipv6 = mkIpv6Address {
+              location = 100;
+              subnet = 100;
+              host = 10;
+            };
           };
 
           publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
@@ -424,11 +460,21 @@
 
         external = {
           name = "end0";
-          ipv4 = "10.0.0.2";
-          ipv6 = "fd25:6f6::2";
+
+          ipv4 = mkIpv4Address {
+            location = 0;
+            subnet = 0;
+            host = 2;
+          };
+
+          ipv6 = mkIpv6Address {
+            location = 0;
+            subnet = 0;
+            host = 2;
+          };
         };
 
-        network = "l";
+        network = "l-private";
 
         exporters = { node.port = 9100; };
       };
@@ -438,44 +484,63 @@
       cooper = {
         interface = {
           name = "wg0";
-          ipv4 = "10.100.100.1";
-          ipv6 = "fd25:6f6:a9f:1100::1";
+
+          ipv4 = mkIpv4Address {
+            location = 100;
+            subnet = 100;
+            host = 50;
+          };
+
+          ipv6 = mkIpv6Address {
+            location = 100;
+            subnet = 100;
+            host = 50;
+          };
         };
 
         publicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
         port = null;
       };
 
-      tomas-phone = {
-        interface = {
-          name = "wg0";
-          ipv4 = "10.100.100.2";
-          ipv6 = "fd25:6f6:a9f:1100::2";
-        };
-
-        publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
-        port = null;
-      };
-
       blacklodge = {
         interface = {
           name = "wg0";
-          ipv4 = "10.100.100.3";
-          ipv6 = "fd25:6f6:a9f:1100::3";
+
+          ipv4 = mkIpv4Address {
+            location = 100;
+            subnet = 100;
+            host = 51;
+          };
+
+          ipv6 = mkIpv6Address {
+            location = 100;
+            subnet = 100;
+            host = 51;
+          };
         };
 
         publicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
         port = null;
       };
 
-      martin-windows = {
+      tomas-phone = {
         interface = {
           name = "wg0";
-          ipv4 = "10.100.104.1";
-          ipv6 = "fd25:6f6:a9f:1200::1";
+
+          ipv4 = mkIpv4Address {
+            location = 100;
+            subnet = 100;
+            host = 52;
+          };
+
+          ipv6 = mkIpv6Address {
+            location = 100;
+            subnet = 100;
+            host = 52;
+          };
         };
 
-        publicKey = "JoxRQuYsNZqg/e/DHIVnAsDsA86PjyDlIWPIViMrPUQ=";
+        publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
         port = null;
       };
     };

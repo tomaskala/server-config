@@ -21,7 +21,6 @@ in {
   "secrets/wg-psk/cooper2whitelodge.age".publicKeys = [ whitelodge ];
   "secrets/wg-psk/tomas-phone2whitelodge.age".publicKeys = [ whitelodge ];
   "secrets/wg-psk/blacklodge2whitelodge.age".publicKeys = [ whitelodge ];
-  "secrets/wg-psk/martin-windows2whitelodge.age".publicKeys = [ whitelodge ];
 
   # Other
 

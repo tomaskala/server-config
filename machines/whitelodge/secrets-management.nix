@@ -57,12 +57,5 @@
       owner = "root";
       group = "systemd-network";
     };
-
-    wg-martin-windows2whitelodge = {
-      file = "/root/secrets/wg-psk/martin-windows2whitelodge.age";
-      mode = "0640";
-      owner = "root";
-      group = "systemd-network";
-    };
   };
 }
