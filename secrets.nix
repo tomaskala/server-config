@@ -13,7 +13,8 @@ in {
   "secrets/users/root-bob.age".publicKeys = [ bob ];
 
   # WireGuard private keys
-  "secrets/wg-pk/whitelodge.age".publicKeys = [ whitelodge ];
+  "secrets/wg-pk/whitelodge-internal.age".publicKeys = [ whitelodge ];
+  "secrets/wg-pk/whitelodge-isolated.age".publicKeys = [ whitelodge ];
   "secrets/wg-pk/bob.age".publicKeys = [ bob ];
 
   # WireGuard preshared keys

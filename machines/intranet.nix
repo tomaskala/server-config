@@ -276,7 +276,7 @@
             };
           };
 
-          publicKey = "";
+          publicKey = "hDzNhJHJ6SJ81XasrZxPus5KDNCXwMb2IEq832GylxM=";
           port = 1194;
         };
       };
