@@ -6,15 +6,16 @@ let
 
   nasAddr = intranetCfg.subnets.l-private.services.nas.ipv4;
 
-  vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.l-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
   allowedIPs = builtins.map maskSubnet [
     privateSubnet.ipv4
     privateSubnet.ipv6
-    vpnSubnet.ipv4
-    vpnSubnet.ipv6
+    intranetCfg.subnets.vpn-internal.ipv4
+    intranetCfg.subnets.vpn-internal.ipv6
+    intranetCfg.subnets.vpn-isolated.ipv4
+    intranetCfg.subnets.vpn-isolated.ipv6
   ];
 in {
   options.services.music = {

@@ -5,10 +5,12 @@ let
   intranetCfg = config.networking.intranet;
   gatewayCfg = intranetCfg.subnets.vpn-internal.gateway;
 
-  vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
-  allowedIPs = builtins.map maskSubnet [ vpnSubnet.ipv4 vpnSubnet.ipv6 ];
+  allowedIPs = builtins.map maskSubnet [
+    intranetCfg.subnets.vpn-internal.ipv4
+    intranetCfg.subnets.vpn-internal.ipv6
+  ];
 in {
   options.services.dav = {
     enable = lib.mkEnableOption "DAV server";
@@ -92,7 +94,7 @@ in {
       };
     };
 
-    networking.intranet.subnets.vpn.services.dav = {
+    networking.intranet.subnets.vpn-internal.services.dav = {
       url = cfg.domain;
       inherit (gatewayCfg.interface) ipv4 ipv6;
     };

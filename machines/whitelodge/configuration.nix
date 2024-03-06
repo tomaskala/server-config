@@ -2,10 +2,7 @@
 
 let
   intranetCfg = config.networking.intranet;
-
-  vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-
   acmeEmail = "public+acme@tomaskala.com";
 in {
   imports = [
@@ -179,8 +176,10 @@ in {
           access-control = [
             "127.0.0.1/8 allow"
             "::1/128 allow"
-            "${maskSubnet vpnSubnet.ipv4} allow"
-            "${maskSubnet vpnSubnet.ipv6} allow"
+            "${maskSubnet intranetCfg.subnets.vpn-internal.ipv4} allow"
+            "${maskSubnet intranetCfg.subnets.vpn-internal.ipv6} allow"
+            "${maskSubnet intranetCfg.subnets.vpn-isolated.ipv4} allow"
+            "${maskSubnet intranetCfg.subnets.vpn-isolated.ipv6} allow"
           ];
         };
       };

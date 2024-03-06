@@ -3,10 +3,6 @@
 let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.subnets.l-private.gateway;
-
-  vpnInterface = gatewayCfg.interface.name;
-  vpnSubnet = intranetCfg.subnets.vpn;
 in {
   options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
 
@@ -14,9 +10,9 @@ in {
     systemd.network = {
       enable = true;
 
-      netdevs."90-${vpnInterface}" = {
+      netdevs."90-${intranetCfg.subnets.l-private.gateway.interface.name}" = {
         netdevConfig = {
-          Name = vpnInterface;
+          Name = intranetCfg.subnets.l-private.gateway.interface.name;
           Kind = "wireguard";
         };
 
@@ -39,18 +35,18 @@ in {
         }];
       };
 
-      networks."90-${vpnInterface}" = {
-        matchConfig.Name = vpnInterface;
+      networks."90-${intranetCfg.subnets.l-private.gateway.interface.name}" = {
+        matchConfig.Name = intranetCfg.subnets.l-private.gateway.interface.name;
 
         # Enable IP forwarding (system-wide).
         networkConfig.IPForward = true;
 
         address = [
-          "${gatewayCfg.interface.ipv4}/${
-            builtins.toString vpnSubnet.ipv4.mask
+          "${intranetCfg.subnets.l-private.gateway.interface.ipv4}/${
+            builtins.toString intranetCfg.subnets.vpn-isolated.ipv4.mask
           }"
-          "${gatewayCfg.interface.ipv6}/${
-            builtins.toString vpnSubnet.ipv6.mask
+          "${intranetCfg.subnets.l-private.gateway.interface.ipv6}/${
+            builtins.toString intranetCfg.subnets.vpn-isolated.ipv6.mask
           }"
         ];
       };

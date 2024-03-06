@@ -204,40 +204,6 @@
       }";
   in {
     subnets = {
-      # Range of the entire intranet.
-      intranet = {
-        ipv4 = mkIpv4Subnet {
-          location = 0;
-          subnet = 0;
-          mask = 8;
-        };
-
-        ipv6 = mkIpv6Subnet {
-          location = 0;
-          subnet = 0;
-          mask = 48;
-        };
-
-        gateway = null;
-      };
-
-      # Accessible by connecting to the server.
-      vpn = {
-        ipv4 = mkIpv4Subnet {
-          location = 100;
-          subnet = 0;
-          mask = 16;
-        };
-
-        ipv6 = mkIpv6Subnet {
-          location = 100;
-          subnet = 0;
-          mask = 56;
-        };
-
-        gateway = null;
-      };
-
       # Devices in the internal subnet can communicate with each other
       # as well as access the public internet via the server.
       vpn-internal = {
@@ -313,23 +279,6 @@
           publicKey = "";
           port = 1194;
         };
-      };
-
-      # Entire L subnet.
-      l = {
-        ipv4 = mkIpv4Subnet {
-          location = 0;
-          subnet = 0;
-          mask = 16;
-        };
-
-        ipv6 = mkIpv6Subnet {
-          location = 0;
-          subnet = 0;
-          mask = 56;
-        };
-
-        gateway = null;
       };
 
       # Private L subnet containing trusted devices.
@@ -412,23 +361,6 @@
         ipv6 = mkIpv6Subnet {
           location = 0;
           subnet = 1;
-        };
-
-        gateway = null;
-      };
-
-      # Entire P subnet.
-      p = {
-        ipv4 = mkIpv4Subnet {
-          location = 1;
-          subnet = 0;
-          mask = 16;
-        };
-
-        ipv6 = mkIpv6Subnet {
-          location = 1;
-          subnet = 0;
-          mask = 56;
         };
 
         gateway = null;

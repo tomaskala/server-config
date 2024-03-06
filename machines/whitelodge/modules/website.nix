@@ -66,7 +66,7 @@ in {
       };
     };
 
-    networking.intranet.subnets.vpn.services.website = {
+    networking.intranet.subnets.vpn-internal.services.website = {
       url = cfg.domain;
       inherit (gatewayCfg.external) ipv4 ipv6;
     };

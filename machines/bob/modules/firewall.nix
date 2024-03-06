@@ -8,7 +8,6 @@ let
   vpnInterface = intranetCfg.subnets.l-private.gateway.interface.name;
   lanInterface = gatewayCfg.external.name;
 
-  vpnSubnet = intranetCfg.subnets.vpn;
   privateSubnet = intranetCfg.subnets.l-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
@@ -136,12 +135,7 @@ in {
               type nat hook postrouting priority 100;
 
               # Masquerade VPN traffic to the internal subnet.
-              oifname ${lanInterface} ip saddr ${
-                maskSubnet vpnSubnet.ipv4
-              } masquerade
-              oifname ${lanInterface} ip6 saddr ${
-                maskSubnet vpnSubnet.ipv6
-              } masquerade
+              oifname ${lanInterface} iifname ${vpnInterface} masquerade
             }
           '';
         };

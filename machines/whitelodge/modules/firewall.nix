@@ -9,9 +9,6 @@ let
     internal = intranetCfg.subnets.vpn-internal.gateway.interface.name;
     isolated = intranetCfg.subnets.vpn-isolated.gateway.interface.name;
   };
-
-  vpnSubnet = intranetCfg.subnets.vpn;
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 in {
   options.services.firewall = { enable = lib.mkEnableOption "firewall"; };
 
@@ -229,20 +226,7 @@ in {
               type nat hook postrouting priority 100;
 
               # Masquerade VPN traffic to WAN.
-              oifname ${wanInterface} ip saddr ${
-                maskSubnet vpnSubnet.ipv4
-              } masquerade
-              oifname ${wanInterface} ip6 saddr ${
-                maskSubnet vpnSubnet.ipv6
-              } masquerade
-
-              # Masquerade VPN traffic to VPN.
-              oifname ${vpnInterface.internal} ip saddr ${
-                maskSubnet vpnSubnet.ipv4
-              } masquerade
-              oifname ${vpnInterface.internal} ip6 saddr ${
-                maskSubnet vpnSubnet.ipv6
-              } masquerade
+              oifname ${wanInterface} iifname ${vpnInterface.internal} masquerade
             }
           '';
         };

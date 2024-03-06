@@ -7,10 +7,12 @@ let
 
   dbName = "grafana";
 
-  vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
-  allowedIPs = builtins.map maskSubnet [ vpnSubnet.ipv4 vpnSubnet.ipv6 ];
+  allowedIPs = builtins.map maskSubnet [
+    intranetCfg.subnets.vpn-internal.ipv4
+    intranetCfg.subnets.vpn-internal.ipv6
+  ];
 in {
   options.services.monitoring-hub = {
     enable = lib.mkEnableOption "monitoring-hub";
@@ -192,7 +194,7 @@ in {
       };
     };
 
-    networking.intranet.subnets.vpn.services.monitoring-hub = {
+    networking.intranet.subnets.vpn-internal.services.monitoring-hub = {
       url = cfg.domain;
       inherit (gatewayCfg.interface) ipv4 ipv6;
     };
