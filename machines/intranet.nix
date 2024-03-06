@@ -2,6 +2,62 @@
 
 {
   options.networking.intranet = let
+    networkInterface = lib.types.submodule {
+      options = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          description = "Name of the network interface";
+          example = "eth0";
+          readOnly = true;
+        };
+
+        ipv4 = lib.mkOption {
+          type = lib.types.str;
+          description = "IPv4 address of the network interface";
+          example = "192.168.0.1";
+          readOnly = true;
+        };
+
+        ipv6 = lib.mkOption {
+          type = lib.types.str;
+          description = "IPv6 address of the network interface";
+          example = "fe80::1";
+          readOnly = true;
+        };
+      };
+    };
+
+    wireguardInterface = lib.types.submodule {
+      options = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          description = "Name of this peer";
+          example = "peer";
+          readOnly = true;
+        };
+
+        interface = lib.mkOption {
+          type = networkInterface;
+          description = "WireGuard interface of this peer";
+          readOnly = true;
+        };
+
+        publicKey = lib.mkOption {
+          type = lib.types.str;
+          description = "WireGuard public key of this peer";
+          example = "C5sNSz31K8ihEavapHZp5ppfjyq3Q1vcTSvAhy2t+Eo=";
+          readOnly = true;
+        };
+
+        port = lib.mkOption {
+          type = lib.types.nullOr lib.types.port;
+          description = "WireGuard port (unless to be automatically selected)";
+          example = 51820;
+          readOnly = true;
+        };
+      };
+    };
+
     subnet = let
       cidr = lib.types.submodule {
         options = {
@@ -56,59 +112,16 @@
           readOnly = true;
         };
 
+        gateway = lib.mkOption {
+          type = lib.types.nullOr wireguardInterface;
+          description = "VPN interface of this subnet";
+          readOnly = true;
+        };
+
         services = lib.mkOption {
           type = lib.types.attrsOf service;
           description = "Services running inside this subnet";
           default = { };
-        };
-      };
-    };
-
-    networkInterface = lib.types.submodule {
-      options = {
-        name = lib.mkOption {
-          type = lib.types.str;
-          description = "Name of the network interface";
-          example = "eth0";
-          readOnly = true;
-        };
-
-        ipv4 = lib.mkOption {
-          type = lib.types.str;
-          description = "IPv4 address of the network interface";
-          example = "192.168.0.1";
-          readOnly = true;
-        };
-
-        ipv6 = lib.mkOption {
-          type = lib.types.str;
-          description = "IPv6 address of the network interface";
-          example = "fe80::1";
-          readOnly = true;
-        };
-      };
-    };
-
-    wireguardInterface = lib.types.submodule {
-      options = {
-        interface = lib.mkOption {
-          type = networkInterface;
-          description = "WireGuard interface of this peer";
-          readOnly = true;
-        };
-
-        publicKey = lib.mkOption {
-          type = lib.types.str;
-          description = "WireGuard public key of this peer";
-          example = "C5sNSz31K8ihEavapHZp5ppfjyq3Q1vcTSvAhy2t+Eo=";
-          readOnly = true;
-        };
-
-        port = lib.mkOption {
-          type = lib.types.nullOr lib.types.port;
-          description = "WireGuard port (unless to be automatically selected)";
-          example = 51820;
-          readOnly = true;
         };
       };
     };
@@ -134,21 +147,9 @@
     gateways = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
-          internal = lib.mkOption {
-            type = wireguardInterface;
-            description = "Configuration of the WireGuard interface";
-            readOnly = true;
-          };
-
           external = lib.mkOption {
             type = networkInterface;
             description = "Configuration of the main external interface";
-            readOnly = true;
-          };
-
-          network = lib.mkOption {
-            type = lib.types.str;
-            description = "Network in 'subnets' this gateway leads to";
             readOnly = true;
           };
 
@@ -216,6 +217,8 @@
           subnet = 0;
           mask = 48;
         };
+
+        gateway = null;
       };
 
       # Accessible by connecting to the server.
@@ -231,6 +234,8 @@
           subnet = 0;
           mask = 56;
         };
+
+        gateway = null;
       };
 
       # Devices in the internal subnet can communicate with each other
@@ -245,10 +250,36 @@
           location = 100;
           subnet = 100;
         };
+
+        gateway = {
+          name = "whitelodge";
+
+          interface = {
+            name = "wg-internal";
+
+            ipv4 = mkIpv4Address {
+              location = 100;
+              subnet = 100;
+              host = 1;
+            };
+
+            ipv6 = mkIpv6Address {
+              location = 100;
+              subnet = 100;
+              host = 1;
+            };
+          };
+
+          publicKey = "a+x1ikWhkKubrcwipwj5UqKL3vE0NcqnjdNNcFXPXho=";
+          port = 1194;
+        };
       };
 
       # Devices in the isolated subnet can communicate with each other,
       # but not access the public internet via the server.
+      # Notably, this subnet should contain all gateways of non-VPN subnets,
+      # because they only need to be accessible from the VPN, not access the
+      # public internet through the server.
       vpn-isolated = {
         ipv4 = mkIpv4Subnet {
           location = 100;
@@ -258,6 +289,29 @@
         ipv6 = mkIpv6Subnet {
           location = 100;
           subnet = 104;
+        };
+
+        gateway = {
+          name = "whitelodge";
+
+          interface = {
+            name = "wg-isolated";
+
+            ipv4 = mkIpv4Address {
+              location = 100;
+              subnet = 104;
+              host = 1;
+            };
+
+            ipv6 = mkIpv6Address {
+              location = 100;
+              subnet = 104;
+              host = 1;
+            };
+          };
+
+          publicKey = "";
+          port = 1194;
         };
       };
 
@@ -274,6 +328,8 @@
           subnet = 0;
           mask = 56;
         };
+
+        gateway = null;
       };
 
       # Private L subnet containing trusted devices.
@@ -286,6 +342,29 @@
         ipv6 = mkIpv6Subnet {
           location = 0;
           subnet = 0;
+        };
+
+        gateway = {
+          name = "bob";
+
+          interface = {
+            name = "wg-private";
+
+            ipv4 = mkIpv4Address {
+              location = 100;
+              subnet = 104;
+              host = 10;
+            };
+
+            ipv6 = mkIpv6Address {
+              location = 100;
+              subnet = 104;
+              host = 10;
+            };
+          };
+
+          publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
+          port = null;
         };
 
         services = {
@@ -334,6 +413,8 @@
           location = 0;
           subnet = 1;
         };
+
+        gateway = null;
       };
 
       # Entire P subnet.
@@ -349,6 +430,8 @@
           subnet = 0;
           mask = 56;
         };
+
+        gateway = null;
       };
 
       # Private P subnet containing trusted devices.
@@ -362,6 +445,8 @@
           location = 1;
           subnet = 10;
         };
+
+        gateway = null;
 
         services = {
           router = {
@@ -393,40 +478,18 @@
           location = 1;
           subnet = 20;
         };
+
+        gateway = null;
       };
     };
 
-    # TODO: Move each gateway into its subnet like services?
     gateways = {
       whitelodge = {
-        internal = {
-          interface = {
-            name = "wg0";
-
-            ipv4 = mkIpv4Address {
-              location = 100;
-              subnet = 100;
-              host = 1;
-            };
-
-            ipv6 = mkIpv6Address {
-              location = 100;
-              subnet = 100;
-              host = 1;
-            };
-          };
-
-          publicKey = "a+x1ikWhkKubrcwipwj5UqKL3vE0NcqnjdNNcFXPXho=";
-          port = 1194;
-        };
-
         external = {
           name = "venet0";
           ipv4 = "37.205.9.85";
           ipv6 = "2a01:430:17:1::ffff:1108";
         };
-
-        network = "vpn-internal";
 
         exporters = {
           node = {
@@ -437,27 +500,6 @@
       };
 
       bob = {
-        internal = {
-          interface = {
-            name = "wg0";
-
-            ipv4 = mkIpv4Address {
-              location = 100;
-              subnet = 100;
-              host = 10;
-            };
-
-            ipv6 = mkIpv6Address {
-              location = 100;
-              subnet = 100;
-              host = 10;
-            };
-          };
-
-          publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
-          port = null;
-        };
-
         external = {
           name = "end0";
 
@@ -474,14 +516,14 @@
           };
         };
 
-        network = "l-private";
-
         exporters = { node.port = 9100; };
       };
     };
 
     devices = {
       cooper = {
+        name = "cooper";
+
         interface = {
           name = "wg0";
 
@@ -503,6 +545,8 @@
       };
 
       blacklodge = {
+        name = "blacklodge";
+
         interface = {
           name = "wg0";
 
@@ -524,6 +568,8 @@
       };
 
       tomas-phone = {
+        name = "tomas-phone";
+
         interface = {
           name = "wg0";
 

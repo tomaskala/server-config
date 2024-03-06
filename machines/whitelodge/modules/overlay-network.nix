@@ -3,40 +3,41 @@
 let
   cfg = config.services.overlay-network;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.whitelodge;
 
-  vpnInterface = gatewayCfg.internal.interface.name;
-  otherGateways = lib.filterAttrs (gatewayName: _: gatewayName != "whitelodge")
-    intranetCfg.gateways;
+  vpnInterfaceIsolated =
+    intranetCfg.subnets.vpn-isolated.gateway.interface.name;
 
-  vpnSubnet = intranetCfg.subnets.vpn;
+  otherSubnets = builtins.attrValues (lib.filterAttrs
+    (_: { gateway, ... }: gateway != null && gateway.name != "whitelodge")
+    intranetCfg.subnets);
+
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
 
-  makePeer = peerName:
-    { internal, network, ... }: {
-      wireguardPeerConfig = {
-        PublicKey = internal.publicKey;
-        PresharedKeyFile = config.age.secrets."wg-${peerName}2whitelodge".path;
-        AllowedIPs = [
-          "${internal.interface.ipv4}/32"
-          "${internal.interface.ipv6}/128"
-          (maskSubnet intranetCfg.subnets.${network}.ipv4)
-          (maskSubnet intranetCfg.subnets.${network}.ipv6)
-        ];
-      };
+  makePeer = subnet: {
+    wireguardPeerConfig = {
+      PublicKey = subnet.gateway.publicKey;
+      PresharedKeyFile =
+        config.age.secrets."wg-${subnet.gateway.name}2whitelodge".path;
+      AllowedIPs = [
+        "${subnet.gateway.interface.ipv4}/32"
+        "${subnet.gateway.interface.ipv6}/128"
+        (maskSubnet subnet.ipv4)
+        (maskSubnet subnet.ipv6)
+      ];
     };
+  };
 
-  makeRoute = network: [
+  makeRoute = subnet: [
     {
       routeConfig = {
-        Destination = maskSubnet intranetCfg.subnets.${network}.ipv4;
+        Destination = maskSubnet subnet.ipv4;
         Scope = "link";
         Type = "unicast";
       };
     }
     {
       routeConfig = {
-        Destination = maskSubnet intranetCfg.subnets.${network}.ipv6;
+        Destination = maskSubnet subnet.ipv6;
         Scope = "link";
         Type = "unicast";
       };
@@ -53,17 +54,16 @@ in {
       addToSet = setName: elem:
         "${pkgs.nftables}/bin/nft add element inet firewall ${setName} { ${elem} }";
 
-      makeAccessibleSet = ipProto:
-        { internal, network, ... }: [
-          internal.interface.${ipProto}
-          (maskSubnet intranetCfg.subnets.${network}.${ipProto})
-        ];
+      makeAccessibleSet = ipProto: subnet: [
+        subnet.gateway.interface.${ipProto}
+        (maskSubnet subnet.${ipProto})
+      ];
 
-      accessibleIPv4 = builtins.concatMap (makeAccessibleSet "ipv4")
-        (builtins.attrValues otherGateways);
+      accessibleIPv4 =
+        builtins.concatMap (makeAccessibleSet "ipv4") otherSubnets;
 
-      accessibleIPv6 = builtins.concatMap (makeAccessibleSet "ipv6")
-        (builtins.attrValues otherGateways);
+      accessibleIPv6 =
+        builtins.concatMap (makeAccessibleSet "ipv6") otherSubnets;
     in ''
       ${addToSet "vpn_internal_ipv4"
       (maskSubnet intranetCfg.subnets.vpn-internal.ipv4)}
@@ -98,43 +98,39 @@ in {
       enable = true;
 
       # Add each gateway as a Wireguard peer.
-      netdevs."90-${vpnInterface}" = {
+      netdevs."90-${vpnInterfaceIsolated}" = {
         netdevConfig = {
-          Name = vpnInterface;
+          Name = vpnInterfaceIsolated;
           Kind = "wireguard";
         };
 
         wireguardConfig = {
-          PrivateKeyFile = config.age.secrets.wg-pk.path;
-          ListenPort = gatewayCfg.internal.port;
+          PrivateKeyFile = config.age.secrets.wg-vpn-isolated-pk.path;
+          ListenPort = intranetCfg.subnets.vpn-isolated.gateway.port;
         };
 
-        wireguardPeers = lib.mapAttrsToList makePeer otherGateways;
+        wireguardPeers = builtins.map makePeer otherSubnets;
       };
 
-      networks."90-${vpnInterface}" = {
-        matchConfig.Name = vpnInterface;
+      networks."90-${vpnInterfaceIsolated}" = {
+        matchConfig.Name = vpnInterfaceIsolated;
 
         # Enable IP forwarding (system-wide).
         networkConfig.IPForward = true;
 
         address = [
-          "${gatewayCfg.internal.interface.ipv4}/${
-            builtins.toString vpnSubnet.ipv4.mask
+          "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv4}/${
+            builtins.toString intranetCfg.subnets.vpn-isolated.ipv4.mask
           }"
-          "${gatewayCfg.internal.interface.ipv6}/${
-            builtins.toString vpnSubnet.ipv6.mask
+          "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv6}/${
+            builtins.toString intranetCfg.subnets.vpn-isolated.ipv6.mask
           }"
         ];
 
         # Route traffic to each gateway's network to the Wireguard interface.
         # Wireguard takes care of routing to the correct gateway within the
         # tunnel thanks to the AllowedIPs clause of each gateway peer.
-        routes = let
-          gatewayValues = builtins.attrValues otherGateways;
-
-          networks = builtins.catAttrs "network" gatewayValues;
-        in builtins.concatMap makeRoute networks;
+        routes = builtins.concatMap makeRoute otherSubnets;
       };
     };
   };

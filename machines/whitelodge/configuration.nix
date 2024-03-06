@@ -2,7 +2,6 @@
 
 let
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.whitelodge;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -144,11 +143,11 @@ in {
         enable = true;
         listenAddresses = [
           {
-            addr = gatewayCfg.internal.interface.ipv4;
+            addr = intranetCfg.subnets.vpn-internal.gateway.interface.ipv4;
             port = 22;
           }
           {
-            addr = gatewayCfg.internal.interface.ipv6;
+            addr = intranetCfg.subnets.vpn-internal.gateway.interface.ipv6;
             port = 22;
           }
         ];
@@ -164,10 +163,18 @@ in {
         enable = true;
         settings.server = {
           interface = [
+            # Allow the server itself to use the resolver.
             "127.0.0.1"
             "::1"
-            gatewayCfg.internal.interface.ipv4
-            gatewayCfg.internal.interface.ipv6
+            # Allow internal peers to use the resolver. This is to allow
+            # resolving internal domain names as well as to use it for
+            # domain filtering when accessing the public internet.
+            intranetCfg.subnets.vpn-internal.gateway.interface.ipv4
+            intranetCfg.subnets.vpn-internal.gateway.interface.ipv6
+            # Allow isolated peers to use the resolver. This is to allow
+            # resolving internal domain names.
+            intranetCfg.subnets.vpn-isolated.gateway.interface.ipv4
+            intranetCfg.subnets.vpn-isolated.gateway.interface.ipv6
           ];
           access-control = [
             "127.0.0.1/8 allow"

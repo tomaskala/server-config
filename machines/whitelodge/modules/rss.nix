@@ -3,7 +3,7 @@
 let
   cfg = config.services.rss;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.whitelodge;
+  gatewayCfg = intranetCfg.subnets.vpn-internal.gateway;
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -60,10 +60,8 @@ in {
       enable = true;
 
       virtualHosts.${cfg.domain} = {
-        listenAddresses = [
-          gatewayCfg.internal.interface.ipv4
-          "[${gatewayCfg.internal.interface.ipv6}]"
-        ];
+        listenAddresses =
+          [ gatewayCfg.interface.ipv4 "[${gatewayCfg.interface.ipv6}]" ];
 
         useACMEHost = cfg.domain;
 
@@ -90,7 +88,7 @@ in {
 
     networking.intranet.subnets.vpn.services.rss = {
       url = cfg.domain;
-      inherit (gatewayCfg.internal.interface) ipv4 ipv6;
+      inherit (gatewayCfg.interface) ipv4 ipv6;
     };
   };
 }

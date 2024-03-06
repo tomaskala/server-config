@@ -23,8 +23,15 @@
       group = "grafana";
     };
 
-    wg-pk = {
-      file = "/root/secrets/wg-pk/whitelodge.age";
+    wg-vpn-internal-pk = {
+      file = "/root/secrets/wg-vpn-internal-pk/whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
+
+    wg-vpn-isolated-pk = {
+      file = "/root/secrets/wg-vpn-isolated-pk/whitelodge.age";
       mode = "0640";
       owner = "root";
       group = "systemd-network";

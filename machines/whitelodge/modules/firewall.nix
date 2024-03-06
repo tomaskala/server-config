@@ -3,10 +3,12 @@
 let
   cfg = config.services.firewall;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.whitelodge;
 
-  vpnInterface = gatewayCfg.internal.interface.name;
-  wanInterface = gatewayCfg.external.name;
+  wanInterface = intranetCfg.gateways.whitelodge.external.name;
+  vpnInterface = {
+    internal = intranetCfg.subnets.vpn-internal.gateway.interface.name;
+    isolated = intranetCfg.subnets.vpn-isolated.gateway.interface.name;
+  };
 
   vpnSubnet = intranetCfg.subnets.vpn;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -26,7 +28,7 @@ in {
       # Source: https://github.com/NixOS/nixpkgs/pull/223283/files.
       checkRuleset = true;
       preCheckRuleset = ''
-        ${pkgs.gnused}/bin/sed -i 's/${gatewayCfg.external.name}/lo/g' ruleset.conf
+        ${pkgs.gnused}/bin/sed -i 's/${wanInterface}/lo/g' ruleset.conf
       '';
 
       tables = {
@@ -42,11 +44,19 @@ in {
               }
             }
 
-            # TCP destination ports accepted from the VPN only.
-            set tcp_accepted_vpn {
+            # TCP destination ports accepted from the internal VPN only.
+            set tcp_accepted_vpn_internal {
               type inet_service
               elements = {
                 22,
+                53,
+              }
+            }
+
+            # TCP destination ports accepted from the isolated VPN only.
+            set tcp_accepted_vpn_isolated {
+              type inet_service
+              elements = {
                 53,
               }
             }
@@ -55,12 +65,27 @@ in {
             set udp_accepted_wan {
               type inet_service
               elements = {
-                ${builtins.toString gatewayCfg.internal.port},
+                ${
+                  builtins.toString
+                  intranetCfg.subnets.vpn-internal.gateway.port
+                },
+                ${
+                  builtins.toString
+                  intranetCfg.subnets.vpn-isolated.gateway.port
+                },
               }
             }
 
-            # UDP destination ports accepted from the VPN only.
-            set udp_accepted_vpn {
+            # UDP destination ports accepted from the internal VPN only.
+            set udp_accepted_vpn_internal {
+              type inet_service
+              elements = {
+                53,
+              }
+            }
+
+            # UDP destination ports accepted from the isolated VPN only.
+            set udp_accepted_vpn_isolated {
               type inet_service
               elements = {
                 53,
@@ -149,10 +174,17 @@ in {
               iifname ${wanInterface} udp dport @udp_accepted_wan ct state new accept
 
               # Allow the specified TCP and UDP ports from the VPN.
-              iifname ${vpnInterface} tcp dport @tcp_accepted_vpn ct state new accept
-              iifname ${vpnInterface} udp dport @udp_accepted_vpn ct state new accept
-              iifname ${vpnInterface} tcp dport @tcp_accepted_wan ct state new accept
-              iifname ${vpnInterface} udp dport @udp_accepted_wan ct state new accept
+              iifname ${vpnInterface.internal} tcp dport @tcp_accepted_vpn_internal ct state new accept
+              iifname ${vpnInterface.internal} udp dport @udp_accepted_vpn_internal ct state new accept
+              iifname ${vpnInterface.isolated} tcp dport @tcp_accepted_vpn_isolated ct state new accept
+              iifname ${vpnInterface.isolated} udp dport @udp_accepted_vpn_isolated ct state new accept
+              ${
+                builtins.concatStringsSep "\n" (lib.mapAttrsToList
+                  (_: interface: ''
+                    iifname ${interface} tcp dport @tcp_accepted_wan ct state new accept
+                    iifname ${interface} udp dport @udp_accepted_wan ct state new accept
+                  '') vpnInterface)
+              }
             }
 
             chain forward {
@@ -162,20 +194,22 @@ in {
               ct state established,related accept
 
               # Allow internal VPN traffic to access the internet via WAN.
-              iifname ${vpnInterface} ip saddr @vpn_internal_ipv4 oifname ${wanInterface} ct state new accept
-              iifname ${vpnInterface} ip6 saddr @vpn_internal_ipv6 oifname ${wanInterface} ct state new accept
+              iifname ${vpnInterface.internal} ip saddr @vpn_internal_ipv4 oifname ${wanInterface} ct state new accept
+              iifname ${vpnInterface.internal} ip6 saddr @vpn_internal_ipv6 oifname ${wanInterface} ct state new accept
 
               # Allow internal VPN peers to communicate with each other.
-              iifname ${vpnInterface} ip saddr @vpn_internal_ipv4 oifname ${vpnInterface} ip daddr @vpn_internal_ipv4 ct state new accept
-              iifname ${vpnInterface} ip6 saddr @vpn_internal_ipv6 oifname ${vpnInterface} ip6 daddr @vpn_internal_ipv6 ct state new accept
+              iifname ${vpnInterface.internal} ip saddr @vpn_internal_ipv4 oifname ${vpnInterface.internal} ip daddr @vpn_internal_ipv4 ct state new accept
+              iifname ${vpnInterface.internal} ip6 saddr @vpn_internal_ipv6 oifname ${vpnInterface.internal} ip6 daddr @vpn_internal_ipv6 ct state new accept
 
               # Allow isolated VPN peers to communicate with each other.
-              iifname ${vpnInterface} ip saddr @vpn_isolated_ipv4 oifname ${vpnInterface} ip daddr @vpn_isolated_ipv4 ct state new accept
-              iifname ${vpnInterface} ip6 saddr @vpn_isolated_ipv6 oifname ${vpnInterface} ip6 daddr @vpn_isolated_ipv6 ct state new accept
+              iifname ${vpnInterface.isolated} ip saddr @vpn_isolated_ipv4 oifname ${vpnInterface.isolated} ip daddr @vpn_isolated_ipv4 ct state new accept
+              iifname ${vpnInterface.isolated} ip6 saddr @vpn_isolated_ipv6 oifname ${vpnInterface.isolated} ip6 daddr @vpn_isolated_ipv6 ct state new accept
 
-              # Allow all VPN traffic to the accessible subnets.
-              iifname ${vpnInterface} ip daddr @vpn_accessible_ipv4 oifname ${vpnInterface} ct state new accept
-              iifname ${vpnInterface} ip6 daddr @vpn_accessible_ipv6 oifname ${vpnInterface} ct state new accept
+              # Allow internal and isolated VPN traffic to the accessible subnets.
+              iifname ${vpnInterface.internal} ip daddr @vpn_accessible_ipv4 ct state new accept
+              iifname ${vpnInterface.internal} ip6 daddr @vpn_accessible_ipv6 ct state new accept
+              iifname ${vpnInterface.isolated} ip daddr @vpn_accessible_ipv4 ct state new accept
+              iifname ${vpnInterface.isolated} ip6 daddr @vpn_accessible_ipv6 ct state new accept
             }
 
             chain output {
@@ -203,10 +237,10 @@ in {
               } masquerade
 
               # Masquerade VPN traffic to VPN.
-              oifname ${vpnInterface} ip saddr ${
+              oifname ${vpnInterface.internal} ip saddr ${
                 maskSubnet vpnSubnet.ipv4
               } masquerade
-              oifname ${vpnInterface} ip6 saddr ${
+              oifname ${vpnInterface.internal} ip6 saddr ${
                 maskSubnet vpnSubnet.ipv6
               } masquerade
             }

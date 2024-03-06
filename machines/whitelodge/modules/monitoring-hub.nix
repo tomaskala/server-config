@@ -3,7 +3,7 @@
 let
   cfg = config.services.monitoring-hub;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.whitelodge;
+  gatewayCfg = intranetCfg.subnets.vpn-internal.gateway;
 
   dbName = "grafana";
 
@@ -133,13 +133,20 @@ in {
         port = cfg.prometheusPort;
 
         scrapeConfigs = let
-          exporters = builtins.concatLists (lib.mapAttrsToList (gateway:
-            { internal, exporters, ... }:
+          subnetsWithGateways =
+            lib.filterAttrs (_: { gateway, ... }: gateway != null)
+            intranetCfg.subnets;
+
+          gateways = lib.mapAttrs' (_:
+            { gateway, ... }:
+            lib.nameValuePair gateway.name gateway.interface.ipv4)
+            subnetsWithGateways;
+
+          exporters = builtins.concatLists (lib.mapAttrsToList (gateway: addr:
             lib.mapAttrsToList (name: exporter: {
-              inherit gateway name;
+              inherit gateway addr name;
               inherit (exporter) port;
-              addr = internal.interface.ipv4;
-            }) exporters) intranetCfg.gateways);
+            }) intranetCfg.gateways.${gateway}.exporters) gateways);
 
           exporterGroups = builtins.groupBy ({ name, ... }: name) exporters;
         in lib.mapAttrsToList (job_name: gateways: {
@@ -155,10 +162,8 @@ in {
         enable = true;
 
         virtualHosts.${cfg.domain} = {
-          listenAddresses = [
-            gatewayCfg.internal.interface.ipv4
-            "[${gatewayCfg.internal.interface.ipv6}]"
-          ];
+          listenAddresses =
+            [ gatewayCfg.interface.ipv4 "[${gatewayCfg.interface.ipv6}]" ];
 
           useACMEHost = cfg.domain;
 
@@ -189,7 +194,7 @@ in {
 
     networking.intranet.subnets.vpn.services.monitoring-hub = {
       url = cfg.domain;
-      inherit (gatewayCfg.internal.interface) ipv4 ipv6;
+      inherit (gatewayCfg.interface) ipv4 ipv6;
     };
   };
 }

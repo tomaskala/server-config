@@ -12,7 +12,6 @@ in {
       {
         enable = true;
         openFirewall = false;
-        listenAddress = gatewayCfg.internal.interface.ipv4;
       } // exporter) gatewayCfg.exporters;
   };
 }

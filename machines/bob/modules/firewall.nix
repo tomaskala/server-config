@@ -5,7 +5,7 @@ let
   intranetCfg = config.networking.intranet;
   gatewayCfg = intranetCfg.gateways.bob;
 
-  vpnInterface = gatewayCfg.internal.interface.name;
+  vpnInterface = intranetCfg.subnets.l-private.gateway.interface.name;
   lanInterface = gatewayCfg.external.name;
 
   vpnSubnet = intranetCfg.subnets.vpn;

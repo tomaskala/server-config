@@ -3,7 +3,6 @@
 let
   cfg = config.services.music;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.bob;
 
   nasAddr = intranetCfg.subnets.l-private.services.nas.ipv4;
 
@@ -80,11 +79,11 @@ in {
 
         virtualHosts.${cfg.domain} = {
           listenAddresses = [
-            gatewayCfg.external.ipv4
-            "[${gatewayCfg.external.ipv6}]"
+            intranetCfg.gateways.bob.external.ipv4
+            "[${intranetCfg.gateways.bob.external.ipv6}]"
 
-            gatewayCfg.internal.interface.ipv4
-            "[${gatewayCfg.internal.interface.ipv6}]"
+            intranetCfg.subnets.vpn-internal.gateway.interface.ipv4
+            "[${intranetCfg.subnets.vpn-internal.gateway.interface.ipv6}]"
           ];
 
           extraConfig = ''
@@ -115,7 +114,7 @@ in {
 
     networking.intranet.subnets.l-private.services.music = {
       url = cfg.domain;
-      inherit (gatewayCfg.external) ipv4 ipv6;
+      inherit (intranetCfg.gateways.bob.external) ipv4 ipv6;
     };
   };
 }
