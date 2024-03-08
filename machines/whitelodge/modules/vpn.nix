@@ -3,6 +3,14 @@
 let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
+
+  mkPeer = { name, publicKey, interface, ... }: {
+    wireguardPeerConfig = {
+      PublicKey = publicKey;
+      PresharedKeyFile = config.age.secrets."wg-${name}2whitelodge".path;
+      AllowedIPs = [ "${interface.ipv4}/32" "${interface.ipv6}/32" ];
+    };
+  };
 in {
   options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
 
@@ -22,43 +30,7 @@ in {
             ListenPort = intranetCfg.subnets.vpn-internal.gateway.port;
           };
 
-          wireguardPeers = [
-            {
-              wireguardPeerConfig = {
-                # cooper
-                PublicKey = intranetCfg.devices.cooper.publicKey;
-                PresharedKeyFile = config.age.secrets.wg-cooper2whitelodge.path;
-                AllowedIPs = [
-                  "${intranetCfg.devices.cooper.interface.ipv4}/32"
-                  "${intranetCfg.devices.cooper.interface.ipv6}/128"
-                ];
-              };
-            }
-            {
-              wireguardPeerConfig = {
-                # tomas-phone
-                PublicKey = intranetCfg.devices.tomas-phone.publicKey;
-                PresharedKeyFile =
-                  config.age.secrets.wg-tomas-phone2whitelodge.path;
-                AllowedIPs = [
-                  "${intranetCfg.devices.tomas-phone.interface.ipv4}/32"
-                  "${intranetCfg.devices.tomas-phone.interface.ipv6}/128"
-                ];
-              };
-            }
-            {
-              wireguardPeerConfig = {
-                # blacklodge
-                PublicKey = intranetCfg.devices.blacklodge.publicKey;
-                PresharedKeyFile =
-                  config.age.secrets.wg-blacklodge2whitelodge.path;
-                AllowedIPs = [
-                  "${intranetCfg.devices.blacklodge.interface.ipv4}/32"
-                  "${intranetCfg.devices.blacklodge.interface.ipv6}/128"
-                ];
-              };
-            }
-          ];
+          wireguardPeers = builtins.map mkPeer intranetCfg.devices;
         };
 
       networks."90-${intranetCfg.subnets.vpn-internal.gateway.interface.name}" =

@@ -151,7 +151,7 @@
     };
 
     devices = lib.mkOption {
-      type = lib.types.attrsOf wireguardInterface;
+      type = lib.types.listOf wireguardInterface;
       description = "Devices connected to the network not serving as gateways";
       readOnly = true;
     };
@@ -423,56 +423,51 @@
       };
     };
 
-    devices = {
-      cooper = {
+    devices = [
+      {
         name = "cooper";
-
-        interface = {
-          name = "wg0";
-
-          ipv4 = mkIpv4Address {
-            location = 100;
-            subnet = 100;
-            host = 50;
-          };
-
-          ipv6 = mkIpv6Address {
-            location = 100;
-            subnet = 100;
-            host = 50;
-          };
-        };
-
         publicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
         port = null;
-      };
-
-      blacklodge = {
-        name = "blacklodge";
-
         interface = {
           name = "wg0";
 
           ipv4 = mkIpv4Address {
             location = 100;
             subnet = 100;
-            host = 51;
+            host = 50;
           };
 
           ipv6 = mkIpv6Address {
             location = 100;
             subnet = 100;
-            host = 51;
+            host = 50;
           };
         };
-
+      }
+      {
+        name = "blacklodge";
         publicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
         port = null;
-      };
+        interface = {
+          name = "wg0";
 
-      tomas-phone = {
+          ipv4 = mkIpv4Address {
+            location = 100;
+            subnet = 100;
+            host = 51;
+          };
+
+          ipv6 = mkIpv6Address {
+            location = 100;
+            subnet = 100;
+            host = 51;
+          };
+        };
+      }
+      {
         name = "tomas-phone";
-
+        publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
+        port = null;
         interface = {
           name = "wg0";
 
@@ -488,10 +483,7 @@
             host = 52;
           };
         };
-
-        publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
-        port = null;
-      };
-    };
+      }
+    ];
   };
 }
