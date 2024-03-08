@@ -2,12 +2,26 @@
 
 {
   options.networking.intranet = let
-    networkInterface = lib.types.submodule {
+    wireguardInterface = lib.types.submodule {
       options = {
         name = lib.mkOption {
           type = lib.types.str;
           description = "Name of the network interface";
           example = "eth0";
+          readOnly = true;
+        };
+
+        publicKey = lib.mkOption {
+          type = lib.types.str;
+          description = "WireGuard public key of this peer";
+          example = "C5sNSz31K8ihEavapHZp5ppfjyq3Q1vcTSvAhy2t+Eo=";
+          readOnly = true;
+        };
+
+        port = lib.mkOption {
+          type = lib.types.nullOr lib.types.port;
+          description = "WireGuard port (unless to be automatically selected)";
+          example = 51820;
           readOnly = true;
         };
 
@@ -27,7 +41,7 @@
       };
     };
 
-    wireguardInterface = lib.types.submodule {
+    wireguardPeer = lib.types.submodule {
       options = {
         name = lib.mkOption {
           type = lib.types.str;
@@ -37,22 +51,8 @@
         };
 
         interface = lib.mkOption {
-          type = networkInterface;
+          type = wireguardInterface;
           description = "WireGuard interface of this peer";
-          readOnly = true;
-        };
-
-        publicKey = lib.mkOption {
-          type = lib.types.str;
-          description = "WireGuard public key of this peer";
-          example = "C5sNSz31K8ihEavapHZp5ppfjyq3Q1vcTSvAhy2t+Eo=";
-          readOnly = true;
-        };
-
-        port = lib.mkOption {
-          type = lib.types.nullOr lib.types.port;
-          description = "WireGuard port (unless to be automatically selected)";
-          example = 51820;
           readOnly = true;
         };
       };
@@ -83,18 +83,21 @@
             type = lib.types.str;
             description = "URL of the service";
             example = "service.home.arpa";
+            readOnly = true;
           };
 
           ipv4 = lib.mkOption {
             type = lib.types.str;
             description = "IPv4 address of the service";
             example = "10.0.0.1";
+            readOnly = true;
           };
 
           ipv6 = lib.mkOption {
             type = lib.types.str;
             description = "IPv6 address of the service";
             example = "fd25:6f6:a9f:2000::1";
+            readOnly = true;
           };
         };
       };
@@ -113,7 +116,7 @@
         };
 
         gateway = lib.mkOption {
-          type = lib.types.nullOr wireguardInterface;
+          type = lib.types.nullOr wireguardPeer;
           description = "VPN interface of this subnet";
           readOnly = true;
         };
@@ -135,7 +138,7 @@
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           external = lib.mkOption {
-            type = networkInterface;
+            type = wireguardInterface;
             description = "Configuration of the main external interface";
             readOnly = true;
           };
@@ -151,7 +154,7 @@
     };
 
     devices = lib.mkOption {
-      type = lib.types.listOf wireguardInterface;
+      type = lib.types.listOf wireguardPeer;
       description = "Devices connected to the network not serving as gateways";
       readOnly = true;
     };
@@ -202,6 +205,8 @@
 
           interface = {
             name = "wg-internal";
+            publicKey = "a+x1ikWhkKubrcwipwj5UqKL3vE0NcqnjdNNcFXPXho=";
+            port = 1194;
 
             ipv4 = mkIpv4Address {
               location = 100;
@@ -215,9 +220,6 @@
               host = 1;
             };
           };
-
-          publicKey = "a+x1ikWhkKubrcwipwj5UqKL3vE0NcqnjdNNcFXPXho=";
-          port = 1194;
         };
       };
 
@@ -242,6 +244,8 @@
 
           interface = {
             name = "wg-isolated";
+            publicKey = "hDzNhJHJ6SJ81XasrZxPus5KDNCXwMb2IEq832GylxM=";
+            port = 51820;
 
             ipv4 = mkIpv4Address {
               location = 100;
@@ -255,9 +259,6 @@
               host = 1;
             };
           };
-
-          publicKey = "hDzNhJHJ6SJ81XasrZxPus5KDNCXwMb2IEq832GylxM=";
-          port = 51820;
         };
       };
 
@@ -278,6 +279,8 @@
 
           interface = {
             name = "wg-private";
+            publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
+            port = null;
 
             ipv4 = mkIpv4Address {
               location = 100;
@@ -291,9 +294,6 @@
               host = 10;
             };
           };
-
-          publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
-          port = null;
         };
 
         services = {
@@ -426,10 +426,10 @@
     devices = [
       {
         name = "cooper";
-        publicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
-        port = null;
         interface = {
           name = "wg0";
+          publicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
+          port = null;
 
           ipv4 = mkIpv4Address {
             location = 100;
@@ -446,10 +446,10 @@
       }
       {
         name = "blacklodge";
-        publicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
-        port = null;
         interface = {
           name = "wg0";
+          publicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
+          port = null;
 
           ipv4 = mkIpv4Address {
             location = 100;
@@ -466,10 +466,10 @@
       }
       {
         name = "tomas-phone";
-        publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
-        port = null;
         interface = {
           name = "wg0";
+          publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
+          port = null;
 
           ipv4 = mkIpv4Address {
             location = 100;

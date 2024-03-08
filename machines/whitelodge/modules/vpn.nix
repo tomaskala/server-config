@@ -4,9 +4,9 @@ let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
 
-  mkPeer = { name, publicKey, interface, ... }: {
+  mkPeer = { name, interface, ... }: {
     wireguardPeerConfig = {
-      PublicKey = publicKey;
+      PublicKey = interface.publicKey;
       PresharedKeyFile = config.age.secrets."wg-${name}2whitelodge".path;
       AllowedIPs = [ "${interface.ipv4}/32" "${interface.ipv6}/32" ];
     };
@@ -27,7 +27,8 @@ in {
 
           wireguardConfig = {
             PrivateKeyFile = config.age.secrets.wg-vpn-internal-pk.path;
-            ListenPort = intranetCfg.subnets.vpn-internal.gateway.port;
+            ListenPort =
+              intranetCfg.subnets.vpn-internal.gateway.interface.port;
           };
 
           wireguardPeers = builtins.map mkPeer intranetCfg.devices;

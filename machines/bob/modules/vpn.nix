@@ -21,14 +21,16 @@ in {
         wireguardPeers = [{
           wireguardPeerConfig = {
             # whitelodge
-            PublicKey = intranetCfg.subnets.vpn-isolated.gateway.publicKey;
+            PublicKey =
+              intranetCfg.subnets.vpn-isolated.gateway.interface.publicKey;
             PresharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
             AllowedIPs = [
               "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv4}/32"
               "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv6}/128"
             ];
             Endpoint = "${intranetCfg.gateways.whitelodge.external.ipv4}:${
-                builtins.toString intranetCfg.subnets.vpn-isolated.gateway.port
+                builtins.toString
+                intranetCfg.subnets.vpn-isolated.gateway.interface.port
               }";
             PersistentKeepalive = 25;
           };

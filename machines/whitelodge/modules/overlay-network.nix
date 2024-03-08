@@ -15,7 +15,7 @@ let
 
   makePeer = subnet: {
     wireguardPeerConfig = {
-      PublicKey = subnet.gateway.publicKey;
+      PublicKey = subnet.gateway.interface.publicKey;
       PresharedKeyFile =
         config.age.secrets."wg-${subnet.gateway.name}2whitelodge".path;
       AllowedIPs = [
@@ -96,7 +96,7 @@ in {
 
         wireguardConfig = {
           PrivateKeyFile = config.age.secrets.wg-vpn-isolated-pk.path;
-          ListenPort = intranetCfg.subnets.vpn-isolated.gateway.port;
+          ListenPort = intranetCfg.subnets.vpn-isolated.gateway.interface.port;
         };
 
         wireguardPeers = builtins.map makePeer otherSubnets;

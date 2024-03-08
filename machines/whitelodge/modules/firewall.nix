@@ -64,11 +64,11 @@ in {
               elements = {
                 ${
                   builtins.toString
-                  intranetCfg.subnets.vpn-internal.gateway.port
+                  intranetCfg.subnets.vpn-internal.gateway.interface.port
                 },
                 ${
                   builtins.toString
-                  intranetCfg.subnets.vpn-isolated.gateway.port
+                  intranetCfg.subnets.vpn-isolated.gateway.interface.port
                 },
               }
             }
