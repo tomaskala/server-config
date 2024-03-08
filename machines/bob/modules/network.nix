@@ -2,7 +2,7 @@
 
 let
   intranetCfg = config.networking.intranet;
-  lanInterface = intranetCfg.gateways.bob.external.name;
+  lanInterface = intranetCfg.external.bob.name;
 in {
   systemd.network = {
     enable = true;

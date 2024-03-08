@@ -28,7 +28,7 @@ in {
               "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv4}/32"
               "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv6}/128"
             ];
-            Endpoint = "${intranetCfg.gateways.whitelodge.external.ipv4}:${
+            Endpoint = "${intranetCfg.external.whitelodge.ipv4}:${
                 builtins.toString
                 intranetCfg.subnets.vpn-isolated.gateway.interface.port
               }";

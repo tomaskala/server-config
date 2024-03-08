@@ -2,6 +2,31 @@
 
 {
   options.networking.intranet = let
+    networkInterface = lib.types.submodule {
+      options = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          description = "Name of the network interface";
+          example = "eth0";
+          readOnly = true;
+        };
+
+        ipv4 = lib.mkOption {
+          type = lib.types.str;
+          description = "IPv4 address of the network interface";
+          example = "192.168.0.1";
+          readOnly = true;
+        };
+
+        ipv6 = lib.mkOption {
+          type = lib.types.str;
+          description = "IPv6 address of the network interface";
+          example = "fe80::1";
+          readOnly = true;
+        };
+      };
+    };
+
     wireguardInterface = lib.types.submodule {
       options = {
         name = lib.mkOption {
@@ -134,28 +159,16 @@
       description = "Subnets inside the VPN";
     };
 
-    gateways = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
-        options = {
-          external = lib.mkOption {
-            type = wireguardInterface;
-            description = "Configuration of the main external interface";
-            readOnly = true;
-          };
-        };
-      });
-      description = ''
-        Gateways connected to the intranet. Each consists of the WireGuard
-        interface used to connect to the intranet, the main external interface
-        (public IP address in case of the server, LAN interface in case of
-        a gateway behind a NAT), and the network that the gateway leads to.
-      '';
+    external = lib.mkOption {
+      type = lib.types.attrsOf networkInterface;
+      description =
+        "Network interfaces to external networks (outside of the intranet)";
       readOnly = true;
     };
 
     devices = lib.mkOption {
       type = lib.types.listOf wireguardPeer;
-      description = "Devices connected to the network not serving as gateways";
+      description = "Devices connected to the network";
       readOnly = true;
     };
   };
@@ -395,30 +408,26 @@
       };
     };
 
-    gateways = {
+    external = {
       whitelodge = {
-        external = {
-          name = "venet0";
-          ipv4 = "37.205.9.85";
-          ipv6 = "2a01:430:17:1::ffff:1108";
-        };
+        name = "venet0";
+        ipv4 = "37.205.9.85";
+        ipv6 = "2a01:430:17:1::ffff:1108";
       };
 
       bob = {
-        external = {
-          name = "end0";
+        name = "end0";
 
-          ipv4 = mkIpv4Address {
-            location = 0;
-            subnet = 0;
-            host = 2;
-          };
+        ipv4 = mkIpv4Address {
+          location = 0;
+          subnet = 0;
+          host = 2;
+        };
 
-          ipv6 = mkIpv6Address {
-            location = 0;
-            subnet = 0;
-            host = 2;
-          };
+        ipv6 = mkIpv6Address {
+          location = 0;
+          subnet = 0;
+          host = 2;
         };
       };
     };

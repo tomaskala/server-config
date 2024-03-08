@@ -3,7 +3,6 @@
 let
   cfg = config.services.website;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.whitelodge;
 in {
   options.services.website = {
     enable = lib.mkEnableOption "website";
@@ -68,7 +67,7 @@ in {
 
     networking.intranet.subnets.vpn-internal.services.website = {
       url = cfg.domain;
-      inherit (gatewayCfg.external) ipv4 ipv6;
+      inherit (intranetCfg.external.whitelodge) ipv4 ipv6;
     };
   };
 }

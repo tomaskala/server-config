@@ -80,8 +80,8 @@ in {
 
         virtualHosts.${cfg.domain} = {
           listenAddresses = [
-            intranetCfg.gateways.bob.external.ipv4
-            "[${intranetCfg.gateways.bob.external.ipv6}]"
+            intranetCfg.external.bob.ipv4
+            "[${intranetCfg.external.bob.ipv6}]"
 
             intranetCfg.subnets.vpn-internal.gateway.interface.ipv4
             "[${intranetCfg.subnets.vpn-internal.gateway.interface.ipv6}]"
@@ -115,7 +115,7 @@ in {
 
     networking.intranet.subnets.l-private.services.music = {
       url = cfg.domain;
-      inherit (intranetCfg.gateways.bob.external) ipv4 ipv6;
+      inherit (intranetCfg.external.bob) ipv4 ipv6;
     };
   };
 }

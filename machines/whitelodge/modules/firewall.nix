@@ -4,7 +4,7 @@ let
   cfg = config.services.firewall;
   intranetCfg = config.networking.intranet;
 
-  wanInterface = intranetCfg.gateways.whitelodge.external.name;
+  wanInterface = intranetCfg.external.whitelodge.name;
   vpnInterface = {
     internal = intranetCfg.subnets.vpn-internal.gateway.interface.name;
     isolated = intranetCfg.subnets.vpn-isolated.gateway.interface.name;

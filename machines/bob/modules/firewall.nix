@@ -3,10 +3,9 @@
 let
   cfg = config.services.firewall;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.bob;
 
   vpnInterface = intranetCfg.subnets.l-private.gateway.interface.name;
-  lanInterface = gatewayCfg.external.name;
+  lanInterface = intranetCfg.external.bob.name;
 
   privateSubnet = intranetCfg.subnets.l-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";

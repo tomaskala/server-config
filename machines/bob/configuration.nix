@@ -2,7 +2,6 @@
 
 let
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.gateways.bob;
 
   privateSubnet = intranetCfg.subnets.l-private;
   maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
@@ -105,8 +104,8 @@ in {
           interface = [
             "127.0.0.1"
             "::1"
-            gatewayCfg.external.ipv4
-            gatewayCfg.external.ipv6
+            intranetCfg.external.bob.ipv4
+            intranetCfg.external.bob.ipv6
           ];
           access-control = [
             "127.0.0.1/8 allow"
