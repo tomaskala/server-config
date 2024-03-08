@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, options, ... }:
 
 let
   cfg = config.services.monitoring-hub;
@@ -34,6 +34,11 @@ in {
       type = lib.types.port;
       description = "Port that Prometheus listens on";
       example = 9090;
+    };
+
+    scrapeConfigs = lib.mkOption {
+      inherit (options.services.prometheus.scrapeConfigs) type;
+      description = "A list of scrape configurations";
     };
 
     acmeEmail = lib.mkOption {
@@ -133,31 +138,7 @@ in {
         enable = true;
         listenAddress = "127.0.0.1";
         port = cfg.prometheusPort;
-
-        scrapeConfigs = let
-          subnetsWithGateways =
-            lib.filterAttrs (_: { gateway, ... }: gateway != null)
-            intranetCfg.subnets;
-
-          gateways = lib.mapAttrs' (_:
-            { gateway, ... }:
-            lib.nameValuePair gateway.name gateway.interface.ipv4)
-            subnetsWithGateways;
-
-          exporters = builtins.concatLists (lib.mapAttrsToList (gateway: addr:
-            lib.mapAttrsToList (name: exporter: {
-              inherit gateway addr name;
-              inherit (exporter) port;
-            }) intranetCfg.gateways.${gateway}.exporters) gateways);
-
-          exporterGroups = builtins.groupBy ({ name, ... }: name) exporters;
-        in lib.mapAttrsToList (job_name: gateways: {
-          inherit job_name;
-          static_configs = builtins.map ({ gateway, addr, port, ... }: {
-            targets = [ "${addr}:${builtins.toString port}" ];
-            labels = { peer = gateway; };
-          }) gateways;
-        }) exporterGroups;
+        inherit (cfg) scrapeConfigs;
       };
 
       caddy = {

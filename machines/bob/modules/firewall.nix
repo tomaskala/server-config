@@ -36,10 +36,10 @@ in {
               type inet_service
               elements = {
                 ${
-                  lib.concatStringsSep ''
-                    ,
-                  '' (builtins.map ({ port, ... }: builtins.toString port)
-                    (builtins.attrValues gatewayCfg.exporters))
+                  lib.optionalString
+                  config.services.prometheus.exporters.node.enable
+                  (builtins.toString
+                    config.services.prometheus.exporters.node.port)
                 }
               }
             }

@@ -83,6 +83,15 @@ in {
       unbound-blocker.enable = true;
       vpn.enable = true;
 
+      prometheus.exporters = {
+        node = {
+          enable = true;
+          openFirewall = false;
+          listenAddress = intranetCfg.subnets.l-private.gateway.interface.ipv4;
+          port = 9100;
+        };
+      };
+
       music = {
         enable = true;
         domain = "music.l.home.arpa";

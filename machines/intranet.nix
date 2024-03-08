@@ -125,19 +125,6 @@
         };
       };
     };
-
-    exporter = lib.types.submodule {
-      freeformType = lib.types.attrs;
-
-      options = {
-        port = lib.mkOption {
-          type = lib.types.port;
-          description = "Port the Prometheus exporter listens on";
-          example = 9100;
-          readOnly = true;
-        };
-      };
-    };
   in {
     subnets = lib.mkOption {
       type = lib.types.attrsOf subnet;
@@ -150,13 +137,6 @@
           external = lib.mkOption {
             type = networkInterface;
             description = "Configuration of the main external interface";
-            readOnly = true;
-          };
-
-          exporters = lib.mkOption {
-            type = lib.types.attrsOf exporter;
-            description = "Prometheus exporters configuration";
-            example = { node.port = 9100; };
             readOnly = true;
           };
         };
@@ -422,13 +402,6 @@
           ipv4 = "37.205.9.85";
           ipv6 = "2a01:430:17:1::ffff:1108";
         };
-
-        exporters = {
-          node = {
-            port = 9100;
-            enabledCollectors = [ "processes" "systemd" ];
-          };
-        };
       };
 
       bob = {
@@ -447,8 +420,6 @@
             host = 2;
           };
         };
-
-        exporters = { node.port = 9100; };
       };
     };
 

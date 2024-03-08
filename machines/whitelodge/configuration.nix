@@ -15,7 +15,6 @@ in {
     ./modules/website.nix
     ./secrets-management.nix
     ../intranet.nix
-    ../../modules/monitoring.nix
     ../../modules/openssh.nix
     ../../modules/unbound-blocker.nix
     ../../modules/unbound.nix
@@ -118,7 +117,6 @@ in {
       timesyncd.enable = true;
 
       firewall.enable = true;
-      monitoring.enable = true;
       overlay-network.enable = true;
       unbound-blocker.enable = true;
       vpn.enable = true;
@@ -134,6 +132,32 @@ in {
         grafanaPort = 3000;
         prometheusPort = 9090;
         inherit acmeEmail;
+
+        scrapeConfigs = [{
+          job_name = "node";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:9100" ];
+              labels = { peer = "whitelodge"; };
+            }
+            {
+              targets = [
+                "${intranetCfg.subnets.l-private.gateway.interface.ipv4}:9100"
+              ];
+              labels = { peer = "bob"; };
+            }
+          ];
+        }];
+      };
+
+      prometheus.exporters = {
+        node = {
+          enable = true;
+          openFirewall = false;
+          listenAddress = "127.0.0.1";
+          port = 9100;
+          enabledCollectors = [ "processes" "systemd" ];
+        };
       };
 
       openssh = {
