@@ -1,21 +1,18 @@
-{ config, lib, ... }:
+{ config, lib, util, ... }:
 
 let
   cfg = config.services.music;
   intranetCfg = config.networking.intranet;
-
-  nasAddr = intranetCfg.subnets.l-private.services.nas.ipv4;
-
-  privateSubnet = intranetCfg.subnets.l-private;
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-
-  allowedIPs = builtins.map maskSubnet [
+  deviceCfg = intranetCfg.devices.bob;
+  privateSubnet = deviceCfg.wireguard.isolated.subnet;
+  nasAddr = privateSubnet.services.nas.ipv4;
+  allowedIPs = builtins.map util.ipSubnet [
     privateSubnet.ipv4
     privateSubnet.ipv6
-    intranetCfg.subnets.vpn-internal.ipv4
-    intranetCfg.subnets.vpn-internal.ipv6
-    intranetCfg.subnets.vpn-isolated.ipv4
-    intranetCfg.subnets.vpn-isolated.ipv6
+    intranetCfg.vpn.internal.ipv4
+    intranetCfg.vpn.internal.ipv6
+    intranetCfg.vpn.isolated.ipv4
+    intranetCfg.vpn.isolated.ipv6
   ];
 in {
   options.services.music = {
@@ -36,7 +33,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     fileSystems.${cfg.musicDir} = {
-      device = "${nasAddr}:/volume1/Music";
+      device = "${util.ipAddress nasAddr}:/volume1/Music";
       fsType = "nfs";
       options = [
         # Use NFSv4.1 (the highest my NAS supports).
@@ -80,11 +77,11 @@ in {
 
         virtualHosts.${cfg.domain} = {
           listenAddresses = [
-            intranetCfg.external.bob.ipv4
-            "[${intranetCfg.external.bob.ipv6}]"
+            (util.ipAddress deviceCfg.external.lan.ipv4)
+            "[${util.ipAddress deviceCfg.external.lan.ipv6}]"
 
-            intranetCfg.subnets.vpn-internal.gateway.interface.ipv4
-            "[${intranetCfg.subnets.vpn-internal.gateway.interface.ipv6}]"
+            (util.ipAddress deviceCfg.wireguard.isolated.ipv4)
+            "[${util.ipAddress deviceCfg.wireguard.isolated.ipv6}]"
           ];
 
           extraConfig = ''
@@ -113,9 +110,9 @@ in {
       };
     };
 
-    networking.intranet.subnets.l-private.services.music = {
+    networking.intranet.subnets.l-internal.services.music = {
       url = cfg.domain;
-      inherit (intranetCfg.external.bob) ipv4 ipv6;
+      inherit (deviceCfg.external.lan) ipv4 ipv6;
     };
   };
 }

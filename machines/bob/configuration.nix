@@ -1,10 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, util, ... }:
 
 let
   intranetCfg = config.networking.intranet;
-
-  privateSubnet = intranetCfg.subnets.l-private;
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+  deviceCfg = intranetCfg.devices.bob;
 in {
   imports = [
     ./hardware-configuration.nix
@@ -13,7 +11,7 @@ in {
     ./modules/network.nix
     ./modules/vpn.nix
     ./secrets-management.nix
-    ../intranet.nix
+    ../../intranet
     ../../modules/openssh.nix
     ../../modules/unbound-blocker.nix
     ../../modules/unbound.nix
@@ -86,7 +84,7 @@ in {
         node = {
           enable = true;
           openFirewall = false;
-          listenAddress = intranetCfg.subnets.l-private.gateway.interface.ipv4;
+          listenAddress = util.ipAddress deviceCfg.wireguard.isolated.ipv4;
           port = 9100;
         };
       };
@@ -104,24 +102,26 @@ in {
           interface = [
             "127.0.0.1"
             "::1"
-            intranetCfg.external.bob.ipv4
-            intranetCfg.external.bob.ipv6
+            (util.ipAddress deviceCfg.external.lan.ipv4)
+            (util.ipAddress deviceCfg.external.lan.ipv6)
           ];
           access-control = [
             "127.0.0.1/8 allow"
             "::1/128 allow"
-            "${maskSubnet privateSubnet.ipv4} allow"
-            "${maskSubnet privateSubnet.ipv6} allow"
+            "${util.ipSubnet deviceCfg.wireguard.isolated.subnet.ipv4} allow"
+            "${util.ipSubnet deviceCfg.wireguard.isolated.subnet.ipv6} allow"
           ];
         };
 
         localDomains = let
           lServices =
-            builtins.attrValues intranetCfg.subnets.l-private.services;
+            builtins.attrValues intranetCfg.subnets.l-internal.services;
 
-          urlsToIPs = builtins.map
-            ({ url, ipv4, ipv6 }: lib.nameValuePair url { inherit ipv4 ipv6; })
-            lServices;
+          urlsToIPs = builtins.map ({ url, ipv4, ipv6 }:
+            lib.nameValuePair url {
+              ipv4 = util.ipAddress ipv4;
+              ipv6 = util.ipAddress ipv6;
+            }) lServices;
         in builtins.listToAttrs urlsToIPs;
       };
     };

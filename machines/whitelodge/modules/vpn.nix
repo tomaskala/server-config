@@ -1,52 +1,119 @@
-{ config, lib, ... }:
+{ config, lib, util, ... }:
 
 let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
+  deviceCfg = intranetCfg.devices.whitelodge;
 
-  mkPeer = { name, interface, ... }: {
-    wireguardPeerConfig = {
-      PublicKey = interface.publicKey;
-      PresharedKeyFile = config.age.secrets."wg-${name}2whitelodge".path;
-      AllowedIPs = [ "${interface.ipv4}/32" "${interface.ipv6}/32" ];
+  mkPeer = { interface, presharedKeyFile }:
+    let inherit (interface) publicKey subnet ipv4 ipv6;
+    in {
+      wireguardPeerConfig = {
+        PublicKey = publicKey;
+
+        PresharedKeyFile = presharedKeyFile;
+
+        AllowedIPs =
+          [ (util.ipAddressMasked ipv4 32) (util.ipAddressMasked ipv6 128) ]
+          ++ lib.optionals (subnet != null) [
+            (util.ipSubnet subnet.ipv4)
+            (util.ipSubnet subnet.ipv6)
+          ];
+      };
     };
-  };
-in {
-  options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
 
-  config = lib.mkIf cfg.enable {
-    systemd.network = {
-      enable = true;
+  mkRoute = { ipv4, ipv6, ... }: [
+    {
+      routeConfig = {
+        Destination = util.ipSubnet ipv4;
+        Scope = "link";
+        Type = "unicast";
+      };
+    }
+    {
+      routeConfig = {
+        Destination = util.ipSubnet ipv6;
+        Scope = "link";
+        Type = "unicast";
+      };
+    }
+  ];
 
-      netdevs."90-${intranetCfg.subnets.vpn-internal.gateway.interface.name}" =
-        {
+  mkLocalDomains = let
+    mkLocalDomain = _:
+      { url, ipv4, ipv6 }:
+      lib.nameValuePair url {
+        ipv4 = util.ipAddress ipv4;
+        ipv6 = util.ipAddress ipv6;
+      };
+  in { services, ... }: lib.mapAttrs' mkLocalDomain services;
+
+  # TODO: Store the private key file path in the interface.
+  mkSubnet = interface: subnet: pkPath:
+    let
+      inherit (interface) name port ipv4 ipv6;
+
+      accessibleSubnets = let
+        deviceSubnets =
+          builtins.map ({ interface, ... }: interface.subnet) subnet.devices;
+      in builtins.filter (subnet: subnet != null) deviceSubnets;
+    in {
+      systemd.network = {
+        enable = true;
+
+        netdevs."90-${name}" = {
           netdevConfig = {
-            Name = intranetCfg.subnets.vpn-internal.gateway.interface.name;
+            Name = name;
             Kind = "wireguard";
           };
 
           wireguardConfig = {
-            PrivateKeyFile = config.age.secrets.wg-vpn-internal-pk.path;
-            ListenPort =
-              intranetCfg.subnets.vpn-internal.gateway.interface.port;
+            PrivateKeyFile = pkPath;
+            ListenPort = port;
           };
 
-          wireguardPeers = builtins.map mkPeer intranetCfg.devices;
+          wireguardPeers = builtins.map mkPeer subnet.devices;
         };
 
-      networks."90-${intranetCfg.subnets.vpn-internal.gateway.interface.name}" =
-        {
-          matchConfig.Name =
-            intranetCfg.subnets.vpn-internal.gateway.interface.name;
+        networks."90-${name}" = {
+          matchConfig.Name = name;
+
+          networkConfig.IPForward = true;
+
           address = [
-            "${intranetCfg.subnets.vpn-internal.gateway.interface.ipv4}/${
-              builtins.toString intranetCfg.subnets.vpn-internal.ipv4.mask
-            }"
-            "${intranetCfg.subnets.vpn-internal.gateway.interface.ipv6}/${
-              builtins.toString intranetCfg.subnets.vpn-internal.ipv6.mask
-            }"
+            (util.ipAddressMasked ipv4 subnet.ipv4.mask)
+            (util.ipAddressMasked ipv6 subnet.ipv6.mask)
           ];
+
+          routes = builtins.concatMap mkRoute accessibleSubnets;
         };
+      };
+
+      services.unbound.localDomains = lib.attrsets.mergeAttrsList
+        (builtins.map mkLocalDomains ([ subnet ] ++ accessibleSubnets));
     };
+in {
+  options.services.vpn = {
+    enable = lib.mkEnableOption "vpn";
+
+    enableInternal = lib.mkEnableOption "internal subnet";
+
+    enableIsolated = lib.mkEnableOption "isolated subnet";
+
+    enablePassthru = lib.mkEnableOption "passthru subnet";
   };
+
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    (lib.mkIf cfg.enableInternal
+      (mkSubnet deviceCfg.wireguard.internal intranetCfg.vpn.internal
+        config.age.secrets.wg-vpn-internal-pk.path))
+
+    (lib.mkIf cfg.enableIsolated
+      (mkSubnet deviceCfg.wireguard.isolated intranetCfg.vpn.isolated
+        config.age.secrets.wg-vpn-isolated-pk.path))
+
+    (lib.mkIf cfg.enablePassthru
+      (mkSubnet deviceCfg.wireguard.passthru intranetCfg.vpn.passthru
+        config.age.secrets.wg-vpn-passthru-pk.path))
+  ]);
 }

@@ -1,8 +1,8 @@
 { config, ... }:
 
 let
-  intranetCfg = config.networking.intranet;
-  lanInterface = intranetCfg.external.bob.name;
+  deviceCfg = config.networking.intranet.devices.bob;
+  lanInterface = deviceCfg.external.lan.name;
 in {
   systemd.network = {
     enable = true;

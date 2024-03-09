@@ -37,6 +37,13 @@
       group = "systemd-network";
     };
 
+    wg-vpn-passthru-pk = {
+      file = "/root/secrets/wg-pk/whitelodge-passthru.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
+
     wg-bob2whitelodge = {
       file = "/root/secrets/wg-psk/bob2whitelodge.age";
       mode = "0640";
@@ -60,6 +67,13 @@
 
     wg-blacklodge2whitelodge = {
       file = "/root/secrets/wg-psk/blacklodge2whitelodge.age";
+      mode = "0640";
+      owner = "root";
+      group = "systemd-network";
+    };
+
+    wg-audrey2whitelodge = {
+      file = "/root/secrets/wg-psk/audrey2whitelodge.age";
       mode = "0640";
       owner = "root";
       group = "systemd-network";

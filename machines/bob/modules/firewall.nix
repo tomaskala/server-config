@@ -1,14 +1,12 @@
-{ config, lib, ... }:
+{ config, lib, util, ... }:
 
 let
   cfg = config.services.firewall;
-  intranetCfg = config.networking.intranet;
+  deviceCfg = config.networking.intranet.devices.bob;
 
-  vpnInterface = intranetCfg.subnets.l-private.gateway.interface.name;
-  lanInterface = intranetCfg.external.bob.name;
-
-  privateSubnet = intranetCfg.subnets.l-private;
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
+  lanInterface = deviceCfg.external.lan.name;
+  vpnInterface = deviceCfg.wireguard.isolated.name;
+  privateSubnet = deviceCfg.wireguard.isolated.subnet;
 in {
   options.services.firewall = { enable = lib.mkEnableOption "firewall"; };
 
@@ -87,18 +85,18 @@ in {
 
               # Allow the specified TCP ports from the private subnet.
               iifname ${lanInterface} ip saddr ${
-                maskSubnet privateSubnet.ipv4
+                util.ipSubnet privateSubnet.ipv4
               } tcp dport @tcp_accepted_lan ct state new accept
               iifname ${lanInterface} ip6 saddr ${
-                maskSubnet privateSubnet.ipv6
+                util.ipSubnet privateSubnet.ipv6
               } tcp dport @tcp_accepted_lan ct state new accept
 
               # Allow the specified UDP ports from the private subnet.
               iifname ${lanInterface} ip saddr ${
-                maskSubnet privateSubnet.ipv4
+                util.ipSubnet privateSubnet.ipv4
               } udp dport @udp_accepted_lan ct state new accept
               iifname ${lanInterface} ip6 saddr ${
-                maskSubnet privateSubnet.ipv6
+                util.ipSubnet privateSubnet.ipv6
               } udp dport @udp_accepted_lan ct state new accept
 
               # Allow the specified TCP and UDP ports from the VPN.

@@ -1,14 +1,29 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, util, ... }:
 
 let
   cfg = config.services.firewall;
-  intranetCfg = config.networking.intranet;
+  deviceCfg = config.networking.intranet.devices.whitelodge;
 
-  wanInterface = intranetCfg.external.whitelodge.name;
+  wanInterface = deviceCfg.external.wan.name;
   vpnInterface = {
-    internal = intranetCfg.subnets.vpn-internal.gateway.interface.name;
-    isolated = intranetCfg.subnets.vpn-isolated.gateway.interface.name;
+    internal = deviceCfg.wireguard.internal.name;
+    isolated = deviceCfg.wireguard.isolated.name;
+    passthru = deviceCfg.wireguard.passthru.name;
   };
+
+  accessibleSubnets = let
+    devices = if config.services.vpn.enable then
+      (lib.optionals config.services.vpn.enableInternal
+        config.networking.intranet.vpn.internal.devices)
+      ++ (lib.optionals config.services.vpn.enableIsolated
+        config.networking.intranet.vpn.isolated.devices)
+      ++ (lib.optionals config.services.vpn.enablePassthru
+        config.networking.intranet.vpn.passthru.devices)
+    else
+      [ ];
+
+    deviceSubnets = builtins.map ({ interface, ... }: interface.subnet) devices;
+  in builtins.filter (subnet: subnet != null) deviceSubnets;
 in {
   options.services.firewall = { enable = lib.mkEnableOption "firewall"; };
 
@@ -58,18 +73,20 @@ in {
               }
             }
 
+            # TCP destination ports accepted from the passthru VPN only.
+            set tcp_accepted_vpn_passthru {
+              type inet_service
+              elements = {
+                53,
+              }
+            }
+
             # UDP destination ports accepted from WAN and the VPN.
             set udp_accepted_wan {
               type inet_service
               elements = {
-                ${
-                  builtins.toString
-                  intranetCfg.subnets.vpn-internal.gateway.interface.port
-                },
-                ${
-                  builtins.toString
-                  intranetCfg.subnets.vpn-isolated.gateway.interface.port
-                },
+                ${builtins.toString deviceCfg.wireguard.internal.port},
+                ${builtins.toString deviceCfg.wireguard.isolated.port},
               }
             }
 
@@ -89,18 +106,36 @@ in {
               }
             }
 
+            # UDP destination ports accepted from the passthru VPN only.
+            set udp_accepted_vpn_passthru {
+              type inet_service
+              elements = {
+                53,
+              }
+            }
+
             # VPN IPv4 subnets accessible by peers.
-            # Managed dynamically by the overlay-network service.
             set vpn_accessible_ipv4 {
               type ipv4_addr
               flags interval
+              elements = {
+                ${
+                  lib.concatMapStringsSep ","
+                  ({ ipv4, ... }: util.ipSubnet ipv4) accessibleSubnets
+                }
+              }
             }
 
             # VPN IPv6 subnets accessible by peers.
-            # Managed dynamically by the overlay-network service.
             set vpn_accessible_ipv6 {
               type ipv6_addr
               flags interval
+              elements = {
+                ${
+                  lib.concatMapStringsSep ","
+                  ({ ipv6, ... }: util.ipSubnet ipv6) accessibleSubnets
+                }
+              }
             }
 
             chain input {
@@ -147,6 +182,8 @@ in {
               iifname ${vpnInterface.internal} udp dport @udp_accepted_vpn_internal ct state new accept
               iifname ${vpnInterface.isolated} tcp dport @tcp_accepted_vpn_isolated ct state new accept
               iifname ${vpnInterface.isolated} udp dport @udp_accepted_vpn_isolated ct state new accept
+              iifname ${vpnInterface.passthru} tcp dport @tcp_accepted_vpn_passthru ct state new accept
+              iifname ${vpnInterface.passthru} udp dport @udp_accepted_vpn_passthru ct state new accept
               ${
                 builtins.concatStringsSep "\n" (lib.mapAttrsToList
                   (_: interface: ''
@@ -162,14 +199,18 @@ in {
               # Allow all established and related traffic.
               ct state established,related accept
 
-              # Allow internal VPN traffic to access the internet via WAN.
+              # Allow internal and passthru VPN traffic to access the internet via WAN.
               iifname ${vpnInterface.internal} oifname ${wanInterface} ct state new accept
+              iifname ${vpnInterface.passthru} oifname ${wanInterface} ct state new accept
 
               # Allow internal VPN peers to communicate with each other.
               iifname ${vpnInterface.internal} oifname ${vpnInterface.internal} ct state new accept
 
               # Allow isolated VPN peers to communicate with each other.
               iifname ${vpnInterface.isolated} oifname ${vpnInterface.isolated} ct state new accept
+
+              # Allow passthru VPN peers to communicate with each other.
+              iifname ${vpnInterface.passthru} oifname ${vpnInterface.passthru} ct state new accept
 
               # Allow internal and isolated VPN traffic to the accessible subnets.
               iifname ${vpnInterface.internal} ip daddr @vpn_accessible_ipv4 ct state new accept
@@ -196,6 +237,7 @@ in {
 
               # Masquerade VPN traffic to WAN.
               oifname ${wanInterface} iifname ${vpnInterface.internal} masquerade
+              oifname ${wanInterface} iifname ${vpnInterface.passthru} masquerade
             }
           '';
         };

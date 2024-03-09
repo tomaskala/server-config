@@ -1,8 +1,9 @@
-{ config, lib, ... }:
+{ config, lib, util, ... }:
 
 let
   cfg = config.services.vpn;
   intranetCfg = config.networking.intranet;
+  deviceCfg = intranetCfg.devices.bob;
 in {
   options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
 
@@ -10,9 +11,9 @@ in {
     systemd.network = {
       enable = true;
 
-      netdevs."90-${intranetCfg.subnets.l-private.gateway.interface.name}" = {
+      netdevs."90-${deviceCfg.wireguard.isolated.name}" = {
         netdevConfig = {
-          Name = intranetCfg.subnets.l-private.gateway.interface.name;
+          Name = deviceCfg.wireguard.isolated.name;
           Kind = "wireguard";
         };
 
@@ -20,36 +21,35 @@ in {
 
         wireguardPeers = [{
           wireguardPeerConfig = {
-            # whitelodge
             PublicKey =
-              intranetCfg.subnets.vpn-isolated.gateway.interface.publicKey;
+              intranetCfg.devices.whitelodge.wireguard.isolated.publicKey;
             PresharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
             AllowedIPs = [
-              "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv4}/32"
-              "${intranetCfg.subnets.vpn-isolated.gateway.interface.ipv6}/128"
+              (util.ipAddressMasked
+                intranetCfg.devices.whitelodge.wireguard.isolated.ipv4 32)
+              (util.ipAddressMasked
+                intranetCfg.devices.whitelodge.wireguard.isolated.ipv6 128)
             ];
-            Endpoint = "${intranetCfg.external.whitelodge.ipv4}:${
+            Endpoint = "${intranetCfg.devices.whitelodge.external.wan.ipv4}:${
                 builtins.toString
-                intranetCfg.subnets.vpn-isolated.gateway.interface.port
+                intranetCfg.devices.whitelodge.wireguard.isolated.port
               }";
             PersistentKeepalive = 25;
           };
         }];
       };
 
-      networks."90-${intranetCfg.subnets.l-private.gateway.interface.name}" = {
-        matchConfig.Name = intranetCfg.subnets.l-private.gateway.interface.name;
+      networks."90-${deviceCfg.wireguard.isolated.name}" = {
+        matchConfig.Name = deviceCfg.wireguard.isolated.name;
 
         # Enable IP forwarding (system-wide).
         networkConfig.IPForward = true;
 
         address = [
-          "${intranetCfg.subnets.l-private.gateway.interface.ipv4}/${
-            builtins.toString intranetCfg.subnets.vpn-isolated.ipv4.mask
-          }"
-          "${intranetCfg.subnets.l-private.gateway.interface.ipv6}/${
-            builtins.toString intranetCfg.subnets.vpn-isolated.ipv6.mask
-          }"
+          (util.ipAddressMasked deviceCfg.wireguard.isolated.ipv4
+            intranetCfg.vpn.isolated.ipv4.mask)
+          (util.ipAddressMasked deviceCfg.wireguard.isolated.ipv6
+            intranetCfg.vpn.isolated.ipv6.mask)
         ];
       };
     };

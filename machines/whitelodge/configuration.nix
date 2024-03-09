@@ -1,20 +1,18 @@
-{ config, pkgs, ... }:
+{ config, pkgs, util, ... }:
 
 let
   intranetCfg = config.networking.intranet;
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
   acmeEmail = "public+acme@tomaskala.com";
 in {
   imports = [
     ./modules/dav.nix
     ./modules/firewall.nix
     ./modules/monitoring-hub.nix
-    ./modules/overlay-network.nix
     ./modules/rss.nix
     ./modules/vpn.nix
     ./modules/website.nix
     ./secrets-management.nix
-    ../intranet.nix
+    ../../intranet
     ../../modules/openssh.nix
     ../../modules/unbound-blocker.nix
     ../../modules/unbound.nix
@@ -117,9 +115,14 @@ in {
       timesyncd.enable = true;
 
       firewall.enable = true;
-      overlay-network.enable = true;
       unbound-blocker.enable = true;
-      vpn.enable = true;
+
+      vpn = {
+        enable = true;
+        enableInternal = true;
+        enableIsolated = true;
+        enablePassthru = true;
+      };
 
       dav = {
         enable = true;
@@ -142,7 +145,9 @@ in {
             }
             {
               targets = [
-                "${intranetCfg.subnets.l-private.gateway.interface.ipv4}:9100"
+                "${
+                  util.ipAddress intranetCfg.devices.bob.wireguard.isolated.ipv4
+                }:9100"
               ];
               labels = { peer = "bob"; };
             }
@@ -164,11 +169,13 @@ in {
         enable = true;
         listenAddresses = [
           {
-            addr = intranetCfg.subnets.vpn-internal.gateway.interface.ipv4;
+            addr = util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
             port = 22;
           }
           {
-            addr = intranetCfg.subnets.vpn-internal.gateway.interface.ipv6;
+            addr = util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.internal.ipv6;
             port = 22;
           }
         ];
@@ -190,20 +197,34 @@ in {
             # Allow internal peers to use the resolver. This is to allow
             # resolving internal domain names as well as to use it for
             # domain filtering when accessing the public internet.
-            intranetCfg.subnets.vpn-internal.gateway.interface.ipv4
-            intranetCfg.subnets.vpn-internal.gateway.interface.ipv6
+            (util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.internal.ipv4)
+            (util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.internal.ipv6)
             # Allow isolated peers to use the resolver. This is to allow
             # resolving internal domain names.
-            intranetCfg.subnets.vpn-isolated.gateway.interface.ipv4
-            intranetCfg.subnets.vpn-isolated.gateway.interface.ipv6
+            (util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.isolated.ipv4)
+            (util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.isolated.ipv6)
+            # Allow passthru peers to use the resolver. This is to allow
+            # them to use a trusted resolver. Although it will resolve
+            # internal domain names, the passthru peers do not have access
+            # to those services.
+            (util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.passthru.ipv4)
+            (util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.passthru.ipv6)
           ];
           access-control = [
             "127.0.0.1/8 allow"
             "::1/128 allow"
-            "${maskSubnet intranetCfg.subnets.vpn-internal.ipv4} allow"
-            "${maskSubnet intranetCfg.subnets.vpn-internal.ipv6} allow"
-            "${maskSubnet intranetCfg.subnets.vpn-isolated.ipv4} allow"
-            "${maskSubnet intranetCfg.subnets.vpn-isolated.ipv6} allow"
+            "${util.ipSubnet intranetCfg.vpn.internal.ipv4} allow"
+            "${util.ipSubnet intranetCfg.vpn.internal.ipv6} allow"
+            "${util.ipSubnet intranetCfg.vpn.isolated.ipv4} allow"
+            "${util.ipSubnet intranetCfg.vpn.isolated.ipv6} allow"
+            "${util.ipSubnet intranetCfg.vpn.passthru.ipv4} allow"
+            "${util.ipSubnet intranetCfg.vpn.passthru.ipv6} allow"
           ];
         };
       };

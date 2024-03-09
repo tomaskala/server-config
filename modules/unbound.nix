@@ -20,6 +20,7 @@ in {
         };
       });
       description = "Locally-resolvable domains and their addresses";
+      default = { };
     };
   };
 

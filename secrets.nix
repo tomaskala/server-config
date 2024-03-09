@@ -15,6 +15,7 @@ in {
   # WireGuard private keys
   "secrets/wg-pk/whitelodge-internal.age".publicKeys = [ whitelodge ];
   "secrets/wg-pk/whitelodge-isolated.age".publicKeys = [ whitelodge ];
+  "secrets/wg-pk/whitelodge-passthru.age".publicKeys = [ whitelodge ];
   "secrets/wg-pk/bob.age".publicKeys = [ bob ];
 
   # WireGuard preshared keys
@@ -22,6 +23,7 @@ in {
   "secrets/wg-psk/cooper2whitelodge.age".publicKeys = [ whitelodge ];
   "secrets/wg-psk/tomas-phone2whitelodge.age".publicKeys = [ whitelodge ];
   "secrets/wg-psk/blacklodge2whitelodge.age".publicKeys = [ whitelodge ];
+  "secrets/wg-psk/audrey2whitelodge.age".publicKeys = [ whitelodge ];
 
   # Other
 

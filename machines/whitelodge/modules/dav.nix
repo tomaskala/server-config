@@ -1,15 +1,12 @@
-{ config, lib, ... }:
+{ config, lib, util, ... }:
 
 let
   cfg = config.services.dav;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.subnets.vpn-internal.gateway;
-
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-
-  allowedIPs = builtins.map maskSubnet [
-    intranetCfg.subnets.vpn-internal.ipv4
-    intranetCfg.subnets.vpn-internal.ipv6
+  deviceCfg = intranetCfg.devices.whitelodge;
+  allowedIPs = builtins.map util.ipSubnet [
+    intranetCfg.vpn.internal.ipv4
+    intranetCfg.vpn.internal.ipv6
   ];
 in {
   options.services.dav = {
@@ -68,8 +65,10 @@ in {
       enable = true;
 
       virtualHosts.${cfg.domain} = {
-        listenAddresses =
-          [ gatewayCfg.interface.ipv4 "[${gatewayCfg.interface.ipv6}]" ];
+        listenAddresses = [
+          (util.ipAddress deviceCfg.wireguard.internal.ipv4)
+          "[${util.ipAddress deviceCfg.wireguard.internal.ipv6}]"
+        ];
 
         useACMEHost = cfg.domain;
 
@@ -94,9 +93,9 @@ in {
       };
     };
 
-    networking.intranet.subnets.vpn-internal.services.dav = {
+    networking.intranet.vpn.internal.services.dav = {
       url = cfg.domain;
-      inherit (gatewayCfg.interface) ipv4 ipv6;
+      inherit (deviceCfg.wireguard.internal) ipv4 ipv6;
     };
   };
 }

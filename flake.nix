@@ -50,28 +50,36 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (forOneSystem f);
     in {
       nixosConfigurations = {
-        whitelodge = let system = "x86_64-linux";
-        in nixpkgs.lib.nixosSystem {
-          inherit system;
+        whitelodge = let
+          system = "x86_64-linux";
           pkgs = forOneSystem (pkgs: pkgs) system;
+          util =
+            forOneSystem (pkgs: import ./util { inherit (pkgs) lib; }) system;
+        in nixpkgs.lib.nixosSystem {
+          inherit system pkgs;
           modules = [
             ./machines/whitelodge/configuration.nix
             commonConfig
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
           ];
+          specialArgs = { inherit util; };
         };
 
-        bob = let system = "aarch64-linux";
-        in nixpkgs.lib.nixosSystem {
-          inherit system;
+        bob = let
+          system = "aarch64-linux";
           pkgs = forOneSystem (pkgs: pkgs) system;
+          util =
+            forOneSystem (pkgs: import ./util { inherit (pkgs) lib; }) system;
+        in nixpkgs.lib.nixosSystem {
+          inherit system pkgs;
           modules = [
             ./machines/bob/configuration.nix
             commonConfig
             nixos-hardware.nixosModules.raspberry-pi-4
             agenix.nixosModules.default
           ];
+          specialArgs = { inherit util; };
         };
       };
 

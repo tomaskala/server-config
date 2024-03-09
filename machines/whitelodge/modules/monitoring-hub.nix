@@ -1,18 +1,14 @@
-{ config, lib, options, ... }:
+{ config, lib, options, util, ... }:
 
 let
   cfg = config.services.monitoring-hub;
   intranetCfg = config.networking.intranet;
-  gatewayCfg = intranetCfg.subnets.vpn-internal.gateway;
-
-  dbName = "grafana";
-
-  maskSubnet = { subnet, mask }: "${subnet}/${builtins.toString mask}";
-
-  allowedIPs = builtins.map maskSubnet [
-    intranetCfg.subnets.vpn-internal.ipv4
-    intranetCfg.subnets.vpn-internal.ipv6
+  deviceCfg = intranetCfg.devices.whitelodge;
+  allowedIPs = builtins.map util.ipSubnet [
+    intranetCfg.vpn.internal.ipv4
+    intranetCfg.vpn.internal.ipv6
   ];
+  dbName = "grafana";
 in {
   options.services.monitoring-hub = {
     enable = lib.mkEnableOption "monitoring-hub";
@@ -145,8 +141,10 @@ in {
         enable = true;
 
         virtualHosts.${cfg.domain} = {
-          listenAddresses =
-            [ gatewayCfg.interface.ipv4 "[${gatewayCfg.interface.ipv6}]" ];
+          listenAddresses = [
+            (util.ipAddress deviceCfg.wireguard.internal.ipv4)
+            "[${util.ipAddress deviceCfg.wireguard.internal.ipv6}]"
+          ];
 
           useACMEHost = cfg.domain;
 
@@ -175,9 +173,9 @@ in {
       };
     };
 
-    networking.intranet.subnets.vpn-internal.services.monitoring-hub = {
+    networking.intranet.vpn.internal.services.monitoring-hub = {
       url = cfg.domain;
-      inherit (gatewayCfg.interface) ipv4 ipv6;
+      inherit (deviceCfg.wireguard.internal) ipv4 ipv6;
     };
   };
 }
