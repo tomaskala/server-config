@@ -1,17 +1,19 @@
+{ secrets, ... }:
+
 {
   config.age.secrets = {
-    users-tomas-password.file = "/root/secrets/users/tomas-bob.age";
-    users-root-password.file = "/root/secrets/users/root-bob.age";
+    users-tomas-password.file = "${secrets}/secrets/users/tomas-bob.age";
+    users-root-password.file = "${secrets}/secrets/users/root-bob.age";
 
     wg-pk = {
-      file = "/root/secrets/wg-pk/bob.age";
+      file = "${secrets}/secrets/wg-pk/bob.age";
       mode = "0640";
       owner = "root";
       group = "systemd-network";
     };
 
     wg-bob2whitelodge = {
-      file = "/root/secrets/wg-psk/bob2whitelodge.age";
+      file = "${secrets}/secrets/wg-psk/bob2whitelodge.age";
       mode = "0640";
       owner = "root";
       group = "systemd-network";

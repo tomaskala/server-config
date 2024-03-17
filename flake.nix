@@ -12,14 +12,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    secrets = {
+      url = "git+ssh://git@github.com/tomaskala/infra-secrets";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     unbound-blocker = {
       url = "github:tomaskala/unbound-blocker";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs =
-    { nixpkgs, nixos-hardware, vps-admin-os, agenix, unbound-blocker, ... }:
+  outputs = { nixpkgs, nixos-hardware, vps-admin-os, agenix, secrets
+    , unbound-blocker, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -63,7 +68,7 @@
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
           ];
-          specialArgs = { inherit util; };
+          specialArgs = { inherit secrets util; };
         };
 
         bob = let
@@ -79,19 +84,13 @@
             nixos-hardware.nixosModules.raspberry-pi-4
             agenix.nixosModules.default
           ];
-          specialArgs = { inherit util; };
+          specialArgs = { inherit secrets util; };
         };
       };
 
       devShells = forAllSystems (pkgs: {
-        default = pkgs.mkShell {
-          packages = with pkgs; [
-            deadnix
-            nixfmt
-            statix
-            agenix.packages.${system}.agenix
-          ];
-        };
+        default =
+          pkgs.mkShell { packages = with pkgs; [ deadnix nixfmt statix ]; };
 
         tf = pkgs.mkShell { packages = [ pkgs.opentofu ]; };
       });
