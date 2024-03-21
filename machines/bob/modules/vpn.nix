@@ -17,7 +17,11 @@ in {
           Kind = "wireguard";
         };
 
-        wireguardConfig = { PrivateKeyFile = config.age.secrets.wg-pk.path; };
+        wireguardConfig = {
+          PrivateKeyFile =
+            assert deviceCfg.wireguard.isolated.privateKeyFile != null;
+            deviceCfg.wireguard.isolated.privateKeyFile;
+        };
 
         wireguardPeers = [{
           wireguardPeerConfig = {

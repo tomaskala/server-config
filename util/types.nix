@@ -143,6 +143,12 @@ let
         readOnly = true;
       };
 
+      privateKeyFile = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        description = "Path to the private key file, if Nix-managed";
+        readOnly = true;
+      };
+
       publicKey = lib.mkOption {
         type = lib.types.str;
         description = "Public key of this interface";

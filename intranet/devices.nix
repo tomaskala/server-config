@@ -14,6 +14,7 @@
       wireguard = {
         internal = {
           name = "wg-internal";
+          privateKeyFile = config.age.secrets.wg-vpn-internal-pk.path;
           publicKey = "a+x1ikWhkKubrcwipwj5UqKL3vE0NcqnjdNNcFXPXho=";
           port = 1194;
           subnet = null;
@@ -33,6 +34,7 @@
 
         isolated = {
           name = "wg-isolated";
+          privateKeyFile = config.age.secrets.wg-vpn-isolated-pk.path;
           publicKey = "hDzNhJHJ6SJ81XasrZxPus5KDNCXwMb2IEq832GylxM=";
           port = 51820;
           subnet = null;
@@ -52,6 +54,7 @@
 
         passthru = {
           name = "wg-passthru";
+          privateKeyFile = config.age.secrets.wg-vpn-passthru-pk.path;
           publicKey = "LT/LtBrD6n+i0Tyvleg1Eh8mWdskRUF5LXn0ynmwSg0=";
           port = 51821;
           subnet = null;
@@ -83,6 +86,7 @@
       wireguard = {
         isolated = {
           name = "wg0";
+          privateKeyFile = config.age.secrets.wg-pk.path;
           publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
           port = null;
           subnet = config.networking.intranet.subnets.l-internal;
@@ -124,6 +128,7 @@
       wireguard = {
         internal = {
           name = "wg0";
+          privateKeyFile = null;
           publicKey = "0F/gm1t4hV19N/U/GyB2laclS3CPfGDR2aA3f53EGXk=";
           port = null;
           subnet = null;
@@ -147,6 +152,7 @@
       wireguard = {
         internal = {
           name = "wg0";
+          privateKeyFile = null;
           publicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
           port = null;
           subnet = null;
@@ -170,6 +176,7 @@
       wireguard = {
         internal = {
           name = "wg0";
+          privateKeyFile = null;
           publicKey = "OTH9T7YWk2sfBGGu6H4VAq/TdaFQkk2fL3fSoR1xnGo=";
           port = null;
           subnet = null;
@@ -193,6 +200,7 @@
       wireguard = {
         passthru = {
           name = "wg0";
+          privateKeyFile = null;
           publicKey = "rmSz9L2CUhHqDbN+v9XOWU+UK1CwDMMwZIcDBBD931U=";
           port = null;
           subnet = null;

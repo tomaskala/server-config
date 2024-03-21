@@ -48,10 +48,9 @@ let
       };
   in { services, ... }: lib.mapAttrs' mkLocalDomain services;
 
-  # TODO: Store the private key file path in the interface.
-  mkSubnet = interface: subnet: pkPath:
+  mkSubnet = interface: subnet:
     let
-      inherit (interface) name port ipv4 ipv6;
+      inherit (interface) name privateKeyFile port ipv4 ipv6;
 
       accessibleSubnets = let
         deviceSubnets =
@@ -68,7 +67,7 @@ let
           };
 
           wireguardConfig = {
-            PrivateKeyFile = pkPath;
+            PrivateKeyFile = assert privateKeyFile != null; privateKeyFile;
             ListenPort = port;
           };
 
@@ -105,15 +104,12 @@ in {
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     (lib.mkIf cfg.enableInternal
-      (mkSubnet deviceCfg.wireguard.internal intranetCfg.vpn.internal
-        config.age.secrets.wg-vpn-internal-pk.path))
+      (mkSubnet deviceCfg.wireguard.internal intranetCfg.vpn.internal))
 
     (lib.mkIf cfg.enableIsolated
-      (mkSubnet deviceCfg.wireguard.isolated intranetCfg.vpn.isolated
-        config.age.secrets.wg-vpn-isolated-pk.path))
+      (mkSubnet deviceCfg.wireguard.isolated intranetCfg.vpn.isolated))
 
     (lib.mkIf cfg.enablePassthru
-      (mkSubnet deviceCfg.wireguard.passthru intranetCfg.vpn.passthru
-        config.age.secrets.wg-vpn-passthru-pk.path))
+      (mkSubnet deviceCfg.wireguard.passthru intranetCfg.vpn.passthru))
   ]);
 }
