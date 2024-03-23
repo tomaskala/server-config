@@ -87,6 +87,7 @@ in {
               elements = {
                 ${builtins.toString deviceCfg.wireguard.internal.port},
                 ${builtins.toString deviceCfg.wireguard.isolated.port},
+                ${builtins.toString deviceCfg.wireguard.passthru.port},
               }
             }
 
