@@ -28,17 +28,17 @@
   config.networking.intranet.ranges = {
     vpn-internal = {
       location = 100;
-      subnet = 100;
+      subnet = 10;
     };
 
     vpn-isolated = {
       location = 100;
-      subnet = 104;
+      subnet = 20;
     };
 
     vpn-passthru = {
       location = 100;
-      subnet = 108;
+      subnet = 30;
     };
 
     l-internal = {
