@@ -203,7 +203,7 @@
           privateKeyFile = null;
           publicKey = "rmSz9L2CUhHqDbN+v9XOWU+UK1CwDMMwZIcDBBD931U=";
           port = null;
-          subnet = null;
+          subnet = config.networking.intranet.subnets.t-internal;
 
           ipv4 = {
             inherit (config.networking.intranet.ranges.vpn-passthru)

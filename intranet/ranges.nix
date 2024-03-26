@@ -50,5 +50,10 @@
       location = 1;
       subnet = 10;
     };
+
+    t-internal = {
+      location = 10;
+      subnet = 10;
+    };
   };
 }

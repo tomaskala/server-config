@@ -48,5 +48,17 @@
         mask = 64;
       };
     };
+
+    t-internal = {
+      ipv4 = {
+        inherit (config.networking.intranet.ranges.t-internal) location subnet;
+        mask = 24;
+      };
+
+      ipv6 = {
+        inherit (config.networking.intranet.ranges.t-internal) location subnet;
+        mask = 64;
+      };
+    };
   };
 }
