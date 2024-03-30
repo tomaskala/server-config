@@ -5,6 +5,7 @@ let
   acmeEmail = "public+acme@tomaskala.com";
 in {
   imports = [
+    ./home.nix
     ./modules/dav.nix
     ./modules/firewall.nix
     ./modules/monitoring-hub.nix

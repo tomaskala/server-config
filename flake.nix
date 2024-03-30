@@ -7,6 +7,11 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
 
+    home-manager = {
+      url = "github:nix-community/home-manager/release-23.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -23,8 +28,8 @@
     };
   };
 
-  outputs = { nixpkgs, nixos-hardware, vps-admin-os, agenix, secrets
-    , unbound-blocker, ... }:
+  outputs = { nixpkgs, nixos-hardware, vps-admin-os, home-manager, agenix
+    , secrets, unbound-blocker, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -65,6 +70,7 @@
           modules = [
             ./machines/whitelodge/configuration.nix
             commonConfig
+            home-manager.nixosModules.home-manager
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
           ];
