@@ -20,6 +20,11 @@ jobs:
         with:
           github_access_token: '${{ secrets.GITHUB_TOKEN }}'
 
+      - name: 'Give GitHub Actions access to infra-secrets'
+        uses: 'webfactory/ssh-agent@v0.9.0'
+        with:
+          ssh-private-key: '${{ secrets.INFRA_SECRETS_DEPLOY_KEY }}'
+
       - name: 'Update flake.lock'
         run: 'nix flake update'
 
