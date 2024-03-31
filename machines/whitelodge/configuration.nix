@@ -193,7 +193,7 @@ in {
       };
 
       monitoring-hub = {
-        enable = true;
+        enable = false;
         grafanaPort = 3000;
         prometheusPort = 9090;
         inherit acmeEmail;
