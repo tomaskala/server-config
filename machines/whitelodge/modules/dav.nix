@@ -1,4 +1,4 @@
-{ config, lib, util, ... }:
+{ config, lib, secrets, util, ... }:
 
 let
   cfg = config.services.dav;
@@ -33,6 +33,18 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets = {
+      cloudflare-dns-challenge-api-tokens.file =
+        "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
+
+      radicale-htpasswd = {
+        file = "${secrets}/secrets/other/radicale-htpasswd.age";
+        mode = "0640";
+        owner = "root";
+        group = "radicale";
+      };
+    };
+
     services.radicale = {
       enable = true;
       settings = {

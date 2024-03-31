@@ -1,4 +1,4 @@
-{ config, lib, options, util, ... }:
+{ config, lib, options, secrets, util, ... }:
 
 let
   cfg = config.services.monitoring-hub;
@@ -45,6 +45,20 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets = {
+      cloudflare-dns-challenge-api-tokens.file =
+        "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
+      postgresql-grafana-password.file =
+        "${secrets}/secrets/other/postgresql-grafana.age";
+
+      grafana-admin-password = {
+        file = "${secrets}/secrets/other/grafana-admin.age";
+        mode = "0640";
+        owner = "root";
+        group = "grafana";
+      };
+    };
+
     security.acme = {
       acceptTerms = true;
 

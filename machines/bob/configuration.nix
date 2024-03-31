@@ -1,4 +1,4 @@
-{ config, lib, pkgs, util, ... }:
+{ config, lib, pkgs, secrets, util, ... }:
 
 let
   intranetCfg = config.networking.intranet;
@@ -10,7 +10,6 @@ in {
     ./modules/music.nix
     ./modules/network.nix
     ./modules/vpn.nix
-    ./secrets-management.nix
     ../../intranet
     ../../modules/openssh.nix
     ../../modules/unbound-blocker.nix
@@ -32,6 +31,25 @@ in {
       settings = {
         auto-optimise-store = true;
         experimental-features = [ "nix-command" "flakes" ];
+      };
+    };
+
+    age.secrets = {
+      users-tomas-password.file = "${secrets}/secrets/users/tomas-bob.age";
+      users-root-password.file = "${secrets}/secrets/users/root-bob.age";
+
+      wg-bob-isolated-pk = {
+        file = "${secrets}/secrets/wg-pk/bob.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-bob2whitelodge = {
+        file = "${secrets}/secrets/wg-psk/bob2whitelodge.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
       };
     };
 

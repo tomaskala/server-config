@@ -1,4 +1,4 @@
-{ config, lib, util, ... }:
+{ config, lib, secrets, util, ... }:
 
 let
   cfg = config.services.rss;
@@ -33,6 +33,13 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    age.secrets = {
+      cloudflare-dns-challenge-api-tokens.file =
+        "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
+      miniflux-admin-credentials.file =
+        "${secrets}/secrets/other/miniflux-whitelodge.age";
+    };
+
     services.miniflux = {
       enable = true;
       adminCredentialsFile = config.age.secrets.miniflux-admin-credentials.path;

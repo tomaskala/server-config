@@ -1,4 +1,4 @@
-{ config, pkgs, util, ... }:
+{ config, pkgs, secrets, util, ... }:
 
 let
   intranetCfg = config.networking.intranet;
@@ -12,7 +12,6 @@ in {
     ./modules/rss.nix
     ./modules/vpn.nix
     ./modules/website.nix
-    ./secrets-management.nix
     ../../intranet
     ../../modules/openssh.nix
     ../../modules/unbound-blocker.nix
@@ -50,6 +49,68 @@ in {
       # nixos-upgrade service because it attempted to read non-existent
       # files under /run/booted-system.
       allowReboot = false;
+    };
+
+    age.secrets = {
+      users-tomas-password.file =
+        "${secrets}/secrets/users/tomas-whitelodge.age";
+      users-root-password.file = "${secrets}/secrets/users/root-whitelodge.age";
+
+      wg-whitelodge-internal-pk = {
+        file = "${secrets}/secrets/wg-pk/whitelodge-internal.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-whitelodge-isolated-pk = {
+        file = "${secrets}/secrets/wg-pk/whitelodge-isolated.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-whitelodge-passthru-pk = {
+        file = "${secrets}/secrets/wg-pk/whitelodge-passthru.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-bob2whitelodge = {
+        file = "${secrets}/secrets/wg-psk/bob2whitelodge.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-cooper2whitelodge = {
+        file = "${secrets}/secrets/wg-psk/cooper2whitelodge.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-tomas-phone2whitelodge = {
+        file = "${secrets}/secrets/wg-psk/tomas-phone2whitelodge.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-blacklodge2whitelodge = {
+        file = "${secrets}/secrets/wg-psk/blacklodge2whitelodge.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
+
+      wg-audrey2whitelodge = {
+        file = "${secrets}/secrets/wg-psk/audrey2whitelodge.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
     };
 
     users = {
