@@ -2,66 +2,67 @@
 <opml version="2.0">
     <head>
         <title>Miniflux</title>
-        <dateCreated>Wed, 25 Oct 2023 17:13:35 UTC</dateCreated>
+        <dateCreated>Tue, 02 Apr 2024 13:54:29 UTC</dateCreated>
     </head>
     <body>
         <outline text="Dev">
-            <outline title="Andreas Kling" text="Andreas Kling" xmlUrl="https://awesomekling.github.io/feed.xml" htmlUrl="https://awesomekling.github.io/"></outline>
-            <outline title="beepb00p" text="beepb00p" xmlUrl="https://beepb00p.xyz/atom.xml" htmlUrl="https://beepb00p.xyz"></outline>
-            <outline title="Eli Bendersky&#39;s website" text="Eli Bendersky&#39;s website" xmlUrl="https://eli.thegreenplace.net/feeds/all.atom.xml" htmlUrl="https://eli.thegreenplace.net/"></outline>
-            <outline title="Insanity Industries" text="Insanity Industries" xmlUrl="https://insanity.industries/atom.xml" htmlUrl="https://insanity.industries/atom.xml"></outline>
-            <outline title="journal.stuffwithstuff.com" text="journal.stuffwithstuff.com" xmlUrl="https://journal.stuffwithstuff.com/rss.xml" htmlUrl="http://journal.stuffwithstuff.com/"></outline>
-            <outline title="Notes on software development" text="Notes on software development" xmlUrl="https://notes.eatonphil.com/rss.xml" htmlUrl="http://notes.eatonphil.com/"></outline>
-            <outline title="null program" text="null program" xmlUrl="https://nullprogram.com/feed/" htmlUrl="https://nullprogram.com"></outline>
-            <outline title="Phoboslab" text="Phoboslab" xmlUrl="https://phoboslab.org/log/feed" htmlUrl="https://phoboslab.org/log"></outline>
-            <outline title="Project Nayuki" text="Project Nayuki" xmlUrl="https://www.nayuki.io/rss20.xml" htmlUrl="https://www.nayuki.io/"></outline>
-            <outline title="Ratfactor Feed" text="Ratfactor Feed" xmlUrl="https://ratfactor.com/atom.xml" htmlUrl="http://ratfactor.com/"></outline>
+            <outline title="Andreas Kling" text="Andreas Kling" xmlUrl="https://awesomekling.github.io/feed.xml" htmlUrl="https://awesomekling.github.io/" type="rss"></outline>
+            <outline title="beepb00p" text="beepb00p" xmlUrl="https://beepb00p.xyz/atom.xml" htmlUrl="https://beepb00p.xyz" type="rss"></outline>
+            <outline title="Eli Bendersky&#39;s website" text="Eli Bendersky&#39;s website" xmlUrl="https://eli.thegreenplace.net/feeds/all.atom.xml" htmlUrl="https://eli.thegreenplace.net/" type="rss"></outline>
+            <outline title="Insanity Industries" text="Insanity Industries" xmlUrl="https://insanity.industries/atom.xml" htmlUrl="https://insanity.industries/atom.xml" type="rss"></outline>
+            <outline title="journal.stuffwithstuff.com" text="journal.stuffwithstuff.com" xmlUrl="https://journal.stuffwithstuff.com/rss.xml" htmlUrl="http://journal.stuffwithstuff.com/" type="rss"></outline>
+            <outline title="Notes on software development" text="Notes on software development" xmlUrl="https://notes.eatonphil.com/rss.xml" htmlUrl="http://notes.eatonphil.com/" type="rss"></outline>
+            <outline title="null program" text="null program" xmlUrl="https://nullprogram.com/feed/" htmlUrl="https://nullprogram.com" type="rss"></outline>
+            <outline title="Phoboslab" text="Phoboslab" xmlUrl="https://phoboslab.org/log/feed" htmlUrl="https://phoboslab.org/log" type="rss"></outline>
+            <outline title="Project Nayuki" text="Project Nayuki" xmlUrl="https://www.nayuki.io/rss20.xml" htmlUrl="https://www.nayuki.io/" type="rss"></outline>
+            <outline title="Ratfactor Feed" text="Ratfactor Feed" xmlUrl="https://ratfactor.com/atom.xml" htmlUrl="http://ratfactor.com/" type="rss"></outline>
         </outline>
         <outline text="Golang">
-            <outline title="Dave Cheney" text="Dave Cheney" xmlUrl="https://dave.cheney.net/feed/atom" htmlUrl="https://dave.cheney.net"></outline>
-            <outline title="research!rsc" text="research!rsc" xmlUrl="https://research.swtch.com/feed.atom" htmlUrl="https://research.swtch.com/feed.atom"></outline>
-            <outline title="The Go Blog" text="The Go Blog" xmlUrl="https://go.dev/blog/feed.atom" htmlUrl="https://go.dev/blog/feed.atom"></outline>
+            <outline title="Dave Cheney" text="Dave Cheney" xmlUrl="https://dave.cheney.net/feed/atom" htmlUrl="https://dave.cheney.net" type="rss"></outline>
+            <outline title="research!rsc" text="research!rsc" xmlUrl="https://research.swtch.com/feed.atom" htmlUrl="https://research.swtch.com/feed.atom" type="rss"></outline>
+            <outline title="The Go Blog" text="The Go Blog" xmlUrl="https://go.dev/blog/feed.atom" htmlUrl="https://go.dev/blog/feed.atom" type="rss"></outline>
         </outline>
         <outline text="Misc">
-            <outline title="A Collection of Unmitigated Pedantry" text="A Collection of Unmitigated Pedantry" xmlUrl="https://acoup.blog/feed/" htmlUrl="https://acoup.blog"></outline>
-            <outline title="Luke&#39;s Webpage" text="Luke&#39;s Webpage" xmlUrl="https://lukesmith.xyz/rss.xml" htmlUrl="https://lukesmith.xyz/"></outline>
+            <outline title="A Collection of Unmitigated Pedantry" text="A Collection of Unmitigated Pedantry" xmlUrl="https://acoup.blog/feed/" htmlUrl="https://acoup.blog" type="rss"></outline>
+            <outline title="Luke&#39;s Webpage" text="Luke&#39;s Webpage" xmlUrl="https://lukesmith.xyz/rss.xml" htmlUrl="https://lukesmith.xyz/" type="rss"></outline>
         </outline>
         <outline text="Security">
-            <outline title="Educated Guesswork" text="Educated Guesswork" xmlUrl="https://educatedguesswork.org/feed/feed.xml" htmlUrl="https://educatedguesswork.org"></outline>
-            <outline title="Filippo Valsorda" text="Filippo Valsorda" xmlUrl="https://words.filippo.io/rss/" htmlUrl="https://words.filippo.io/"></outline>
+            <outline title="A Few Thoughts on Cryptographic Engineering" text="A Few Thoughts on Cryptographic Engineering" xmlUrl="https://blog.cryptographyengineering.com/feed/" htmlUrl="https://blog.cryptographyengineering.com" type="rss"></outline>
+            <outline title="Educated Guesswork" text="Educated Guesswork" xmlUrl="https://educatedguesswork.org/feed/feed.xml" htmlUrl="https://educatedguesswork.org" type="rss"></outline>
+            <outline title="Filippo Valsorda" text="Filippo Valsorda" xmlUrl="https://words.filippo.io/rss/" htmlUrl="https://words.filippo.io/" type="rss"></outline>
         </outline>
         <outline text="Tech">
-            <outline title="Fabien Sanglard" text="Fabien Sanglard" xmlUrl="https://fabiensanglard.net/rss.xml" htmlUrl="https://fabiensanglard.net"></outline>
-            <outline title="Michael Stapelbergs Website" text="Michael Stapelbergs Website" xmlUrl="https://michael.stapelberg.ch/feed.xml" htmlUrl="https://michael.stapelberg.ch/"></outline>
-            <outline title="sdomi&#39;s weblog" text="sdomi&#39;s weblog" xmlUrl="https://sdomi.pl/weblog/atom/" htmlUrl="https://sdomi.pl/weblog/atom/"></outline>
-            <outline title="Susam Pal" text="Susam Pal" xmlUrl="https://susam.net/blog/feed.xml" htmlUrl="https://susam.net/blog/feed.xml"></outline>
+            <outline title="Fabien Sanglard" text="Fabien Sanglard" xmlUrl="https://fabiensanglard.net/rss.xml" htmlUrl="https://fabiensanglard.net" type="rss"></outline>
+            <outline title="Michael Stapelbergs Website" text="Michael Stapelbergs Website" xmlUrl="https://michael.stapelberg.ch/feed.xml" htmlUrl="https://michael.stapelberg.ch/" type="rss"></outline>
+            <outline title="sdomi&#39;s weblog" text="sdomi&#39;s weblog" xmlUrl="https://sdomi.pl/weblog/atom/" htmlUrl="https://sdomi.pl/weblog/atom/" type="rss"></outline>
+            <outline title="Susam Pal" text="Susam Pal" xmlUrl="https://susam.net/blog/feed.xml" htmlUrl="https://susam.net/blog/feed.xml" type="rss"></outline>
         </outline>
         <outline text="YouTube Gaming">
-            <outline title="Retro Nation" text="Retro Nation" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCj06o0LOFU-lFLwGaEOSM7g" htmlUrl="https://www.youtube.com/channel/UCj06o0LOFU-lFLwGaEOSM7g"></outline>
+            <outline title="Retro Nation" text="Retro Nation" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCj06o0LOFU-lFLwGaEOSM7g" htmlUrl="https://www.youtube.com/channel/UCj06o0LOFU-lFLwGaEOSM7g" type="rss"></outline>
         </outline>
         <outline text="YouTube Misc">
-            <outline title="Luke Smith" text="Luke Smith" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA" htmlUrl="https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA"></outline>
-            <outline title="Modern History TV" text="Modern History TV" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCMjlDOf0UO9wSijFqPE9wBw" htmlUrl="https://www.youtube.com/channel/UCMjlDOf0UO9wSijFqPE9wBw"></outline>
-            <outline title="Primitive Technology" text="Primitive Technology" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCAL3JXZSzSm8AlZyD3nQdBA" htmlUrl="https://www.youtube.com/channel/UCAL3JXZSzSm8AlZyD3nQdBA"></outline>
-            <outline title="RailCowGirl" text="RailCowGirl" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCj-Xm8j6WBgKY8OG7s9r2vQ" htmlUrl="https://www.youtube.com/channel/UCj-Xm8j6WBgKY8OG7s9r2vQ"></outline>
-            <outline title="shiey" text="shiey" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCpXwMqnXfJzazKS5fJ8nrVw" htmlUrl="https://www.youtube.com/channel/UCpXwMqnXfJzazKS5fJ8nrVw"></outline>
-            <outline title="You Suck At Cooking" text="You Suck At Cooking" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCekQr9znsk2vWxBo3YiLq2w" htmlUrl="https://www.youtube.com/channel/UCekQr9znsk2vWxBo3YiLq2w"></outline>
+            <outline title="Luke Smith" text="Luke Smith" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA" htmlUrl="https://www.youtube.com/channel/UC2eYFnH61tmytImy1mTYvhA" type="rss"></outline>
+            <outline title="Modern History TV" text="Modern History TV" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCMjlDOf0UO9wSijFqPE9wBw" htmlUrl="https://www.youtube.com/channel/UCMjlDOf0UO9wSijFqPE9wBw" type="rss"></outline>
+            <outline title="Primitive Technology" text="Primitive Technology" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCAL3JXZSzSm8AlZyD3nQdBA" htmlUrl="https://www.youtube.com/channel/UCAL3JXZSzSm8AlZyD3nQdBA" type="rss"></outline>
+            <outline title="RailCowGirl" text="RailCowGirl" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCj-Xm8j6WBgKY8OG7s9r2vQ" htmlUrl="https://www.youtube.com/channel/UCj-Xm8j6WBgKY8OG7s9r2vQ" type="rss"></outline>
+            <outline title="shiey" text="shiey" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCpXwMqnXfJzazKS5fJ8nrVw" htmlUrl="https://www.youtube.com/channel/UCpXwMqnXfJzazKS5fJ8nrVw" type="rss"></outline>
+            <outline title="You Suck At Cooking" text="You Suck At Cooking" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCekQr9znsk2vWxBo3YiLq2w" htmlUrl="https://www.youtube.com/channel/UCekQr9znsk2vWxBo3YiLq2w" type="rss"></outline>
         </outline>
         <outline text="YouTube Music">
-            <outline title="AFM Records" text="AFM Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKdA5J4-opjla1aWOjF74mg" htmlUrl="https://www.youtube.com/channel/UCKdA5J4-opjla1aWOjF74mg"></outline>
-            <outline title="Century Media Records" text="Century Media Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCnK9PxMozTYs8ELOvgMNKFA" htmlUrl="https://www.youtube.com/channel/UCnK9PxMozTYs8ELOvgMNKFA"></outline>
-            <outline title="Epitaph Records" text="Epitaph Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCDE5Ezmxq1bNVak4lmkpCMw" htmlUrl="https://www.youtube.com/channel/UCDE5Ezmxq1bNVak4lmkpCMw"></outline>
-            <outline title="Napalm Records" text="Napalm Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCG7AaCh_CiG6pq_rRDNw72A" htmlUrl="https://www.youtube.com/channel/UCG7AaCh_CiG6pq_rRDNw72A"></outline>
-            <outline title="Noble Demon" text="Noble Demon" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2X3FMgVqyn1XVdhLF-rmjg" htmlUrl="https://www.youtube.com/channel/UC2X3FMgVqyn1XVdhLF-rmjg"></outline>
-            <outline title="Nuclear Blast Records" text="Nuclear Blast Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCoxg3Kml41wE3IPq-PC-LQw" htmlUrl="https://www.youtube.com/channel/UCoxg3Kml41wE3IPq-PC-LQw"></outline>
-            <outline title="Sargent House" text="Sargent House" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC6B0kJYqT-K-gMacinxn3-g" htmlUrl="https://www.youtube.com/channel/UC6B0kJYqT-K-gMacinxn3-g"></outline>
-            <outline title="The Longest Johns" text="The Longest Johns" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC8BvYNPXVXylwSoXGSrfaBA" htmlUrl="https://www.youtube.com/channel/UC8BvYNPXVXylwSoXGSrfaBA"></outline>
+            <outline title="AFM Records" text="AFM Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKdA5J4-opjla1aWOjF74mg" htmlUrl="https://www.youtube.com/channel/UCKdA5J4-opjla1aWOjF74mg" type="rss"></outline>
+            <outline title="Century Media Records" text="Century Media Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCnK9PxMozTYs8ELOvgMNKFA" htmlUrl="https://www.youtube.com/channel/UCnK9PxMozTYs8ELOvgMNKFA" type="rss"></outline>
+            <outline title="Epitaph Records" text="Epitaph Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCDE5Ezmxq1bNVak4lmkpCMw" htmlUrl="https://www.youtube.com/channel/UCDE5Ezmxq1bNVak4lmkpCMw" type="rss"></outline>
+            <outline title="Napalm Records" text="Napalm Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCG7AaCh_CiG6pq_rRDNw72A" htmlUrl="https://www.youtube.com/channel/UCG7AaCh_CiG6pq_rRDNw72A" type="rss"></outline>
+            <outline title="Noble Demon" text="Noble Demon" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2X3FMgVqyn1XVdhLF-rmjg" htmlUrl="https://www.youtube.com/channel/UC2X3FMgVqyn1XVdhLF-rmjg" type="rss"></outline>
+            <outline title="Nuclear Blast Records" text="Nuclear Blast Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCoxg3Kml41wE3IPq-PC-LQw" htmlUrl="https://www.youtube.com/channel/UCoxg3Kml41wE3IPq-PC-LQw" type="rss"></outline>
+            <outline title="Sargent House" text="Sargent House" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC6B0kJYqT-K-gMacinxn3-g" htmlUrl="https://www.youtube.com/channel/UC6B0kJYqT-K-gMacinxn3-g" type="rss"></outline>
+            <outline title="The Longest Johns" text="The Longest Johns" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC8BvYNPXVXylwSoXGSrfaBA" htmlUrl="https://www.youtube.com/channel/UC8BvYNPXVXylwSoXGSrfaBA" type="rss"></outline>
         </outline>
         <outline text="YouTube Tech">
-            <outline title="3Blue1Brown" text="3Blue1Brown" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw" htmlUrl="https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw"></outline>
-            <outline title="Bisqwit" text="Bisqwit" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKTehwyGCKF-b2wo0RKwrcg" htmlUrl="https://www.youtube.com/channel/UCKTehwyGCKF-b2wo0RKwrcg"></outline>
-            <outline title="Inigo Quilez" text="Inigo Quilez" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCdmAhiG8HQDlz8uyekw4ENw" htmlUrl="https://www.youtube.com/channel/UCdmAhiG8HQDlz8uyekw4ENw"></outline>
-            <outline title="Lex Fridman" text="Lex Fridman" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCSHZKyawb77ixDdsGog4iWA" htmlUrl="https://www.youtube.com/channel/UCSHZKyawb77ixDdsGog4iWA"></outline>
+            <outline title="3Blue1Brown" text="3Blue1Brown" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw" htmlUrl="https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw" type="rss"></outline>
+            <outline title="Bisqwit" text="Bisqwit" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKTehwyGCKF-b2wo0RKwrcg" htmlUrl="https://www.youtube.com/channel/UCKTehwyGCKF-b2wo0RKwrcg" type="rss"></outline>
+            <outline title="Inigo Quilez" text="Inigo Quilez" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCdmAhiG8HQDlz8uyekw4ENw" htmlUrl="https://www.youtube.com/channel/UCdmAhiG8HQDlz8uyekw4ENw" type="rss"></outline>
+            <outline title="Lex Fridman" text="Lex Fridman" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCSHZKyawb77ixDdsGog4iWA" htmlUrl="https://www.youtube.com/channel/UCSHZKyawb77ixDdsGog4iWA" type="rss"></outline>
         </outline>
     </body>
 </opml>
