@@ -12,7 +12,7 @@
 
         matchBlocks = {
           "github.com" = {
-            identityFile = "/root/.ssh/id_ed25519_github";
+            identityFile = "~/.ssh/id_ed25519_github";
             identitiesOnly = true;
           };
         };
