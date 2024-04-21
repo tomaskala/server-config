@@ -202,7 +202,7 @@
           passthru = {
             name = "wg0";
             privateKeyFile = null;
-            publicKey = "rmSz9L2CUhHqDbN+v9XOWU+UK1CwDMMwZIcDBBD931U=";
+            publicKey = "CLJaT0cZMQIC7gPd7aVuiJiJqGMKO5zwaRUYVdUnuwQ=";
             port = null;
             subnet = config.networking.intranet.subnets.t-internal;
 
