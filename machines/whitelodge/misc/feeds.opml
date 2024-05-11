@@ -2,7 +2,7 @@
 <opml version="2.0">
     <head>
         <title>Miniflux</title>
-        <dateCreated>Tue, 02 Apr 2024 13:54:29 UTC</dateCreated>
+        <dateCreated>Sat, 11 May 2024 11:06:55 UTC</dateCreated>
     </head>
     <body>
         <outline text="Dev">
@@ -46,17 +46,6 @@
             <outline title="Primitive Technology" text="Primitive Technology" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCAL3JXZSzSm8AlZyD3nQdBA" htmlUrl="https://www.youtube.com/channel/UCAL3JXZSzSm8AlZyD3nQdBA" type="rss"></outline>
             <outline title="RailCowGirl" text="RailCowGirl" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCj-Xm8j6WBgKY8OG7s9r2vQ" htmlUrl="https://www.youtube.com/channel/UCj-Xm8j6WBgKY8OG7s9r2vQ" type="rss"></outline>
             <outline title="shiey" text="shiey" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCpXwMqnXfJzazKS5fJ8nrVw" htmlUrl="https://www.youtube.com/channel/UCpXwMqnXfJzazKS5fJ8nrVw" type="rss"></outline>
-            <outline title="You Suck At Cooking" text="You Suck At Cooking" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCekQr9znsk2vWxBo3YiLq2w" htmlUrl="https://www.youtube.com/channel/UCekQr9znsk2vWxBo3YiLq2w" type="rss"></outline>
-        </outline>
-        <outline text="YouTube Music">
-            <outline title="AFM Records" text="AFM Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCKdA5J4-opjla1aWOjF74mg" htmlUrl="https://www.youtube.com/channel/UCKdA5J4-opjla1aWOjF74mg" type="rss"></outline>
-            <outline title="Century Media Records" text="Century Media Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCnK9PxMozTYs8ELOvgMNKFA" htmlUrl="https://www.youtube.com/channel/UCnK9PxMozTYs8ELOvgMNKFA" type="rss"></outline>
-            <outline title="Epitaph Records" text="Epitaph Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCDE5Ezmxq1bNVak4lmkpCMw" htmlUrl="https://www.youtube.com/channel/UCDE5Ezmxq1bNVak4lmkpCMw" type="rss"></outline>
-            <outline title="Napalm Records" text="Napalm Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCG7AaCh_CiG6pq_rRDNw72A" htmlUrl="https://www.youtube.com/channel/UCG7AaCh_CiG6pq_rRDNw72A" type="rss"></outline>
-            <outline title="Noble Demon" text="Noble Demon" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC2X3FMgVqyn1XVdhLF-rmjg" htmlUrl="https://www.youtube.com/channel/UC2X3FMgVqyn1XVdhLF-rmjg" type="rss"></outline>
-            <outline title="Nuclear Blast Records" text="Nuclear Blast Records" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCoxg3Kml41wE3IPq-PC-LQw" htmlUrl="https://www.youtube.com/channel/UCoxg3Kml41wE3IPq-PC-LQw" type="rss"></outline>
-            <outline title="Sargent House" text="Sargent House" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC6B0kJYqT-K-gMacinxn3-g" htmlUrl="https://www.youtube.com/channel/UC6B0kJYqT-K-gMacinxn3-g" type="rss"></outline>
-            <outline title="The Longest Johns" text="The Longest Johns" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UC8BvYNPXVXylwSoXGSrfaBA" htmlUrl="https://www.youtube.com/channel/UC8BvYNPXVXylwSoXGSrfaBA" type="rss"></outline>
         </outline>
         <outline text="YouTube Tech">
             <outline title="3Blue1Brown" text="3Blue1Brown" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCYO_jab_esuFRV4b17AJtAw" htmlUrl="https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw" type="rss"></outline>
