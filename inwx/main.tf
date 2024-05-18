@@ -94,7 +94,7 @@ resource "inwx_nameserver_record" "tomaskala_com_a" {
 resource "inwx_nameserver_record" "tomaskala_com_aaaa" {
   domain  = local.domain
   type    = "AAAA"
-  content = "2a01:430:17:1::ffff:1108"
+  content = "2a03:3b40:fe:c7::1"
   ttl     = 3600
 }
 
