@@ -1,7 +1,7 @@
 { config, ... }:
 
 let
-  deviceCfg = config.networking.intranet.devices.bob;
+  deviceCfg = config.infra.intranet.devices.bob;
   lanInterface = deviceCfg.external.lan.name;
 in {
   systemd.network = {

@@ -1,11 +1,11 @@
 { config, lib, util, ... }:
 
 let
-  cfg = config.services.vpn;
-  intranetCfg = config.networking.intranet;
+  cfg = config.infra.wireguard;
+  intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
 in {
-  options.services.vpn = { enable = lib.mkEnableOption "vpn"; };
+  options.infra.wireguard = { enable = lib.mkEnableOption "wireguard"; };
 
   config = lib.mkIf cfg.enable {
     systemd.network = {
@@ -51,9 +51,9 @@ in {
 
         address = [
           (util.ipAddressMasked deviceCfg.wireguard.isolated.ipv4
-            intranetCfg.vpn.isolated.ipv4.mask)
+            intranetCfg.wireguard.isolated.ipv4.mask)
           (util.ipAddressMasked deviceCfg.wireguard.isolated.ipv6
-            intranetCfg.vpn.isolated.ipv6.mask)
+            intranetCfg.wireguard.isolated.ipv6.mask)
         ];
       };
     };

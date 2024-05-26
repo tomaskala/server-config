@@ -1,28 +1,28 @@
 { config, lib, secrets, util, ... }:
 
 let
-  cfg = config.services.rss;
-  intranetCfg = config.networking.intranet;
+  cfg = config.infra.radicale;
+  intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;
   allowedIPs = builtins.map util.ipSubnet [
-    intranetCfg.vpn.internal.ipv4
-    intranetCfg.vpn.internal.ipv6
+    intranetCfg.wireguard.internal.ipv4
+    intranetCfg.wireguard.internal.ipv6
   ];
 in {
-  options.services.rss = {
-    enable = lib.mkEnableOption "rss";
+  options.infra.radicale = {
+    enable = lib.mkEnableOption "DAV server";
 
     domain = lib.mkOption {
       type = lib.types.str;
-      description = "Domain RSS is available on";
-      default = "rss.whitelodge.tomaskala.com";
+      description = "Domain the DAV server is available on";
+      default = "dav.whitelodge.tomaskala.com";
       readOnly = true;
     };
 
     port = lib.mkOption {
       type = lib.types.port;
-      description = "Port RSS listens on";
-      example = 7070;
+      description = "Port the DAV server listens on";
+      example = 5232;
     };
 
     acmeEmail = lib.mkOption {
@@ -36,18 +36,29 @@ in {
     age.secrets = {
       cloudflare-dns-challenge-api-tokens.file =
         "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
-      miniflux-admin-credentials.file =
-        "${secrets}/secrets/other/miniflux-whitelodge.age";
+
+      radicale-htpasswd = {
+        file = "${secrets}/secrets/other/radicale-htpasswd.age";
+        mode = "0640";
+        owner = "root";
+        group = "radicale";
+      };
     };
 
-    services.miniflux = {
+    services.radicale = {
       enable = true;
-      adminCredentialsFile = config.age.secrets.miniflux-admin-credentials.path;
-      config = {
-        POLLING_FREQUENCY = "1440";
-        LISTEN_ADDR = "127.0.0.1:${builtins.toString cfg.port}";
-        BASE_URL = "https://${cfg.domain}";
-        CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
+      settings = {
+        server.hosts = [ "localhost:${builtins.toString cfg.port}" ];
+        auth = {
+          type = "htpasswd";
+          htpasswd_filename = config.age.secrets.radicale-htpasswd.path;
+          htpasswd_encryption = "plain";
+        };
+        storage = {
+          type = "multifilesystem";
+          filesystem_folder = "/var/lib/radicale/collections";
+        };
+        web.type = "internal";
       };
     };
 
@@ -94,7 +105,7 @@ in {
       };
     };
 
-    networking.intranet.vpn.internal.services.rss = {
+    infra.intranet.wireguard.internal.services.dav = {
       url = cfg.domain;
       inherit (deviceCfg.wireguard.internal) ipv4 ipv6;
     };

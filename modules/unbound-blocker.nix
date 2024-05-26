@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  cfg = config.services.unbound-blocker;
+  cfg = config.infra.unbound-blocker;
 
   sources = [
     "https://adaway.org/hosts.txt"
@@ -97,7 +97,7 @@ let
     "turn1.whispersystems.org"
   ];
 in {
-  options.services.unbound-blocker = {
+  options.infra.unbound-blocker = {
     enable = lib.mkEnableOption "unbound-blocker";
   };
 

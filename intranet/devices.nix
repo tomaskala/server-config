@@ -1,16 +1,16 @@
 { config, lib, util, ... }:
 
 {
-  options.networking.intranet.devices = lib.mkOption {
+  options.infra.intranet.devices = lib.mkOption {
     type = lib.types.attrsOf util.types.device;
     description = "Devices present in the intranet";
     readOnly = true;
   };
 
-  # TODO: If we could store both VPN subnets and non-VPN subnets inside
-  # each device's 'subnet' field, this would simplify vpn.nix
+  # TODO: If we could store both WireGuard subnets and non-WireGuard subnets
+  # inside each device's 'subnet' field, this would simplify wireguard.nix
   config = {
-    networking.intranet.devices = {
+    infra.intranet.devices = {
       whitelodge = {
         wireguard = {
           internal = {
@@ -21,13 +21,13 @@
             subnet = null;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 subnet location;
               host = 1;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 subnet location;
               host = 1;
             };
@@ -41,13 +41,13 @@
             subnet = null;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-isolated)
+              inherit (config.infra.intranet.ranges.wg-isolated)
                 subnet location;
               host = 1;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-isolated)
+              inherit (config.infra.intranet.ranges.wg-isolated)
                 subnet location;
               host = 1;
             };
@@ -61,13 +61,13 @@
             subnet = null;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-passthru)
+              inherit (config.infra.intranet.ranges.wg-passthru)
                 subnet location;
               host = 1;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-passthru)
+              inherit (config.infra.intranet.ranges.wg-passthru)
                 subnet location;
               host = 1;
             };
@@ -90,16 +90,16 @@
             privateKeyFile = config.age.secrets.wg-bob-isolated-pk.path;
             publicKey = "mLT5Zqafn73bD6ZTyaMby6xM7Qm5i4CFau8vuqvTYkQ=";
             port = null;
-            subnet = config.networking.intranet.subnets.l-internal;
+            subnet = config.infra.intranet.subnets.l-internal;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-isolated)
+              inherit (config.infra.intranet.ranges.wg-isolated)
                 subnet location;
               host = 10;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-isolated)
+              inherit (config.infra.intranet.ranges.wg-isolated)
                 subnet location;
               host = 10;
             };
@@ -111,14 +111,12 @@
             name = "end0";
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.l-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.l-internal) location subnet;
               host = 2;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.l-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.l-internal) location subnet;
               host = 2;
             };
           };
@@ -135,13 +133,13 @@
             subnet = null;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 location subnet;
               host = 50;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 location subnet;
               host = 50;
             };
@@ -159,13 +157,13 @@
             subnet = null;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 location subnet;
               host = 51;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 location subnet;
               host = 51;
             };
@@ -183,13 +181,13 @@
             subnet = null;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 location subnet;
               host = 52;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-internal)
+              inherit (config.infra.intranet.ranges.wg-internal)
                 location subnet;
               host = 52;
             };
@@ -204,16 +202,16 @@
             privateKeyFile = null;
             publicKey = "CLJaT0cZMQIC7gPd7aVuiJiJqGMKO5zwaRUYVdUnuwQ=";
             port = null;
-            subnet = config.networking.intranet.subnets.t-internal;
+            subnet = config.infra.intranet.subnets.t-internal;
 
             ipv4 = {
-              inherit (config.networking.intranet.ranges.vpn-passthru)
+              inherit (config.infra.intranet.ranges.wg-passthru)
                 location subnet;
               host = 10;
             };
 
             ipv6 = {
-              inherit (config.networking.intranet.ranges.vpn-passthru)
+              inherit (config.infra.intranet.ranges.wg-passthru)
                 location subnet;
               host = 10;
             };

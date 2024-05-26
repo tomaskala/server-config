@@ -1,1 +1,1 @@
-{ imports = [ ./devices.nix ./ranges.nix ./subnets.nix ./vpn.nix ]; }
+{ imports = [ ./devices.nix ./ranges.nix ./subnets.nix ./wireguard.nix ]; }

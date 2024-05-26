@@ -1,8 +1,8 @@
 { config, lib, util, ... }:
 
 let
-  cfg = config.services.vpn;
-  intranetCfg = config.networking.intranet;
+  cfg = config.infra.wireguard;
+  intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;
 
   mkPeer = { interface, presharedKeyFile }:
@@ -92,8 +92,8 @@ let
         (builtins.map mkLocalDomains ([ subnet ] ++ accessibleSubnets));
     };
 in {
-  options.services.vpn = {
-    enable = lib.mkEnableOption "vpn";
+  options.infra.wireguard = {
+    enable = lib.mkEnableOption "wireguard";
 
     enableInternal = lib.mkEnableOption "internal subnet";
 
@@ -104,12 +104,12 @@ in {
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
     (lib.mkIf cfg.enableInternal
-      (mkSubnet deviceCfg.wireguard.internal intranetCfg.vpn.internal))
+      (mkSubnet deviceCfg.wireguard.internal intranetCfg.wireguard.internal))
 
     (lib.mkIf cfg.enableIsolated
-      (mkSubnet deviceCfg.wireguard.isolated intranetCfg.vpn.isolated))
+      (mkSubnet deviceCfg.wireguard.isolated intranetCfg.wireguard.isolated))
 
     (lib.mkIf cfg.enablePassthru
-      (mkSubnet deviceCfg.wireguard.passthru intranetCfg.vpn.passthru))
+      (mkSubnet deviceCfg.wireguard.passthru intranetCfg.wireguard.passthru))
   ]);
 }

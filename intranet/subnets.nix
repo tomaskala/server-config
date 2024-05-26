@@ -1,20 +1,20 @@
 { config, lib, util, ... }:
 
 {
-  options.networking.intranet.subnets = lib.mkOption {
-    type = lib.types.attrsOf util.types.nonVpnSubnet;
-    description = "Subnets in the intranet accessible from the VPN";
+  options.infra.intranet.subnets = lib.mkOption {
+    type = lib.types.attrsOf util.types.nonWgSubnet;
+    description = "Subnets in the intranet accessible from WireGuard";
   };
 
-  config.networking.intranet.subnets = {
+  config.infra.intranet.subnets = {
     l-internal = {
       ipv4 = {
-        inherit (config.networking.intranet.ranges.l-internal) location subnet;
+        inherit (config.infra.intranet.ranges.l-internal) location subnet;
         mask = 24;
       };
 
       ipv6 = {
-        inherit (config.networking.intranet.ranges.l-internal) location subnet;
+        inherit (config.infra.intranet.ranges.l-internal) location subnet;
         mask = 64;
       };
 
@@ -23,14 +23,12 @@
           url = "nas.l.home.arpa";
 
           ipv4 = {
-            inherit (config.networking.intranet.ranges.l-internal)
-              location subnet;
+            inherit (config.infra.intranet.ranges.l-internal) location subnet;
             host = 10;
           };
 
           ipv6 = {
-            inherit (config.networking.intranet.ranges.l-internal)
-              location subnet;
+            inherit (config.infra.intranet.ranges.l-internal) location subnet;
             host = 10;
           };
         };
@@ -39,24 +37,24 @@
 
     p-internal = {
       ipv4 = {
-        inherit (config.networking.intranet.ranges.p-internal) location subnet;
+        inherit (config.infra.intranet.ranges.p-internal) location subnet;
         mask = 24;
       };
 
       ipv6 = {
-        inherit (config.networking.intranet.ranges.p-internal) location subnet;
+        inherit (config.infra.intranet.ranges.p-internal) location subnet;
         mask = 64;
       };
     };
 
     t-internal = {
       ipv4 = {
-        inherit (config.networking.intranet.ranges.t-internal) location subnet;
+        inherit (config.infra.intranet.ranges.t-internal) location subnet;
         mask = 24;
       };
 
       ipv6 = {
-        inherit (config.networking.intranet.ranges.t-internal) location subnet;
+        inherit (config.infra.intranet.ranges.t-internal) location subnet;
         mask = 64;
       };
     };

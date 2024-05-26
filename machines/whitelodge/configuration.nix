@@ -1,17 +1,17 @@
 { config, pkgs, secrets, util, ... }:
 
 let
-  intranetCfg = config.networking.intranet;
+  intranetCfg = config.infra.intranet;
   acmeEmail = "public+acme@tomaskala.com";
 in {
   imports = [
     ./home.nix
-    ./modules/dav.nix
     ./modules/firewall.nix
+    ./modules/miniflux.nix
     ./modules/monitoring-hub.nix
-    ./modules/rss.nix
-    ./modules/vpn.nix
+    ./modules/radicale.nix
     ./modules/website.nix
+    ./modules/wireguard.nix
     ../../intranet
     ../../modules/openssh.nix
     ../../modules/unbound-blocker.nix
@@ -176,57 +176,6 @@ in {
       ntp.enable = false;
       timesyncd.enable = true;
 
-      firewall.enable = true;
-      unbound-blocker.enable = true;
-
-      vpn = {
-        enable = true;
-        enableInternal = true;
-        enableIsolated = true;
-        enablePassthru = true;
-      };
-
-      dav = {
-        enable = true;
-        port = 5232;
-        inherit acmeEmail;
-      };
-
-      monitoring-hub = {
-        enable = true;
-        grafanaPort = 3000;
-        prometheusPort = 9090;
-        inherit acmeEmail;
-
-        scrapeConfigs = [{
-          job_name = "node";
-          static_configs = [
-            {
-              targets = [ "127.0.0.1:9100" ];
-              labels = { peer = "whitelodge"; };
-            }
-            {
-              targets = [
-                "${
-                  util.ipAddress intranetCfg.devices.bob.wireguard.isolated.ipv4
-                }:9100"
-              ];
-              labels = { peer = "bob"; };
-            }
-          ];
-        }];
-      };
-
-      prometheus.exporters = {
-        node = {
-          enable = true;
-          openFirewall = false;
-          listenAddress = "127.0.0.1";
-          port = 9100;
-          enabledCollectors = [ "processes" "systemd" ];
-        };
-      };
-
       openssh = {
         enable = true;
         listenAddresses = [
@@ -243,10 +192,14 @@ in {
         ];
       };
 
-      rss = {
-        enable = true;
-        port = 7070;
-        inherit acmeEmail;
+      prometheus.exporters = {
+        node = {
+          enable = true;
+          openFirewall = false;
+          listenAddress = "127.0.0.1";
+          port = 9100;
+          enabledCollectors = [ "processes" "systemd" ];
+        };
       };
 
       unbound = {
@@ -281,21 +234,71 @@ in {
           access-control = [
             "127.0.0.1/8 allow"
             "::1/128 allow"
-            "${util.ipSubnet intranetCfg.vpn.internal.ipv4} allow"
-            "${util.ipSubnet intranetCfg.vpn.internal.ipv6} allow"
-            "${util.ipSubnet intranetCfg.vpn.isolated.ipv4} allow"
-            "${util.ipSubnet intranetCfg.vpn.isolated.ipv6} allow"
-            "${util.ipSubnet intranetCfg.vpn.passthru.ipv4} allow"
-            "${util.ipSubnet intranetCfg.vpn.passthru.ipv6} allow"
+            "${util.ipSubnet intranetCfg.wireguard.internal.ipv4} allow"
+            "${util.ipSubnet intranetCfg.wireguard.internal.ipv6} allow"
+            "${util.ipSubnet intranetCfg.wireguard.isolated.ipv4} allow"
+            "${util.ipSubnet intranetCfg.wireguard.isolated.ipv6} allow"
+            "${util.ipSubnet intranetCfg.wireguard.passthru.ipv4} allow"
+            "${util.ipSubnet intranetCfg.wireguard.passthru.ipv6} allow"
           ];
         };
       };
+    };
+
+    infra = {
+      firewall.enable = true;
+
+      miniflux = {
+        enable = true;
+        port = 7070;
+        inherit acmeEmail;
+      };
+
+      monitoring-hub = {
+        enable = true;
+        grafanaPort = 3000;
+        prometheusPort = 9090;
+        inherit acmeEmail;
+
+        scrapeConfigs = [{
+          job_name = "node";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:9100" ];
+              labels = { peer = "whitelodge"; };
+            }
+            {
+              targets = [
+                "${
+                  util.ipAddress intranetCfg.devices.bob.wireguard.isolated.ipv4
+                }:9100"
+              ];
+              labels = { peer = "bob"; };
+            }
+          ];
+        }];
+      };
+
+      radicale = {
+        enable = true;
+        port = 5232;
+        inherit acmeEmail;
+      };
+
+      unbound-blocker.enable = true;
 
       website = {
         enable = true;
         domain = "tomaskala.com";
         webroot = "/var/www/tomaskala.com";
         inherit acmeEmail;
+      };
+
+      wireguard = {
+        enable = true;
+        enableInternal = true;
+        enableIsolated = true;
+        enablePassthru = true;
       };
     };
   };

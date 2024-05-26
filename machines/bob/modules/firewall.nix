@@ -1,14 +1,14 @@
 { config, lib, util, ... }:
 
 let
-  cfg = config.services.firewall;
-  deviceCfg = config.networking.intranet.devices.bob;
+  cfg = config.infra.firewall;
+  deviceCfg = config.infra.intranet.devices.bob;
 
   lanInterface = deviceCfg.external.lan.name;
-  vpnInterface = deviceCfg.wireguard.isolated.name;
+  wgInterface = deviceCfg.wireguard.isolated.name;
   privateSubnet = deviceCfg.wireguard.isolated.subnet;
 in {
-  options.services.firewall = { enable = lib.mkEnableOption "firewall"; };
+  options.infra.firewall = { enable = lib.mkEnableOption "firewall"; };
 
   config = lib.mkIf cfg.enable {
     networking.firewall.enable = false;
@@ -29,7 +29,7 @@ in {
               }
             }
 
-            set tcp_accepted_vpn {
+            set tcp_accepted_wg {
               type inet_service
               elements = {
                 ${
@@ -99,10 +99,10 @@ in {
                 util.ipSubnet privateSubnet.ipv6
               } udp dport @udp_accepted_lan ct state new accept
 
-              # Allow the specified TCP and UDP ports from the VPN.
-              iifname ${vpnInterface} tcp dport @tcp_accepted_lan ct state new accept
-              iifname ${vpnInterface} udp dport @udp_accepted_lan ct state new accept
-              iifname ${vpnInterface} tcp dport @tcp_accepted_vpn ct state new accept
+              # Allow the specified TCP and UDP ports from WireGuard.
+              iifname ${wgInterface} tcp dport @tcp_accepted_lan ct state new accept
+              iifname ${wgInterface} udp dport @udp_accepted_lan ct state new accept
+              iifname ${wgInterface} tcp dport @tcp_accepted_wg ct state new accept
             }
 
             chain forward {
@@ -111,8 +111,8 @@ in {
               # Allow all established and related traffic.
               ct state established,related accept
 
-              # Allow VPN peers to access the internal subnet.
-              iifname ${vpnInterface} oifname ${lanInterface} ct state new accept
+              # Allow WireGuard peers to access the internal subnet.
+              iifname ${wgInterface} oifname ${lanInterface} ct state new accept
             }
 
             chain output {
@@ -131,8 +131,8 @@ in {
             chain postrouting {
               type nat hook postrouting priority 100;
 
-              # Masquerade VPN traffic to the internal subnet.
-              oifname ${lanInterface} iifname ${vpnInterface} masquerade
+              # Masquerade WireGuard traffic to the internal subnet.
+              oifname ${lanInterface} iifname ${wgInterface} masquerade
             }
           '';
         };

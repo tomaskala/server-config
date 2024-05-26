@@ -1,21 +1,21 @@
 { config, lib, util, ... }:
 
 let
-  cfg = config.services.music;
-  intranetCfg = config.networking.intranet;
+  cfg = config.infra.navidrome;
+  intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
   privateSubnet = deviceCfg.wireguard.isolated.subnet;
   nasAddr = privateSubnet.services.nas.ipv4;
   allowedIPs = builtins.map util.ipSubnet [
     privateSubnet.ipv4
     privateSubnet.ipv6
-    intranetCfg.vpn.internal.ipv4
-    intranetCfg.vpn.internal.ipv6
-    intranetCfg.vpn.isolated.ipv4
-    intranetCfg.vpn.isolated.ipv6
+    intranetCfg.wireguard.internal.ipv4
+    intranetCfg.wireguard.internal.ipv6
+    intranetCfg.wireguard.isolated.ipv4
+    intranetCfg.wireguard.isolated.ipv6
   ];
 in {
-  options.services.music = {
+  options.infra.navidrome = {
     enable = lib.mkEnableOption "music";
 
     domain = lib.mkOption {
@@ -110,7 +110,7 @@ in {
       };
     };
 
-    networking.intranet.subnets.l-internal.services.music = {
+    infra.intranet.subnets.l-internal.services.music = {
       url = cfg.domain;
       inherit (deviceCfg.external.lan) ipv4 ipv6;
     };

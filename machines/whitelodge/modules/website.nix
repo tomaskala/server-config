@@ -1,8 +1,8 @@
 { config, lib, ... }:
 
-let cfg = config.services.website;
+let cfg = config.infra.website;
 in {
-  options.services.website = {
+  options.infra.website = {
     enable = lib.mkEnableOption "website";
 
     domain = lib.mkOption {

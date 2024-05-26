@@ -1,31 +1,31 @@
 { config, lib, pkgs, util, ... }:
 
 let
-  cfg = config.services.firewall;
-  deviceCfg = config.networking.intranet.devices.whitelodge;
+  cfg = config.infra.firewall;
+  deviceCfg = config.infra.intranet.devices.whitelodge;
 
   wanInterface = deviceCfg.external.wan.name;
-  vpnInterface = {
+  wgInterface = {
     internal = deviceCfg.wireguard.internal.name;
     isolated = deviceCfg.wireguard.isolated.name;
     passthru = deviceCfg.wireguard.passthru.name;
   };
 
   accessibleSubnets = let
-    devices = if config.services.vpn.enable then
-      (lib.optionals config.services.vpn.enableInternal
-        config.networking.intranet.vpn.internal.devices)
-      ++ (lib.optionals config.services.vpn.enableIsolated
-        config.networking.intranet.vpn.isolated.devices)
-      ++ (lib.optionals config.services.vpn.enablePassthru
-        config.networking.intranet.vpn.passthru.devices)
+    devices = if config.infra.wireguard.enable then
+      (lib.optionals config.infra.wireguard.enableInternal
+        config.infra.intranet.wireguard.internal.devices)
+      ++ (lib.optionals config.infra.wireguard.enableIsolated
+        config.infra.intranet.wireguard.isolated.devices)
+      ++ (lib.optionals config.infra.wireguard.enablePassthru
+        config.infra.intranet.wireguard.passthru.devices)
     else
       [ ];
 
     deviceSubnets = builtins.map ({ interface, ... }: interface.subnet) devices;
   in builtins.filter (subnet: subnet != null) deviceSubnets;
 in {
-  options.services.firewall = { enable = lib.mkEnableOption "firewall"; };
+  options.infra.firewall = { enable = lib.mkEnableOption "firewall"; };
 
   config = lib.mkIf cfg.enable {
     networking.firewall.enable = false;
@@ -47,7 +47,7 @@ in {
         firewall = {
           family = "inet";
           content = ''
-            # TCP destination ports accepted from WAN and the VPN.
+            # TCP destination ports accepted from WAN and WireGuard.
             set tcp_accepted_wan {
               type inet_service
               elements = {
@@ -56,8 +56,8 @@ in {
               }
             }
 
-            # TCP destination ports accepted from the internal VPN only.
-            set tcp_accepted_vpn_internal {
+            # TCP destination ports accepted from the internal WireGuard subnet only.
+            set tcp_accepted_wg_internal {
               type inet_service
               elements = {
                 22,
@@ -65,23 +65,23 @@ in {
               }
             }
 
-            # TCP destination ports accepted from the isolated VPN only.
-            set tcp_accepted_vpn_isolated {
+            # TCP destination ports accepted from the isolated WireGuard subnet only.
+            set tcp_accepted_wg_isolated {
               type inet_service
               elements = {
                 53,
               }
             }
 
-            # TCP destination ports accepted from the passthru VPN only.
-            set tcp_accepted_vpn_passthru {
+            # TCP destination ports accepted from the passthru WireGuard subnet only.
+            set tcp_accepted_wg_passthru {
               type inet_service
               elements = {
                 53,
               }
             }
 
-            # UDP destination ports accepted from WAN and the VPN.
+            # UDP destination ports accepted from WAN and the WireGuard subnet.
             set udp_accepted_wan {
               type inet_service
               elements = {
@@ -91,32 +91,32 @@ in {
               }
             }
 
-            # UDP destination ports accepted from the internal VPN only.
-            set udp_accepted_vpn_internal {
+            # UDP destination ports accepted from the internal WireGuard subnet only.
+            set udp_accepted_wg_internal {
               type inet_service
               elements = {
                 53,
               }
             }
 
-            # UDP destination ports accepted from the isolated VPN only.
-            set udp_accepted_vpn_isolated {
+            # UDP destination ports accepted from the isolated WireGuard subnet only.
+            set udp_accepted_wg_isolated {
               type inet_service
               elements = {
                 53,
               }
             }
 
-            # UDP destination ports accepted from the passthru VPN only.
-            set udp_accepted_vpn_passthru {
+            # UDP destination ports accepted from the passthru WireGuard subnet only.
+            set udp_accepted_wg_passthru {
               type inet_service
               elements = {
                 53,
               }
             }
 
-            # VPN IPv4 subnets accessible by peers.
-            set vpn_accessible_ipv4 {
+            # WireGuard IPv4 subnets accessible by peers.
+            set wg_accessible_ipv4 {
               type ipv4_addr
               flags interval
               elements = {
@@ -127,8 +127,8 @@ in {
               }
             }
 
-            # VPN IPv6 subnets accessible by peers.
-            set vpn_accessible_ipv6 {
+            # WireGuard IPv6 subnets accessible by peers.
+            set wg_accessible_ipv6 {
               type ipv6_addr
               flags interval
               elements = {
@@ -178,19 +178,19 @@ in {
               iifname ${wanInterface} tcp dport @tcp_accepted_wan ct state new accept
               iifname ${wanInterface} udp dport @udp_accepted_wan ct state new accept
 
-              # Allow the specified TCP and UDP ports from the VPN.
-              iifname ${vpnInterface.internal} tcp dport @tcp_accepted_vpn_internal ct state new accept
-              iifname ${vpnInterface.internal} udp dport @udp_accepted_vpn_internal ct state new accept
-              iifname ${vpnInterface.isolated} tcp dport @tcp_accepted_vpn_isolated ct state new accept
-              iifname ${vpnInterface.isolated} udp dport @udp_accepted_vpn_isolated ct state new accept
-              iifname ${vpnInterface.passthru} tcp dport @tcp_accepted_vpn_passthru ct state new accept
-              iifname ${vpnInterface.passthru} udp dport @udp_accepted_vpn_passthru ct state new accept
+              # Allow the specified TCP and UDP ports from the WireGuard subnet.
+              iifname ${wgInterface.internal} tcp dport @tcp_accepted_wg_internal ct state new accept
+              iifname ${wgInterface.internal} udp dport @udp_accepted_wg_internal ct state new accept
+              iifname ${wgInterface.isolated} tcp dport @tcp_accepted_wg_isolated ct state new accept
+              iifname ${wgInterface.isolated} udp dport @udp_accepted_wg_isolated ct state new accept
+              iifname ${wgInterface.passthru} tcp dport @tcp_accepted_wg_passthru ct state new accept
+              iifname ${wgInterface.passthru} udp dport @udp_accepted_wg_passthru ct state new accept
               ${
                 builtins.concatStringsSep "\n" (lib.mapAttrsToList
                   (_: interface: ''
                     iifname ${interface} tcp dport @tcp_accepted_wan ct state new accept
                     iifname ${interface} udp dport @udp_accepted_wan ct state new accept
-                  '') vpnInterface)
+                  '') wgInterface)
               }
             }
 
@@ -200,24 +200,24 @@ in {
               # Allow all established and related traffic.
               ct state established,related accept
 
-              # Allow internal and passthru VPN traffic to access the internet via WAN.
-              iifname ${vpnInterface.internal} oifname ${wanInterface} ct state new accept
-              iifname ${vpnInterface.passthru} oifname ${wanInterface} ct state new accept
+              # Allow internal and passthru WireGuard traffic to access the internet via WAN.
+              iifname ${wgInterface.internal} oifname ${wanInterface} ct state new accept
+              iifname ${wgInterface.passthru} oifname ${wanInterface} ct state new accept
 
-              # Allow internal VPN peers to communicate with each other.
-              iifname ${vpnInterface.internal} oifname ${vpnInterface.internal} ct state new accept
+              # Allow internal WireGuard peers to communicate with each other.
+              iifname ${wgInterface.internal} oifname ${wgInterface.internal} ct state new accept
 
-              # Allow isolated VPN peers to communicate with each other.
-              iifname ${vpnInterface.isolated} oifname ${vpnInterface.isolated} ct state new accept
+              # Allow isolated WireGuard peers to communicate with each other.
+              iifname ${wgInterface.isolated} oifname ${wgInterface.isolated} ct state new accept
 
-              # Allow passthru VPN peers to communicate with each other.
-              iifname ${vpnInterface.passthru} oifname ${vpnInterface.passthru} ct state new accept
+              # Allow passthru WireGuard peers to communicate with each other.
+              iifname ${wgInterface.passthru} oifname ${wgInterface.passthru} ct state new accept
 
-              # Allow internal and isolated VPN traffic to the accessible subnets.
-              iifname ${vpnInterface.internal} ip daddr @vpn_accessible_ipv4 ct state new accept
-              iifname ${vpnInterface.internal} ip6 daddr @vpn_accessible_ipv6 ct state new accept
-              iifname ${vpnInterface.isolated} ip daddr @vpn_accessible_ipv4 ct state new accept
-              iifname ${vpnInterface.isolated} ip6 daddr @vpn_accessible_ipv6 ct state new accept
+              # Allow internal and isolated WireGuard traffic to the accessible subnets.
+              iifname ${wgInterface.internal} ip daddr @wg_accessible_ipv4 ct state new accept
+              iifname ${wgInterface.internal} ip6 daddr @wg_accessible_ipv6 ct state new accept
+              iifname ${wgInterface.isolated} ip daddr @wg_accessible_ipv4 ct state new accept
+              iifname ${wgInterface.isolated} ip6 daddr @wg_accessible_ipv6 ct state new accept
             }
 
             chain output {
@@ -236,9 +236,9 @@ in {
             chain postrouting {
               type nat hook postrouting priority 100;
 
-              # Masquerade VPN traffic to WAN.
-              oifname ${wanInterface} iifname ${vpnInterface.internal} masquerade
-              oifname ${wanInterface} iifname ${vpnInterface.passthru} masquerade
+              # Masquerade WireGuard traffic to WAN.
+              oifname ${wanInterface} iifname ${wgInterface.internal} masquerade
+              oifname ${wanInterface} iifname ${wgInterface.passthru} masquerade
             }
           '';
         };

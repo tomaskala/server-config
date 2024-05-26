@@ -1,28 +1,28 @@
 { config, lib, secrets, util, ... }:
 
 let
-  cfg = config.services.dav;
-  intranetCfg = config.networking.intranet;
+  cfg = config.infra.miniflux;
+  intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;
   allowedIPs = builtins.map util.ipSubnet [
-    intranetCfg.vpn.internal.ipv4
-    intranetCfg.vpn.internal.ipv6
+    intranetCfg.wireguard.internal.ipv4
+    intranetCfg.wireguard.internal.ipv6
   ];
 in {
-  options.services.dav = {
-    enable = lib.mkEnableOption "DAV server";
+  options.infra.miniflux = {
+    enable = lib.mkEnableOption "rss";
 
     domain = lib.mkOption {
       type = lib.types.str;
-      description = "Domain the DAV server is available on";
-      default = "dav.whitelodge.tomaskala.com";
+      description = "Domain RSS is available on";
+      default = "rss.whitelodge.tomaskala.com";
       readOnly = true;
     };
 
     port = lib.mkOption {
       type = lib.types.port;
-      description = "Port the DAV server listens on";
-      example = 5232;
+      description = "Port RSS listens on";
+      example = 7070;
     };
 
     acmeEmail = lib.mkOption {
@@ -36,29 +36,18 @@ in {
     age.secrets = {
       cloudflare-dns-challenge-api-tokens.file =
         "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
-
-      radicale-htpasswd = {
-        file = "${secrets}/secrets/other/radicale-htpasswd.age";
-        mode = "0640";
-        owner = "root";
-        group = "radicale";
-      };
+      miniflux-admin-credentials.file =
+        "${secrets}/secrets/other/miniflux-whitelodge.age";
     };
 
-    services.radicale = {
+    services.miniflux = {
       enable = true;
-      settings = {
-        server.hosts = [ "localhost:${builtins.toString cfg.port}" ];
-        auth = {
-          type = "htpasswd";
-          htpasswd_filename = config.age.secrets.radicale-htpasswd.path;
-          htpasswd_encryption = "plain";
-        };
-        storage = {
-          type = "multifilesystem";
-          filesystem_folder = "/var/lib/radicale/collections";
-        };
-        web.type = "internal";
+      adminCredentialsFile = config.age.secrets.miniflux-admin-credentials.path;
+      config = {
+        POLLING_FREQUENCY = "1440";
+        LISTEN_ADDR = "127.0.0.1:${builtins.toString cfg.port}";
+        BASE_URL = "https://${cfg.domain}";
+        CLEANUP_ARCHIVE_UNREAD_DAYS = "-1";
       };
     };
 
@@ -105,7 +94,7 @@ in {
       };
     };
 
-    networking.intranet.vpn.internal.services.dav = {
+    infra.intranet.wireguard.internal.services.rss = {
       url = cfg.domain;
       inherit (deviceCfg.wireguard.internal) ipv4 ipv6;
     };

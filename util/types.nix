@@ -165,7 +165,7 @@ let
       };
 
       subnet = lib.mkOption {
-        type = lib.types.nullOr nonVpnSubnet;
+        type = lib.types.nullOr nonWgSubnet;
         description = "Subnet this interface is a gateway to, if any";
         readOnly = true;
       };
@@ -238,7 +238,7 @@ let
     };
   };
 
-  vpnSubnet = lib.types.submodule {
+  wgSubnet = lib.types.submodule {
     options = {
       ipv4 = lib.mkOption {
         type = ipv4Subnet;
@@ -266,7 +266,7 @@ let
     };
   };
 
-  nonVpnSubnet = lib.types.submodule {
+  nonWgSubnet = lib.types.submodule {
     options = {
       ipv4 = lib.mkOption {
         type = ipv4Subnet;
@@ -287,4 +287,4 @@ let
       };
     };
   };
-in { inherit device vpnSubnet nonVpnSubnet; }
+in { inherit device wgSubnet nonWgSubnet; }

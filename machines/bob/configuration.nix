@@ -1,15 +1,15 @@
 { config, lib, pkgs, secrets, util, ... }:
 
 let
-  intranetCfg = config.networking.intranet;
+  intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
 in {
   imports = [
     ./hardware-configuration.nix
     ./modules/firewall.nix
-    ./modules/music.nix
+    ./modules/navidrome.nix
     ./modules/network.nix
-    ./modules/vpn.nix
+    ./modules/wireguard.nix
     ../../intranet
     ../../modules/openssh.nix
     ../../modules/unbound-blocker.nix
@@ -93,10 +93,7 @@ in {
       ntp.enable = false;
       timesyncd.enable = true;
 
-      firewall.enable = true;
       openssh.enable = true;
-      unbound-blocker.enable = true;
-      vpn.enable = true;
 
       prometheus.exporters = {
         node = {
@@ -105,12 +102,6 @@ in {
           listenAddress = util.ipAddress deviceCfg.wireguard.isolated.ipv4;
           port = 9100;
         };
-      };
-
-      music = {
-        enable = true;
-        domain = "music.l.home.arpa";
-        musicDir = "/mnt/Music";
       };
 
       unbound = {
@@ -142,6 +133,19 @@ in {
             }) lServices;
         in builtins.listToAttrs urlsToIPs;
       };
+    };
+
+    infra = {
+      firewall.enable = true;
+
+      navidrome = {
+        enable = true;
+        domain = "music.l.home.arpa";
+        musicDir = "/mnt/Music";
+      };
+
+      unbound-blocker.enable = true;
+      wireguard.enable = true;
     };
   };
 }

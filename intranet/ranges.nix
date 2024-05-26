@@ -1,7 +1,7 @@
 { lib, ... }:
 
 {
-  options.networking.intranet.ranges = lib.mkOption {
+  options.infra.intranet.ranges = lib.mkOption {
     type = lib.types.attrsOf (lib.types.submodule {
       options = {
         location = lib.mkOption {
@@ -25,18 +25,18 @@
     readOnly = true;
   };
 
-  config.networking.intranet.ranges = {
-    vpn-internal = {
+  config.infra.intranet.ranges = {
+    wg-internal = {
       location = 100;
       subnet = 10;
     };
 
-    vpn-isolated = {
+    wg-isolated = {
       location = 100;
       subnet = 20;
     };
 
-    vpn-passthru = {
+    wg-passthru = {
       location = 100;
       subnet = 30;
     };

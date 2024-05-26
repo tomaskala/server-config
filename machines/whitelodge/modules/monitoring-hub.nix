@@ -1,16 +1,16 @@
 { config, lib, options, secrets, util, ... }:
 
 let
-  cfg = config.services.monitoring-hub;
-  intranetCfg = config.networking.intranet;
+  cfg = config.infra.monitoring-hub;
+  intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;
   allowedIPs = builtins.map util.ipSubnet [
-    intranetCfg.vpn.internal.ipv4
-    intranetCfg.vpn.internal.ipv6
+    intranetCfg.wireguard.internal.ipv4
+    intranetCfg.wireguard.internal.ipv6
   ];
   dbName = "grafana";
 in {
-  options.services.monitoring-hub = {
+  options.infra.monitoring-hub = {
     enable = lib.mkEnableOption "monitoring-hub";
 
     domain = lib.mkOption {
@@ -187,7 +187,7 @@ in {
       };
     };
 
-    networking.intranet.vpn.internal.services.monitoring-hub = {
+    infra.intranet.wireguard.internal.services.monitoring-hub = {
       url = cfg.domain;
       inherit (deviceCfg.wireguard.internal) ipv4 ipv6;
     };
