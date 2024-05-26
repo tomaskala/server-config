@@ -64,6 +64,14 @@ in {
               elements = {
                 22,
                 53,
+                ${
+                # Need to append an empty string so the whole thing has
+                # a trailing comma.
+                  lib.concatMapStringsSep "," builtins.toString
+                  (lib.optionals config.infra.syncthing.enable
+                    ((builtins.attrValues config.infra.syncthing.ports)
+                      ++ [ "" ]))
+                }
               }
             }
 

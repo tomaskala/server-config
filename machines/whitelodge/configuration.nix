@@ -7,15 +7,16 @@ let
   acmeEmail = "public+acme@tomaskala.com";
 in {
   imports = [
+    ../../intranet
+    ../../modules/blocky.nix
     ./home.nix
     ./modules/firewall.nix
     ./modules/mealie.nix
     ./modules/miniflux.nix
     ./modules/monitoring-hub.nix
+    ./modules/syncthing.nix
     ./modules/website.nix
     ./modules/wireguard.nix
-    ../../intranet
-    ../../modules/blocky.nix
   ];
 
   config = {
@@ -342,6 +343,17 @@ in {
             ];
           }
         ];
+      };
+
+      syncthing = {
+        enable = false;
+
+        ports = {
+          web = 8384;
+          listen = 22000;
+        };
+
+        inherit acmeEmail;
       };
 
       website = {

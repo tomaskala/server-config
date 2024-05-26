@@ -200,8 +200,42 @@ let
     };
   };
 
+  syncthingConfig = lib.types.submodule {
+    options = {
+      id = lib.mkOption {
+        type = lib.types.str;
+        description = "Syncthing device ID";
+        readOnly = true;
+      };
+
+      introducer = lib.mkOption {
+        type = lib.types.bool;
+        description = "Whether this device serves as an introducer";
+        readOnly = true;
+      };
+
+      ipv4 = lib.mkOption {
+        type = ipv4Address;
+        description = "Syncthing IPv4 address of this device";
+        readOnly = true;
+      };
+
+      ipv6 = lib.mkOption {
+        type = ipv6Address;
+        description = "Syncthing IPv6 address of this device";
+        readOnly = true;
+      };
+    };
+  };
+
   device = lib.types.submodule {
     options = {
+      syncthing = lib.mkOption {
+        type = lib.types.nullOr syncthingConfig;
+        description = "Syncthing configuration of this device";
+        default = null;
+      };
+
       wireguard = lib.mkOption {
         type = lib.types.attrsOf wireguardInterface;
         description = "WireGuard interfaces of this device";
