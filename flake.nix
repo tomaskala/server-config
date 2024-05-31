@@ -3,12 +3,12 @@
   nixConfig.bash-prompt = "[nix-develop]$ ";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-23.11";
+      url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -95,8 +95,9 @@
       };
 
       devShells = forAllSystems (pkgs: {
-        default =
-          pkgs.mkShell { packages = with pkgs; [ deadnix nixfmt statix ]; };
+        default = pkgs.mkShell {
+          packages = with pkgs; [ deadnix nixfmt-classic statix ];
+        };
 
         tf = pkgs.mkShell { packages = [ pkgs.opentofu ]; };
       });
@@ -104,7 +105,7 @@
       formatter = forAllSystems (pkgs:
         pkgs.writeShellApplication {
           name = "nixfmt";
-          runtimeInputs = with pkgs; [ findutils nixfmt ];
+          runtimeInputs = with pkgs; [ findutils nixfmt-classic ];
           text = ''
             find . -type f -name '*.nix' -exec nixfmt {} \+
           '';
