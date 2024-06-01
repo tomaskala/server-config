@@ -287,4 +287,4 @@ let
       };
     };
   };
-in { inherit device wgSubnet nonWgSubnet; }
+in { inherit ipv4Address ipv6Address device wgSubnet nonWgSubnet; }

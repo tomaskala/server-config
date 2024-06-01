@@ -42,10 +42,7 @@ let
   mkLocalDomains = let
     mkLocalDomain = _:
       { url, ipv4, ipv6 }:
-      lib.nameValuePair url {
-        ipv4 = util.ipAddress ipv4;
-        ipv6 = util.ipAddress ipv6;
-      };
+      lib.nameValuePair url { inherit ipv4 ipv6; };
   in { services, ... }: lib.mapAttrs' mkLocalDomain services;
 
   mkSubnet = interface: subnet:
@@ -88,7 +85,7 @@ let
         };
       };
 
-      services.unbound.localDomains = lib.attrsets.mergeAttrsList
+      infra.blocky.localDomains = lib.attrsets.mergeAttrsList
         (builtins.map mkLocalDomains ([ subnet ] ++ accessibleSubnets));
     };
 in {

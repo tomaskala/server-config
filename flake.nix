@@ -21,15 +21,10 @@
       url = "git+ssh://git@github.com/tomaskala/infra-secrets";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    unbound-blocker = {
-      url = "github:tomaskala/unbound-blocker";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = { nixpkgs, nixos-hardware, vps-admin-os, home-manager, agenix
-    , secrets, unbound-blocker, ... }:
+    , secrets, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -47,15 +42,7 @@
         };
       };
 
-      forOneSystem = f: system:
-        f (import nixpkgs {
-          inherit system;
-          overlays = [
-            (_: _: {
-              unbound-blocker = unbound-blocker.packages.${system}.default;
-            })
-          ];
-        });
+      forOneSystem = f: system: f (import nixpkgs { inherit system; });
 
       forAllSystems = f: nixpkgs.lib.genAttrs systems (forOneSystem f);
     in {
