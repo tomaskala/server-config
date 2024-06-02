@@ -194,10 +194,14 @@ in {
           database = dbName;
           user = grafanaDbUser;
           jsonData.sslmode = "disable";
+          # Grafana requires the postgres user to have a password. The user
+          # only has selection privileges, so let's not bother with agenix.
+          secureJsonData.password = grafanaDbUser;
         }];
       };
 
       systemd.services.postgresql.postStart = lib.mkAfter ''
+        $PSQL -tAc "ALTER USER ${grafanaDbUser} WITH PASSWORD '${grafanaDbUser}';"
         $PSQL -d ${dbName} -tAc 'GRANT USAGE ON SCHEMA public TO ${grafanaDbUser};'
         $PSQL -d ${dbName} -tAc 'GRANT SELECT ON public.log_entries TO ${grafanaDbUser};'
       '';
