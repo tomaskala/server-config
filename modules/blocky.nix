@@ -193,6 +193,7 @@ in {
           host = "/run/postgresql";
           database = dbName;
           user = grafanaDbUser;
+          jsonData.sslmode = "disable";
         }];
       };
 
