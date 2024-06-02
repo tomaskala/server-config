@@ -1,4 +1,4 @@
-{ config, lib, util, ... }:
+{ config, lib, secrets, util, ... }:
 
 let
   cfg = config.infra.blocky;
@@ -168,6 +168,9 @@ in {
     # Do not enable postgres here; we only want to attach to an already running
     # instance, since not all machines running blocky should run postgres.
     (lib.mkIf config.services.postgresql.enable {
+      age.secrets.blocky-grafana-postgresql.file =
+        "${secrets}/secrets/other/blocky-grafana-postgresql.age";
+
       services = {
         blocky = {
           settings.queryLog = {
@@ -194,14 +197,21 @@ in {
           database = dbName;
           user = grafanaDbUser;
           jsonData.sslmode = "disable";
-          # Grafana requires the postgres user to have a password. The user
-          # only has selection privileges, so let's not bother with agenix.
-          secureJsonData.password = grafanaDbUser;
+          secureJsonData.password =
+            "$__file{${config.age.secrets.blocky-grafana-postgresql.path}}";
         }];
       };
 
       systemd.services.postgresql.postStart = lib.mkAfter ''
-        $PSQL -tAc "ALTER USER ${grafanaDbUser} WITH PASSWORD '${grafanaDbUser}';"
+        $PSQL -tA <<'EOF'
+          DO $$
+          DECLARE password TEXT;
+          BEGIN
+            password := trim(both from replace(pg_read_file('${config.age.secrets.blocky-grafana-postgresql.path}'), E'\n', '''));
+            EXECUTE format('ALTER ROLE ${grafanaDbUser} WITH PASSWORD '''%s''';', password);
+          END $$;
+        EOF
+
         $PSQL -d ${dbName} -tAc 'GRANT USAGE ON SCHEMA public TO ${grafanaDbUser};'
         $PSQL -d ${dbName} -tAc 'GRANT SELECT ON public.log_entries TO ${grafanaDbUser};'
       '';
