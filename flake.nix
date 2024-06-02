@@ -4,6 +4,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
 
@@ -23,8 +24,8 @@
     };
   };
 
-  outputs = { nixpkgs, nixos-hardware, vps-admin-os, home-manager, agenix
-    , secrets, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, nixos-hardware, vps-admin-os
+    , home-manager, agenix, secrets, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -42,7 +43,12 @@
         };
       };
 
-      forOneSystem = f: system: f (import nixpkgs { inherit system; });
+      forOneSystem = f: system:
+        f (import nixpkgs {
+          inherit system;
+          overlays = let unstable = import nixpkgs-unstable { inherit system; };
+          in [ (_: _: { inherit (unstable) blocky; }) ];
+        });
 
       forAllSystems = f: nixpkgs.lib.genAttrs systems (forOneSystem f);
     in {

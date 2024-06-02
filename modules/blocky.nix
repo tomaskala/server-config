@@ -94,12 +94,12 @@ in {
             };
 
             blocking = {
-              blackLists.default = [
+              denylists.default = [
                 "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt"
                 "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/fake.txt"
               ];
 
-              whiteLists.default = [''
+              allowlists.default = [''
                 clients4.google.com
                 clients2.google.com
                 s.youtube.com
