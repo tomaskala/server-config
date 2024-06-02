@@ -168,8 +168,21 @@ in {
     # Do not enable postgres here; we only want to attach to an already running
     # instance, since not all machines running blocky should run postgres.
     (lib.mkIf config.services.postgresql.enable {
-      age.secrets.blocky-grafana-postgresql.file =
-        "${secrets}/secrets/other/blocky-grafana-postgresql.age";
+      age.secrets = {
+        blocky-grafana-postgresql-grafana = {
+          file = "${secrets}/secrets/other/blocky-grafana-postgresql.age";
+          mode = "0640";
+          owner = "root";
+          group = "grafana";
+        };
+
+        blocky-grafana-postgresql-postgresql = {
+          file = "${secrets}/secrets/other/blocky-grafana-postgresql.age";
+          mode = "0640";
+          owner = "root";
+          group = "postgres";
+        };
+      };
 
       services = {
         blocky = {
@@ -203,7 +216,7 @@ in {
             user = grafanaDbUser;
             jsonData.sslmode = "disable";
             secureJsonData.password =
-              "$__file{${config.age.secrets.blocky-grafana-postgresql.path}}";
+              "$__file{${config.age.secrets.blocky-grafana-postgresql-grafana.path}}";
           }];
         };
       };
@@ -213,7 +226,7 @@ in {
           DO $$
           DECLARE password TEXT;
           BEGIN
-            password := trim(both from replace(pg_read_file('${config.age.secrets.blocky-grafana-postgresql.path}'), E'\n', '''));
+            password := trim(both from replace(pg_read_file('${config.age.secrets.blocky-grafana-postgresql-postgresql.path}'), E'\n', '''));
             EXECUTE format('ALTER ROLE ${grafanaDbUser} WITH PASSWORD '''%s''';', password);
           END $$;
         EOF
