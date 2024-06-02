@@ -66,132 +66,140 @@ in {
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services = {
-      blocky = {
-        enable = true;
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    {
+      services = {
+        blocky = {
+          enable = true;
 
-        settings = {
-          ports = {
-            dns =
-              builtins.map ({ addr, port }: "${addr}:${builtins.toString port}")
-              cfg.listenAddresses;
-            http = "${cfg.metrics.addr}:${builtins.toString cfg.metrics.port}";
+          settings = {
+            ports = {
+              dns = builtins.map
+                ({ addr, port }: "${addr}:${builtins.toString port}")
+                cfg.listenAddresses;
+
+              http =
+                "${cfg.metrics.addr}:${builtins.toString cfg.metrics.port}";
+            };
+
+            prometheus.enable = true;
+
+            upstreams.groups = {
+              default = [
+                "tcp-tls:9.9.9.9:853#dns.quad9.net"
+                "tcp-tls:149.112.112.112:853#dns.quad9.net"
+                "tcp-tls:[2620:fe::fe]:853#dns.quad9.net"
+                "tcp-tls:[2620:fe::9]:853#dns.quad9.net"
+              ];
+            };
+
+            blocking = {
+              blackLists.default = [
+                "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt"
+                "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/fake.txt"
+              ];
+
+              whiteLists.default = [''
+                clients4.google.com
+                clients2.google.com
+                s.youtube.com
+                video-stats.l.google.com
+                www.googleapis.com
+                youtubei.googleapis.com
+                oauthaccountmanager.googleapis.com
+                android.clients.google.com
+                reminders-pa.googleapis.com
+                firestore.googleapis.com
+                gstaticadssl.l.google.com
+                googleapis.l.google.com
+                dl.google.com
+                redirector.gvt1.com
+                connectivitycheck.android.com
+                android.clients.google.com
+                clients3.google.com
+                connectivitycheck.gstatic.com
+                itunes.apple.com
+                s.mzstatic.com
+                appleid.apple.com
+                gsp-ssl.ls.apple.com
+                gsp-ssl.ls-apple.com.akadns.net
+                captive.apple.com
+                gsp1.apple.com
+                www.apple.com
+                www.appleiphonecell.com
+                tracking-protection.cdn.mozilla.net
+                styles.redditmedia.com
+                www.redditstatic.com
+                reddit.map.fastly.net
+                www.redditmedia.com
+                reddit-uploaded-media.s3-accelerate.amazonaws.com
+                ud-chat.signal.org
+                chat.signal.org
+                storage.signal.org
+                signal.org
+                www.signal.org
+                updates2.signal.org
+                textsecure-service-whispersystems.org
+                giphy-proxy-production.whispersystems.org
+                cdn.signal.org
+                whispersystems-textsecure-attachments.s3-accelerate.amazonaws.com
+                d83eunklitikj.cloudfront.net
+                souqcdn.com
+                cms.souqcdn.com
+                api.directory.signal.org
+                contentproxy.signal.org
+                turn1.whispersystems.org
+              ''];
+
+              clientGroupsBlock = { default = [ "default" ]; };
+            };
+
+            customDNS = {
+              filterUnmappedTypes = true;
+              mapping = builtins.mapAttrs (_:
+                { ipv4, ipv6 }:
+                "${util.ipAddress ipv4},${util.ipAddress ipv6}")
+                cfg.localDomains;
+            };
           };
-
-          prometheus.enable = true;
-
-          upstreams.groups = {
-            default = [
-              "tcp-tls:9.9.9.9:853#dns.quad9.net"
-              "tcp-tls:149.112.112.112:853#dns.quad9.net"
-              "tcp-tls:[2620:fe::fe]:853#dns.quad9.net"
-              "tcp-tls:[2620:fe::9]:853#dns.quad9.net"
-            ];
-          };
-
-          blocking = {
-            blackLists.default = [
-              "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/pro.txt"
-              "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/fake.txt"
-            ];
-
-            whiteLists.default = [''
-              clients4.google.com
-              clients2.google.com
-              s.youtube.com
-              video-stats.l.google.com
-              www.googleapis.com
-              youtubei.googleapis.com
-              oauthaccountmanager.googleapis.com
-              android.clients.google.com
-              reminders-pa.googleapis.com
-              firestore.googleapis.com
-              gstaticadssl.l.google.com
-              googleapis.l.google.com
-              dl.google.com
-              redirector.gvt1.com
-              connectivitycheck.android.com
-              android.clients.google.com
-              clients3.google.com
-              connectivitycheck.gstatic.com
-              itunes.apple.com
-              s.mzstatic.com
-              appleid.apple.com
-              gsp-ssl.ls.apple.com
-              gsp-ssl.ls-apple.com.akadns.net
-              captive.apple.com
-              gsp1.apple.com
-              www.apple.com
-              www.appleiphonecell.com
-              tracking-protection.cdn.mozilla.net
-              styles.redditmedia.com
-              www.redditstatic.com
-              reddit.map.fastly.net
-              www.redditmedia.com
-              reddit-uploaded-media.s3-accelerate.amazonaws.com
-              ud-chat.signal.org
-              chat.signal.org
-              storage.signal.org
-              signal.org
-              www.signal.org
-              updates2.signal.org
-              textsecure-service-whispersystems.org
-              giphy-proxy-production.whispersystems.org
-              cdn.signal.org
-              whispersystems-textsecure-attachments.s3-accelerate.amazonaws.com
-              d83eunklitikj.cloudfront.net
-              souqcdn.com
-              cms.souqcdn.com
-              api.directory.signal.org
-              contentproxy.signal.org
-              turn1.whispersystems.org
-            ''];
-
-            clientGroupsBlock = { default = [ "default" ]; };
-          };
-
-          customDNS = {
-            filterUnmappedTypes = true;
-            mapping = builtins.mapAttrs (_:
-              { ipv4, ipv6 }:
-              "${util.ipAddress ipv4},${util.ipAddress ipv6}") cfg.localDomains;
-          };
-
-          queryLog = lib.mkIf config.services.postgresql.enable {
+        };
+      };
+    }
+    # Do not enable postgres here; we only want to attach to an already running
+    # instance, since not all machines running blocky should run postgres.
+    (lib.mkIf config.services.postgresql.enable {
+      services = {
+        blocky = {
+          settings.queryLog = {
             type = "postgresql";
             target = "postgresql://${dbName}@/${dbName}?host=/run/postgresql";
           };
         };
-      };
 
-      # Do not enable postgresql here, we only want to attach to an already
-      # running instance.
-      postgresql = lib.mkIf config.services.postgresql.enable {
-        ensureDatabases = [ dbName ];
-        ensureUsers = [
-          {
-            name = dbName;
-            ensureDBOwnership = true;
-          }
-          { name = grafanaDbUser; }
-        ];
-      };
+        postgresql = {
+          ensureDatabases = [ dbName ];
+          ensureUsers = [
+            {
+              name = dbName;
+              ensureDBOwnership = true;
+            }
+            { name = grafanaDbUser; }
+          ];
+        };
 
-      grafana.provision.datasources.settings.datasources =
-        lib.mkIf config.services.postgresql.enable [{
+        grafana.provision.datasources.settings.datasources = [{
           name = "PostgreSQL";
           type = "postgres";
           host = "/run/postgresql";
           database = dbName;
           user = grafanaDbUser;
         }];
-    };
+      };
 
-    systemd.services.postgresql.postStart =
-      lib.mkIf config.services.postgresql.enable (lib.mkAfter ''
+      systemd.services.postgresql.postStart = lib.mkAfter ''
         $PSQL -d ${dbName} -tAc 'GRANT USAGE ON SCHEMA public TO ${grafanaDbUser};'
         $PSQL -d ${dbName} -tAc 'GRANT SELECT ON public.log_entries TO ${grafanaDbUser};'
-      '');
-  };
+      '';
+    })
+  ]);
 }
