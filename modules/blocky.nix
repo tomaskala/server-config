@@ -190,16 +190,22 @@ in {
           ];
         };
 
-        grafana.provision.datasources.settings.datasources = [{
-          name = "PostgreSQL";
-          type = "postgres";
-          host = "/run/postgresql";
-          database = dbName;
-          user = grafanaDbUser;
-          jsonData.sslmode = "disable";
-          secureJsonData.password =
-            "$__file{${config.age.secrets.blocky-grafana-postgresql.path}}";
-        }];
+        grafana = {
+          # Allow scripts in text panels. Necessary for the "Disable blocking"
+          # button to work.
+          settings.panels.disable_sanitize_html = true;
+
+          provision.datasources.settings.datasources = [{
+            name = "PostgreSQL";
+            type = "postgres";
+            host = "/run/postgresql";
+            database = dbName;
+            user = grafanaDbUser;
+            jsonData.sslmode = "disable";
+            secureJsonData.password =
+              "$__file{${config.age.secrets.blocky-grafana-postgresql.path}}";
+          }];
+        };
       };
 
       systemd.services.postgresql.postStart = lib.mkAfter ''
