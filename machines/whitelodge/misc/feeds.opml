@@ -2,7 +2,7 @@
 <opml version="2.0">
     <head>
         <title>Miniflux</title>
-        <dateCreated>Sat, 11 May 2024 11:06:55 UTC</dateCreated>
+        <dateCreated>Mon, 03 Jun 2024 08:16:19 UTC</dateCreated>
     </head>
     <body>
         <outline text="Dev">
@@ -16,6 +16,7 @@
             <outline title="Phoboslab" text="Phoboslab" xmlUrl="https://phoboslab.org/log/feed" htmlUrl="https://phoboslab.org/log" type="rss"></outline>
             <outline title="Project Nayuki" text="Project Nayuki" xmlUrl="https://www.nayuki.io/rss20.xml" htmlUrl="https://www.nayuki.io/" type="rss"></outline>
             <outline title="Ratfactor Feed" text="Ratfactor Feed" xmlUrl="https://ratfactor.com/atom.xml" htmlUrl="http://ratfactor.com/" type="rss"></outline>
+            <outline title="Technomancy" text="Technomancy" xmlUrl="https://technomancy.us/atom.xml" htmlUrl="https://technomancy.us/" type="rss"></outline>
         </outline>
         <outline text="Golang">
             <outline title="Dave Cheney" text="Dave Cheney" xmlUrl="https://dave.cheney.net/feed/atom" htmlUrl="https://dave.cheney.net" type="rss"></outline>
