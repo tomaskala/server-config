@@ -1,11 +1,11 @@
-{ config, pkgs, ... }:
+{ config, pkgs, secrets, ... }:
 
 {
   # TODO: https://codeberg.org/davidak/nixos-config
   # TODO: home-manager
 
   imports = [
-    ../intranet.nix
+    ./home.nix
     ./modules/audio.nix
     ./modules/filesystems.nix
     ./modules/firewall.nix
@@ -16,7 +16,7 @@
     ./modules/virtualisation.nix
     ./modules/vpn.nix
     ./modules/xserver.nix
-    ./secrets-management.nix
+    ../intranet.nix
   ];
 
   config = {
@@ -48,8 +48,33 @@
       experimental-features = [ "nix-commands" "flakes" ];
     };
 
+    age = {
+      identityPaths = [ "/home/tomas/.ssh/id_ed25519_agenix" ];
+
+      secrets = {
+        users-tomas-password.file = "${secrets}/secrets/users/cooper/tomas.age";
+        users-root-password.file = "${secrets}/secrets/users/cooper/root.age";
+
+        wg-cooper-internal-pk = {
+          file = "${secrets}/secrets/wg-pk/cooper/internal.age";
+          mode = "0640";
+          owner = "root";
+          group = "systemd-network";
+        };
+
+        wg-cooper2whitelodge = {
+          file = "${secrets}/secrets/wg-psk/cooper2whitelodge.age";
+          mode = "0640";
+          owner = "root";
+          group = "systemd-network";
+        };
+      };
+    };
+
     users = {
       mutableUsers = false;
+
+      root.hashedPasswordFile = config.age.secrets.users-root-password.path;
 
       users.tomas = {
         isNormalUser = true;
