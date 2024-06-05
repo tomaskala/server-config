@@ -75,25 +75,75 @@
 
         tomas = {
           isNormalUser = true;
-          extraGroups = [ "wheel" ];
+          extraGroups = [ "wheel" "wireshark" ];
           hashedPasswordFile = config.age.secrets.users-tomas-password.path;
+          shell = pkgs.zsh;
         };
       };
     };
 
     time.timeZone = "Europe/Prague";
 
-    # Only system utilities should be installed globally.
+    programs = {
+      firefox.enable = true;
+
+      git = {
+        enable = true;
+        lfs.enable = true;
+      };
+
+      neovim = {
+        enable = true;
+        defaultEditor = true;
+        vimAlias = true;
+      };
+
+      ssh.startAgent = true;
+
+      wireshark = {
+        enable = true;
+        package = pkgs.wireshark-qt;
+      };
+
+      zsh.enable = true;
+    };
+
     environment.systemPackages = with pkgs; [
+      # System utilities
       bc
-      curl
-      git
+      fzf
       htop
-      ldns
+      man-pages
+      man-pages-posix
+      ripgrep
       rsync
       tmux
       tree
+
+      # Networking
+      curl
+      ldns
+      openssl
+      tcpdump
+      whois
       wireguard-tools
+
+      # Internet
+      thunderbird
+
+      # Development
+      gnumake
+      shellcheck
+
+      # Media
+      mpv
+      yt-dlp
+
+      # Communication
+      discord
+      telegram-desktop
+
+      # Miscellaneous
       yubikey-manager-qt
     ];
 
