@@ -170,14 +170,16 @@ in {
     (lib.mkIf config.services.postgresql.enable {
       age.secrets = {
         blocky-grafana-postgresql-grafana = {
-          file = "${secrets}/secrets/other/blocky-grafana-postgresql.age";
+          file =
+            "${secrets}/secrets/other/whitelodge/blocky-grafana-postgresql.age";
           mode = "0640";
           owner = "root";
           group = "grafana";
         };
 
         blocky-grafana-postgresql-postgresql = {
-          file = "${secrets}/secrets/other/blocky-grafana-postgresql.age";
+          file =
+            "${secrets}/secrets/other/whitelodge/blocky-grafana-postgresql.age";
           mode = "0640";
           owner = "root";
           group = "postgres";
