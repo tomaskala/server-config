@@ -9,7 +9,8 @@ following.
 
 1. Put its configuration under `machines/twinpeaks`.
 2. Create an `outputs.nixosConfigurations.twinpeaks` block in `flake.nix`. If 
-   necessary, define its network configuration in `machines/intranet.nix`.
+   necessary, define its network configuration in `intranet/devices.nix` and 
+  `intranet/wireguard.nix`.
 3. Start the machine and its SSH server to generate an SSH host key.
 4. Obtain the host key.
    ```
