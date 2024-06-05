@@ -49,8 +49,6 @@ in {
     };
   };
 
-  environment.persistence."/persistent".directories = [ "/var/lib/iwd" ];
-
   # Wait until udev renames the wireless interface.
   systemd.services.iwd =
     let deps = [ "sys-subsystem-net-devices-${wirelessInterface}.device" ];

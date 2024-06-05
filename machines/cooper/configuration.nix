@@ -1,9 +1,6 @@
 { config, pkgs, secrets, ... }:
 
 {
-  # TODO: https://codeberg.org/davidak/nixos-config
-  # TODO: home-manager
-
   imports = [
     ./home.nix
     ./modules/audio.nix

@@ -43,10 +43,4 @@
       ];
     };
   };
-
-  environment.persistence."/persistent".users.tomas = {
-    directories = [ ".config/dunst" ".config/i3" ".config/i3status" ];
-
-    files = [ ".config/xinitrc" ];
-  };
 }
