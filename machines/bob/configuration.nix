@@ -11,9 +11,8 @@ in {
     ./modules/network.nix
     ./modules/wireguard.nix
     ../../intranet
+    ../../modules/blocky.nix
     ../../modules/openssh.nix
-    ../../modules/unbound-blocker.nix
-    ../../modules/unbound.nix
   ];
 
   config = {
@@ -103,39 +102,46 @@ in {
           port = 9100;
         };
       };
+    };
 
-      unbound = {
+    infra = {
+      blocky = {
         enable = true;
 
-        settings.server = {
-          interface = [
-            "127.0.0.1"
-            "::1"
-            (util.ipAddress deviceCfg.external.lan.ipv4)
-            (util.ipAddress deviceCfg.external.lan.ipv6)
-          ];
-          access-control = [
-            "127.0.0.1/8 allow"
-            "::1/128 allow"
-            "${util.ipSubnet deviceCfg.wireguard.isolated.subnet.ipv4} allow"
-            "${util.ipSubnet deviceCfg.wireguard.isolated.subnet.ipv6} allow"
-          ];
+        listenAddresses = [
+          {
+            addr = "127.0.0.1";
+            port = 53;
+          }
+          {
+            addr = "[::1]";
+            port = 53;
+          }
+          {
+            addr = util.ipAddress deviceCfg.external.lan.ipv4;
+            port = 53;
+          }
+          {
+            addr = "[${util.ipAddress deviceCfg.external.lan.ipv6}]";
+            port = 53;
+          }
+        ];
+
+        metrics = {
+          addr = util.ipAddress deviceCfg.wireguard.isolated.ipv4;
+          port = 4000;
         };
 
         localDomains = let
           lServices =
             builtins.attrValues intranetCfg.subnets.l-internal.services;
 
-          urlsToIPs = builtins.map ({ url, ipv4, ipv6 }:
-            lib.nameValuePair url {
-              ipv4 = util.ipAddress ipv4;
-              ipv6 = util.ipAddress ipv6;
-            }) lServices;
+          urlsToIPs = builtins.map
+            ({ url, ipv4, ipv6 }: lib.nameValuePair url { inherit ipv4 ipv6; })
+            lServices;
         in builtins.listToAttrs urlsToIPs;
       };
-    };
 
-    infra = {
       firewall.enable = true;
 
       navidrome = {
@@ -144,7 +150,6 @@ in {
         musicDir = "/mnt/Music";
       };
 
-      unbound-blocker.enable = true;
       wireguard.enable = true;
     };
   };

@@ -13,9 +13,8 @@ in {
     ./modules/website.nix
     ./modules/wireguard.nix
     ../../intranet
+    ../../modules/blocky.nix
     ../../modules/openssh.nix
-    ../../modules/unbound-blocker.nix
-    ../../modules/unbound.nix
   ];
 
   config = {
@@ -201,51 +200,75 @@ in {
           enabledCollectors = [ "processes" "systemd" ];
         };
       };
-
-      unbound = {
-        enable = true;
-        settings.server = {
-          interface = [
-            # Allow the server itself to use the resolver.
-            "127.0.0.1"
-            "::1"
-            # Allow internal peers to use the resolver. This is to allow
-            # resolving internal domain names as well as to use it for
-            # domain filtering when accessing the public internet.
-            (util.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.internal.ipv4)
-            (util.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.internal.ipv6)
-            # Allow isolated peers to use the resolver. This is to allow
-            # resolving internal domain names.
-            (util.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.isolated.ipv4)
-            (util.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.isolated.ipv6)
-            # Allow passthru peers to use the resolver. This is to allow
-            # them to use a trusted resolver. Although it will resolve
-            # internal domain names, the passthru peers do not have access
-            # to those services.
-            (util.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.passthru.ipv4)
-            (util.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.passthru.ipv6)
-          ];
-          access-control = [
-            "127.0.0.1/8 allow"
-            "::1/128 allow"
-            "${util.ipSubnet intranetCfg.wireguard.internal.ipv4} allow"
-            "${util.ipSubnet intranetCfg.wireguard.internal.ipv6} allow"
-            "${util.ipSubnet intranetCfg.wireguard.isolated.ipv4} allow"
-            "${util.ipSubnet intranetCfg.wireguard.isolated.ipv6} allow"
-            "${util.ipSubnet intranetCfg.wireguard.passthru.ipv4} allow"
-            "${util.ipSubnet intranetCfg.wireguard.passthru.ipv6} allow"
-          ];
-        };
-      };
     };
 
     infra = {
+      blocky = {
+        enable = true;
+
+        listenAddresses = [
+          # Allow the server itself to use the resolver.
+          {
+            addr = "127.0.0.1";
+            port = 53;
+          }
+          {
+            addr = "[::1]";
+            port = 53;
+          }
+          # Allow internal peers to use the resolver. This is to allow
+          # resolving internal domain names as well as to use it for
+          # domain filtering when accessing the public internet.
+          {
+            addr = util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
+            port = 53;
+          }
+          {
+            addr = "[${
+                util.ipAddress
+                intranetCfg.devices.whitelodge.wireguard.internal.ipv6
+              }]";
+            port = 53;
+          }
+          # Allow isolated peers to use the resolver. This is to allow
+          # resolving internal domain names.
+          {
+            addr = util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.isolated.ipv4;
+            port = 53;
+          }
+          {
+            addr = "[${
+                util.ipAddress
+                intranetCfg.devices.whitelodge.wireguard.isolated.ipv6
+              }]";
+            port = 53;
+          }
+          # Allow passthru peers to use the resolver. This is to allow
+          # them to use a trusted resolver. Although it will resolve
+          # internal domain names, the passthru peers do not have access
+          # to those services.
+          {
+            addr = util.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.passthru.ipv4;
+            port = 53;
+          }
+          {
+            addr = "[${
+                util.ipAddress
+                intranetCfg.devices.whitelodge.wireguard.passthru.ipv6
+              }]";
+            port = 53;
+          }
+        ];
+
+        metrics = {
+          addr = "127.0.0.1";
+          port = 4000;
+        };
+      };
+
       firewall.enable = true;
 
       miniflux = {
@@ -260,23 +283,44 @@ in {
         prometheusPort = 9090;
         inherit acmeEmail;
 
-        scrapeConfigs = [{
-          job_name = "node";
-          static_configs = [
-            {
-              targets = [ "127.0.0.1:9100" ];
-              labels = { peer = "whitelodge"; };
-            }
-            {
-              targets = [
-                "${
-                  util.ipAddress intranetCfg.devices.bob.wireguard.isolated.ipv4
-                }:9100"
-              ];
-              labels = { peer = "bob"; };
-            }
-          ];
-        }];
+        scrapeConfigs = [
+          {
+            job_name = "node";
+            static_configs = [
+              {
+                targets = [ "127.0.0.1:9100" ];
+                labels = { peer = "whitelodge"; };
+              }
+              {
+                targets = [
+                  "${
+                    util.ipAddress
+                    intranetCfg.devices.bob.wireguard.isolated.ipv4
+                  }:9100"
+                ];
+                labels = { peer = "bob"; };
+              }
+            ];
+          }
+          {
+            job_name = "blocky";
+            static_configs = [
+              {
+                targets = [ "127.0.0.1:4000" ];
+                labels = { peer = "whitelodge"; };
+              }
+              {
+                targets = [
+                  "${
+                    util.ipAddress
+                    intranetCfg.devices.bob.wireguard.isolated.ipv4
+                  }:4000"
+                ];
+                labels = { peer = "bob"; };
+              }
+            ];
+          }
+        ];
       };
 
       radicale = {
@@ -284,8 +328,6 @@ in {
         port = 5232;
         inherit acmeEmail;
       };
-
-      unbound-blocker.enable = true;
 
       website = {
         enable = true;

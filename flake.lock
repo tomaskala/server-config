@@ -188,14 +188,30 @@
         "type": "github"
       }
     },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1717196966,
+        "narHash": "sha256-yZKhxVIKd2lsbOqYd5iDoUIwsRZFqE87smE2Vzf6Ck0=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "57610d2f8f0937f39dbd72251e9614b1561942d8",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
         "home-manager": "home-manager_2",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "secrets": "secrets",
-        "unbound-blocker": "unbound-blocker",
         "vps-admin-os": "vps-admin-os"
       }
     },
@@ -247,26 +263,6 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
-        "type": "github"
-      }
-    },
-    "unbound-blocker": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1701553388,
-        "narHash": "sha256-t10Egs728gbrTIJS8r1xpt1nbncnTQEOV9Af01KkuuU=",
-        "owner": "tomaskala",
-        "repo": "unbound-blocker",
-        "rev": "cb9227e04698c3791f483d3500beb9fc821643fd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tomaskala",
-        "repo": "unbound-blocker",
         "type": "github"
       }
     },
