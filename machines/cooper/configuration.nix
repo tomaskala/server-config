@@ -12,7 +12,7 @@
     ./modules/printing.nix
     ./modules/virtualisation.nix
     ./modules/wireguard.nix
-    ../intranet.nix
+    ../../intranet
   ];
 
   config = {
@@ -70,12 +70,14 @@
     users = {
       mutableUsers = false;
 
-      root.hashedPasswordFile = config.age.secrets.users-root-password.path;
+      users = {
+        root.hashedPasswordFile = config.age.secrets.users-root-password.path;
 
-      users.tomas = {
-        isNormalUser = true;
-        extraGroups = [ "wheel" ];
-        hashedPasswordFile = config.age.secrets.users-tomas-password.path;
+        tomas = {
+          isNormalUser = true;
+          extraGroups = [ "wheel" ];
+          hashedPasswordFile = config.age.secrets.users-tomas-password.path;
+        };
       };
     };
 

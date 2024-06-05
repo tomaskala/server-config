@@ -1,5 +1,4 @@
-let
-  wiredInterface = "eth0";
+let wiredInterface = "eth0";
 in {
   services.resolved = {
     enable = true;
