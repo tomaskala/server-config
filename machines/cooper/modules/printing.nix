@@ -17,10 +17,10 @@ in {
   };
 
   hardware.printers = {
-    ensureDefaultPrinter = "HP_home";
+    ensureDefaultPrinter = "HP@l";
     ensurePrinters = [{
-      name = "HP_home";
-      location = "home";
+      name = "HP@l";
+      location = "l";
       description = "HP_OfficeJet_Pro_8715";
       deviceUri = "ipp://${privateSubnet.services.printer.ipv4}/ipp/print";
       model = "lsb/usr/HP/hp-officejet_pro_8710.ppd.gz";

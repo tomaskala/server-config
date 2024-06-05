@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [ kind qemu ];
+  environment.systemPackages = [ pkgs.qemu ];
 
   virtualisation.podman = {
     enable = true;

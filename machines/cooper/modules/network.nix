@@ -1,6 +1,5 @@
 let
   wiredInterface = "eth0";
-  wirelessInterface = "wlan0";
 in {
   services.resolved = {
     enable = true;
@@ -48,12 +47,4 @@ in {
       };
     };
   };
-
-  # Wait until udev renames the wireless interface.
-  systemd.services.iwd =
-    let deps = [ "sys-subsystem-net-devices-${wirelessInterface}.device" ];
-    in {
-      requires = deps;
-      after = deps;
-    };
 }

@@ -11,8 +11,7 @@
     ./modules/phone.nix
     ./modules/printing.nix
     ./modules/virtualisation.nix
-    ./modules/vpn.nix
-    ./modules/xserver.nix
+    ./modules/wireguard.nix
     ../intranet.nix
   ];
 
