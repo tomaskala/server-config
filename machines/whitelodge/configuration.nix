@@ -53,25 +53,25 @@ in {
 
     age.secrets = {
       users-tomas-password.file =
-        "${secrets}/secrets/users/tomas-whitelodge.age";
-      users-root-password.file = "${secrets}/secrets/users/root-whitelodge.age";
+        "${secrets}/secrets/users/whitelodge/tomas.age";
+      users-root-password.file = "${secrets}/secrets/users/whitelodge/root.age";
 
       wg-whitelodge-internal-pk = {
-        file = "${secrets}/secrets/wg-pk/whitelodge-internal.age";
+        file = "${secrets}/secrets/wg-pk/whitelodge/internal.age";
         mode = "0640";
         owner = "root";
         group = "systemd-network";
       };
 
       wg-whitelodge-isolated-pk = {
-        file = "${secrets}/secrets/wg-pk/whitelodge-isolated.age";
+        file = "${secrets}/secrets/wg-pk/whitelodge/isolated.age";
         mode = "0640";
         owner = "root";
         group = "systemd-network";
       };
 
       wg-whitelodge-passthru-pk = {
-        file = "${secrets}/secrets/wg-pk/whitelodge-passthru.age";
+        file = "${secrets}/secrets/wg-pk/whitelodge/passthru.age";
         mode = "0640";
         owner = "root";
         group = "systemd-network";

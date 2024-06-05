@@ -120,11 +120,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1716736833,
-        "narHash": "sha256-rNObca6dm7Qs524O4st8VJH6pZ/Xe1gxl+Rx6mcWYo0=",
+        "lastModified": 1717527182,
+        "narHash": "sha256-vWSkg6AMok1UUQiSYVdGMOXKD2cDFnajITiSi0Zjd1A=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "a631666f5ec18271e86a5cde998cba68c33d9ac6",
+        "rev": "845a5c4c073f74105022533907703441e0464bc3",
         "type": "github"
       },
       "original": {
@@ -158,11 +158,11 @@
     },
     "nixos-hardware": {
       "locked": {
-        "lastModified": 1717248095,
-        "narHash": "sha256-e8X2eWjAHJQT82AAN+mCI0B68cIDBJpqJ156+VRrFO0=",
+        "lastModified": 1717574423,
+        "narHash": "sha256-cz3P5MZffAHwL2IQaNzsqUBsJS+u0J/AAwArHMAcCa0=",
         "owner": "nixos",
         "repo": "nixos-hardware",
-        "rev": "7b49d3967613d9aacac5b340ef158d493906ba79",
+        "rev": "d6c6cf6f5fead4057d8fb2d5f30aa8ac1727f177",
         "type": "github"
       },
       "original": {
@@ -174,11 +174,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1717144377,
-        "narHash": "sha256-F/TKWETwB5RaR8owkPPi+SPJh83AQsm6KrQAlJ8v/uA=",
+        "lastModified": 1717281328,
+        "narHash": "sha256-evZPzpf59oNcDUXxh2GHcxHkTEG4fjae2ytWP85jXRo=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "805a384895c696f802a9bf5bf4720f37385df547",
+        "rev": "b3b2b28c1daa04fe2ae47c21bb76fd226eac4ca1",
         "type": "github"
       },
       "original": {
@@ -207,11 +207,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1711916709,
-        "narHash": "sha256-Kix4kRtZcaP0xD0sS/+Qiam94JBXb4voN9ZKS6DGD9g=",
+        "lastModified": 1717593094,
+        "narHash": "sha256-bW/FglQJ8XOrApXH+t11d97/m7ry6DvAAFkUBOz89tQ=",
         "ref": "refs/heads/master",
-        "rev": "0eb2721fa79012fcf3a401b35ecf8ec7922925f2",
-        "revCount": 4,
+        "rev": "cb4cbf68dad8f66d10c2e4b9668a5c33f5b565cc",
+        "revCount": 7,
         "type": "git",
         "url": "ssh://git@github.com/tomaskala/infra-secrets"
       },
@@ -272,11 +272,11 @@
     },
     "vps-admin-os": {
       "locked": {
-        "lastModified": 1717245729,
-        "narHash": "sha256-c43oGHgsSecDQMCtZ+EqQmeIpjOXe86WmNxZ0nwztG8=",
+        "lastModified": 1717573966,
+        "narHash": "sha256-HexNxrosL7s5QLDwHjPC1EbZLXLicBkPR7CLZJ98MF8=",
         "owner": "vpsfreecz",
         "repo": "vpsadminos",
-        "rev": "4a779702bdfe2fd98497f7a9e638b7b559ce1cc1",
+        "rev": "13f3c04e6a936c68028d452088e2041604818eac",
         "type": "github"
       },
       "original": {

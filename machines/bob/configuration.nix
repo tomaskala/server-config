@@ -35,11 +35,11 @@ in {
     };
 
     age.secrets = {
-      users-tomas-password.file = "${secrets}/secrets/users/tomas-bob.age";
-      users-root-password.file = "${secrets}/secrets/users/root-bob.age";
+      users-tomas-password.file = "${secrets}/secrets/users/bob/tomas.age";
+      users-root-password.file = "${secrets}/secrets/users/bob/root.age";
 
       wg-bob-isolated-pk = {
-        file = "${secrets}/secrets/wg-pk/bob.age";
+        file = "${secrets}/secrets/wg-pk/bob/isolated.age";
         mode = "0640";
         owner = "root";
         group = "systemd-network";

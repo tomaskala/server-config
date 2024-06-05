@@ -35,10 +35,10 @@ in {
   config = lib.mkIf cfg.enable {
     age.secrets = {
       cloudflare-dns-challenge-api-tokens.file =
-        "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
+        "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
 
       radicale-htpasswd = {
-        file = "${secrets}/secrets/other/radicale-htpasswd.age";
+        file = "${secrets}/secrets/other/whitelodge/radicale-htpasswd.age";
         mode = "0640";
         owner = "root";
         group = "radicale";

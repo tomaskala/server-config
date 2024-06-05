@@ -35,9 +35,9 @@ in {
   config = lib.mkIf cfg.enable {
     age.secrets = {
       cloudflare-dns-challenge-api-tokens.file =
-        "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
+        "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
       miniflux-admin-credentials.file =
-        "${secrets}/secrets/other/miniflux-whitelodge.age";
+        "${secrets}/secrets/other/whitelodge/miniflux-whitelodge.age";
     };
 
     services.miniflux = {

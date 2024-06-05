@@ -47,12 +47,12 @@ in {
   config = lib.mkIf cfg.enable {
     age.secrets = {
       cloudflare-dns-challenge-api-tokens.file =
-        "${secrets}/secrets/other/cloudflare-dns-challenge-api-tokens.age";
+        "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
       postgresql-grafana-password.file =
-        "${secrets}/secrets/other/postgresql-grafana.age";
+        "${secrets}/secrets/other/whitelodge/postgresql-grafana.age";
 
       grafana-admin-password = {
-        file = "${secrets}/secrets/other/grafana-admin.age";
+        file = "${secrets}/secrets/other/whitelodge/grafana-admin.age";
         mode = "0640";
         owner = "root";
         group = "grafana";
