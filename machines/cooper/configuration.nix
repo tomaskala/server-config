@@ -9,6 +9,7 @@
     ./modules/network.nix
     ./modules/phone.nix
     ./modules/printing.nix
+    ./modules/sway.nix
     ./modules/virtualisation.nix
     ./modules/wireguard.nix
     ../../intranet
@@ -138,6 +139,7 @@
       # Media
       mpv
       yt-dlp
+      zathura
 
       # Communication
       discord
