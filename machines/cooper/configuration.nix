@@ -42,6 +42,7 @@
     nix.settings = {
       auto-optimise-store = true;
       experimental-features = [ "nix-commands" "flakes" ];
+      trusted-users = [ "root" "tomas" ];
     };
 
     age = {
