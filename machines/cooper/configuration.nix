@@ -12,6 +12,7 @@
     ./modules/sway.nix
     ./modules/virtualisation.nix
     ./modules/wireguard.nix
+    ./modules/work.nix
     ../../intranet
   ];
 
@@ -134,9 +135,14 @@
 
       # Development
       gnumake
+      go
+      gotools
+      hugo
+      (python3.withPackages (ps: [ ps.pip ]))
       shellcheck
 
       # Media
+      libreoffice-still
       mpv
       yt-dlp
       zathura
