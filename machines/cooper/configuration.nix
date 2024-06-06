@@ -4,7 +4,6 @@
   imports = [
     ./home.nix
     ./modules/audio.nix
-    ./modules/filesystems.nix
     ./modules/firewall.nix
     ./modules/fonts.nix
     ./modules/network.nix
