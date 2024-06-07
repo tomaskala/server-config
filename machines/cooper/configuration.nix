@@ -138,7 +138,7 @@
       go
       gotools
       hugo
-      (python3.withPackages (ps: [ ps.pip ]))
+      python3
       shellcheck
 
       # Media

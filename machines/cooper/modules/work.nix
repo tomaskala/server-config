@@ -4,7 +4,7 @@
   programs.openvpn3.enable = true;
 
   environment.systemPackages = with pkgs; [
-    (python3.withPackages (ps: [ ps.pip ]))
+    python3
     poetry
 
     biome
