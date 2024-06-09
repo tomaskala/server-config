@@ -95,7 +95,7 @@
       packages.x86_64-linux.audrey = let
         inherit (openwrt-imagebuilder) lib;
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      in pkgs.callPackage ./machines/audrey/audrey.nix {
+      in pkgs.callPackage ./machines/audrey {
         inherit (lib.profiles { inherit pkgs; }) identifyProfile;
         inherit (lib) build;
       };
