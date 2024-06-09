@@ -1,9 +1,10 @@
-{ runCommand, identifyProfile, build }:
+{ pkgs, openwrt-imagebuilder }:
 
 let
   profile = "mikrotik_routerboard-952ui-5ac2nd";
-  profileCfg = identifyProfile profile;
-in build (profileCfg // {
+  profiles = openwrt-imagebuilder.lib.profiles { inherit pkgs; };
+  profileCfg = profiles.identifyProfile profile;
+in openwrt-imagebuilder.lib.build (profileCfg // {
   packages = [
     "travelmate"
     "luci-app-travelmate"
@@ -15,7 +16,7 @@ in build (profileCfg // {
     "wireguard-tools"
   ];
 
-  files = runCommand "image-files" { } ''
+  files = pkgs.runCommand "image-files" { } ''
     mkdir -p $out/etc/uci-defaults
 
     cat > $out/etc/uci-defaults/99-custom <<EOF

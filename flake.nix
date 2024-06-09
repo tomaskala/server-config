@@ -92,13 +92,9 @@
         };
       };
 
-      packages.x86_64-linux.audrey = let
-        inherit (openwrt-imagebuilder) lib;
-        pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      in pkgs.callPackage ./machines/audrey {
-        inherit (lib.profiles { inherit pkgs; }) identifyProfile;
-        inherit (lib) build;
-      };
+      packages.x86_64-linux.audrey =
+        let pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        in pkgs.callPackage ./machines/audrey { inherit openwrt-imagebuilder; };
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
