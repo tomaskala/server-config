@@ -18,6 +18,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    openwrt-imagebuilder = {
+      url = "github:astro/nix-openwrt-imagebuilder";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     secrets = {
       url = "git+ssh://git@github.com/tomaskala/infra-secrets";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -25,7 +30,7 @@
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, nixos-hardware, vps-admin-os
-    , home-manager, agenix, secrets, ... }:
+    , home-manager, agenix, openwrt-imagebuilder, secrets, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
 
@@ -85,6 +90,14 @@
           ];
           specialArgs = { inherit secrets util; };
         };
+      };
+
+      packages.x86_64-linux.audrey = let
+        inherit (openwrt-imagebuilder) lib;
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      in pkgs.callPackage ./machines/audrey/audrey.nix {
+        inherit (lib.profiles { inherit pkgs; }) identifyProfile;
+        inherit (lib) build;
       };
 
       devShells = forAllSystems (pkgs: {
