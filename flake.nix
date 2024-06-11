@@ -48,23 +48,24 @@
         };
       };
 
-      forOneSystem = f: system:
-        f (import nixpkgs {
-          inherit system;
-          overlays = let unstable = import nixpkgs-unstable { inherit system; };
-          in [ (_: _: { inherit (unstable) blocky; }) ];
-        });
+      mkUtil = pkgs: import ./util { inherit (pkgs) lib; };
 
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (forOneSystem f);
+      forAllSystems = f:
+        nixpkgs.lib.genAttrs systems
+        (system: f (import nixpkgs { inherit system; }));
     in {
       nixosConfigurations = {
         whitelodge = let
           system = "x86_64-linux";
-          pkgs = forOneSystem (pkgs: pkgs) system;
-          util =
-            forOneSystem (pkgs: import ./util { inherit (pkgs) lib; }) system;
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays =
+              let unstable = import nixpkgs-unstable { inherit system; };
+              in [ (_: _: { inherit (unstable) blocky; }) ];
+          };
         in nixpkgs.lib.nixosSystem {
           inherit system pkgs;
+
           modules = [
             ./machines/whitelodge/configuration.nix
             commonConfig
@@ -72,23 +73,35 @@
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
           ];
-          specialArgs = { inherit secrets util; };
+
+          specialArgs = {
+            inherit secrets;
+            util = mkUtil pkgs;
+          };
         };
 
         bob = let
           system = "aarch64-linux";
-          pkgs = forOneSystem (pkgs: pkgs) system;
-          util =
-            forOneSystem (pkgs: import ./util { inherit (pkgs) lib; }) system;
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays =
+              let unstable = import nixpkgs-unstable { inherit system; };
+              in [ (_: _: { inherit (unstable) blocky; }) ];
+          };
         in nixpkgs.lib.nixosSystem {
           inherit system pkgs;
+
           modules = [
             ./machines/bob/configuration.nix
             commonConfig
             nixos-hardware.nixosModules.raspberry-pi-4
             agenix.nixosModules.default
           ];
-          specialArgs = { inherit secrets util; };
+
+          specialArgs = {
+            inherit secrets;
+            util = mkUtil pkgs;
+          };
         };
       };
 
