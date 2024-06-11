@@ -7,6 +7,7 @@ in {
   imports = [
     ./home.nix
     ./modules/firewall.nix
+    ./modules/mealie.nix
     ./modules/miniflux.nix
     ./modules/monitoring-hub.nix
     ./modules/radicale.nix
@@ -270,6 +271,12 @@ in {
       };
 
       firewall.enable = true;
+
+      mealie = {
+        enable = true;
+        port = 9000;
+        inherit acmeEmail;
+      };
 
       miniflux = {
         enable = true;

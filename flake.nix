@@ -61,7 +61,7 @@
             inherit system;
             overlays =
               let unstable = import nixpkgs-unstable { inherit system; };
-              in [ (_: _: { inherit (unstable) blocky; }) ];
+              in [ (_: _: { inherit (unstable) blocky mealie; }) ];
           };
         in nixpkgs.lib.nixosSystem {
           inherit system pkgs;
