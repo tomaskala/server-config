@@ -148,23 +148,27 @@ in {
 
     time.timeZone = "Etc/UTC";
 
-    environment = {
-      noXlibs = true;
-      systemPackages = with pkgs; [
-        curl
-        git
-        htop
-        ldns
-        rsync
-        tmux
-        tree
-        wireguard-tools
-      ];
+    programs = {
+      git = {
+        enable = true;
+        config.init.defaultBranch = "master";
+      };
+
+      htop.enable = true;
+
+      tmux = {
+        enable = true;
+        escapeTime = 1;
+        clock24 = true;
+        baseIndex = 1;
+      };
+
+      vim.defaultEditor = true;
     };
 
-    programs = {
-      vim.defaultEditor = true;
-      git.config.init.defaultBranch = "master";
+    environment = {
+      noXlibs = true;
+      systemPackages = with pkgs; [ curl ldns rsync tree wireguard-tools ];
     };
 
     networking = {
