@@ -1,0 +1,48 @@
+{ config, pkgs, ... }:
+
+{
+  nix.settings = {
+    auto-optimise-store = true;
+    experimental-features = [ "nix-command" "flakes" ];
+  };
+
+  services.nix-daemon.enable = true;
+
+  programs = {
+    tmux.enable = true;
+    zsh.enable = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    # System utilities
+    fzf
+    htop
+    jq
+    ripgrep
+    rsync
+
+    # Development
+    git
+    gnumake
+    go
+    gotools
+    neovim
+    python3
+    shellcheck
+
+    # Media
+    hugo
+    yt-dlp
+
+    # Networking
+    curl
+    ldns
+    openssl
+    whois
+  ];
+
+  networking = {
+    computerName = "cooper";
+    hostName = "cooper";
+  };
+}

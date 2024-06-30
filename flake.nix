@@ -8,6 +8,11 @@
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
 
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,9 +35,9 @@
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, nixos-hardware, vps-admin-os
-    , home-manager, agenix, openwrt-imagebuilder, secrets, ... }:
+    , nix-darwin, home-manager, agenix, openwrt-imagebuilder, secrets, ... }:
     let
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 
       commonConfig = {
         config = {
@@ -102,6 +107,22 @@
             inherit secrets;
             util = mkUtil pkgs;
           };
+        };
+      };
+
+      darwinConfigurations = {
+        cooper = let
+          system = "aarch64-darwin";
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays =
+              let unstable = import nixpkgs-unstable { inherit system; };
+              in [ (_: _: { inherit (unstable) neovim; }) ];
+          };
+        in nix-darwin.lib.darwinSystem {
+          inherit system pkgs;
+
+          modules = [ ./machines/cooper/configuration.nix commonConfig ];
         };
       };
 
