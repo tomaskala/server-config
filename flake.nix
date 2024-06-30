@@ -113,8 +113,6 @@
         default = pkgs.mkShell {
           packages = with pkgs; [ deadnix nixfmt-classic statix ];
         };
-
-        tf = pkgs.mkShell { packages = [ pkgs.opentofu ]; };
       });
 
       formatter = forAllSystems (pkgs:
