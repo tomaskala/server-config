@@ -131,9 +131,8 @@
         in pkgs.callPackage ./machines/audrey { inherit openwrt-imagebuilder; };
 
       devShells = forAllSystems (pkgs: {
-        default = pkgs.mkShell {
-          packages = with pkgs; [ deadnix nixfmt-classic statix ];
-        };
+        default = import ./shells/infra.nix { inherit pkgs; };
+        work = import ./shells/work.nix { inherit pkgs; };
       });
 
       formatter = forAllSystems (pkgs:

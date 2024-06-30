@@ -11,6 +11,11 @@
   programs = {
     tmux.enable = true;
     zsh.enable = true;
+
+    direnv = {
+      enable = true;
+      silent = true;
+    };
   };
 
   environment.systemPackages = with pkgs; [
