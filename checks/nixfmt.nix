@@ -1,6 +1,6 @@
-{ runCommand, nixfmt-classic }:
+{ runCommandLocal, nixfmt-classic }:
 
-runCommand "check-statix" { nativeBuildInputs = [ nixfmt-classic ]; } ''
+runCommandLocal "check-nixfmt" { nativeBuildInputs = [ nixfmt-classic ]; } ''
   set -e
   find ${./..} -type f -name '*.nix' -exec nixfmt --check {} \+
   touch $out

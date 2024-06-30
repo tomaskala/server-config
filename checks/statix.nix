@@ -1,6 +1,6 @@
-{ runCommand, statix }:
+{ runCommandLocal, statix }:
 
-runCommand "check-statix" { nativeBuildInputs = [ statix ]; } ''
+runCommandLocal "check-statix" { nativeBuildInputs = [ statix ]; } ''
   set -e
   statix check ${./..}
   touch $out
