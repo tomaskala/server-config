@@ -80,7 +80,6 @@
     in {
       nixosConfigurations = {
         whitelodge = nixpkgs.lib.nixosSystem {
-          # TODO: Unstable blocky
           system = "x86_64-linux";
 
           modules = [
@@ -95,7 +94,6 @@
         };
 
         bob = nixpkgs.lib.nixosSystem {
-          # TODO: Unstable blocky
           system = "aarch64-linux";
 
           modules = [

@@ -166,6 +166,15 @@ in {
           };
         };
       };
+
+      # Ugly hack to use blocky from nixpkgs-unstable. Necessary because
+      # services.blocky does not expose a package option.
+      systemd.services.blocky.serviceConfig.ExecStart = let
+        format = pkgs.formats.yaml { };
+        configFile =
+          format.generate "config.yaml" config.services.blocky.settings;
+      in lib.mkForce
+      "${pkgs.unstable.blocky}/bin/blocky --config ${configFile}";
     }
     # Do not enable postgres here; we only want to attach to an already running
     # instance, since not all machines running blocky should run postgres.
