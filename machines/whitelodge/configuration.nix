@@ -26,13 +26,6 @@ in {
         # The system is running on ZFS, so we don't need Nix generations.
         options = "--delete-old";
       };
-
-      settings = {
-        # Optimise the store after each build (as opposed to nix.optimise.*
-        # which sets up a systemd timer to optimise the store periodically).
-        auto-optimise-store = true;
-        experimental-features = [ "nix-command" "flakes" ];
-      };
     };
 
     system.autoUpgrade = {

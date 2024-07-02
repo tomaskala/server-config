@@ -39,17 +39,24 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 
-      commonConfig = {
+      commonConfig = stateVersion: {
         config = {
-          system.stateVersion = "23.05";
+          system.stateVersion = stateVersion;
 
-          # Pin the nixpkgs flake to the same exact version used to build
-          # the system. This has two benefits:
-          # 1. No version mismatch between system packages and those
-          #    brought in by commands like 'nix shell nixpkgs#<package>'.
-          # 2. More efficient evaluation, because many dependencies will
-          # already be present in the Nix store.
-          nix.registry.nixpkgs.flake = nixpkgs;
+          nix = {
+            # Pin the nixpkgs flake to the same exact version used to build
+            # the system. This has two benefits:
+            # 1. No version mismatch between system packages and those
+            #    brought in by commands like 'nix shell nixpkgs#<package>'.
+            # 2. More efficient evaluation, because many dependencies will
+            # already be present in the Nix store.
+            registry.nixpkgs.flake = nixpkgs;
+
+            settings = {
+              auto-optimise-store = true;
+              experimental-features = [ "nix-command" "flakes" ];
+            };
+          };
         };
       };
 
@@ -73,7 +80,7 @@
 
           modules = [
             ./machines/whitelodge/configuration.nix
-            commonConfig
+            (commonConfig "23.05")
             home-manager.nixosModules.home-manager
             agenix.nixosModules.default
             vps-admin-os.nixosConfigurations.container
@@ -98,7 +105,7 @@
 
           modules = [
             ./machines/bob/configuration.nix
-            commonConfig
+            (commonConfig "23.05")
             nixos-hardware.nixosModules.raspberry-pi-4
             agenix.nixosModules.default
           ];
@@ -122,7 +129,7 @@
         in nix-darwin.lib.darwinSystem {
           inherit system pkgs;
 
-          modules = [ ./machines/cooper/configuration.nix commonConfig ];
+          modules = [ ./machines/cooper/configuration.nix (commonConfig 4) ];
         };
       };
 
