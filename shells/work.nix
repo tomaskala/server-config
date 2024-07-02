@@ -1,7 +1,7 @@
 { pkgs }:
 
 pkgs.mkShell {
-  name = "work-shell";
+  name = "shell-work";
   packages = with pkgs; [
     # NodeJS development
     biome

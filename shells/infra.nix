@@ -1,6 +1,6 @@
 { pkgs }:
 
 pkgs.mkShell {
-  name = "infra-shell";
+  name = "shell-infra";
   packages = with pkgs; [ deadnix nixfmt-classic statix ];
 }
