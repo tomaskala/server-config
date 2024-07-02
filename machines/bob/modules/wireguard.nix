@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   cfg = config.infra.wireguard;
   intranetCfg = config.infra.intranet;
@@ -31,9 +31,9 @@ in {
               intranetCfg.devices.whitelodge.wireguard.isolated.publicKey;
             PresharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
             AllowedIPs = [
-              (util.ipAddressMasked
+              (infra.ipAddressMasked
                 intranetCfg.devices.whitelodge.wireguard.isolated.ipv4 32)
-              (util.ipAddressMasked
+              (infra.ipAddressMasked
                 intranetCfg.devices.whitelodge.wireguard.isolated.ipv6 128)
             ];
             Endpoint = "${intranetCfg.devices.whitelodge.external.wan.ipv4}:${
@@ -52,9 +52,9 @@ in {
         networkConfig.IPForward = true;
 
         address = [
-          (util.ipAddressMasked deviceCfg.wireguard.isolated.ipv4
+          (infra.ipAddressMasked deviceCfg.wireguard.isolated.ipv4
             intranetCfg.wireguard.isolated.ipv4.mask)
-          (util.ipAddressMasked deviceCfg.wireguard.isolated.ipv6
+          (infra.ipAddressMasked deviceCfg.wireguard.isolated.ipv6
             intranetCfg.wireguard.isolated.ipv6.mask)
         ];
       };

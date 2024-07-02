@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   cfg = config.infra.firewall;
   deviceCfg = config.infra.intranet.devices.whitelodge;
@@ -124,7 +124,7 @@ in {
               elements = {
                 ${
                   lib.concatMapStringsSep ","
-                  ({ ipv4, ... }: util.ipSubnet ipv4) accessibleSubnets
+                  ({ ipv4, ... }: infra.ipSubnet ipv4) accessibleSubnets
                 }
               }
             }
@@ -136,7 +136,7 @@ in {
               elements = {
                 ${
                   lib.concatMapStringsSep ","
-                  ({ ipv6, ... }: util.ipSubnet ipv6) accessibleSubnets
+                  ({ ipv6, ... }: infra.ipSubnet ipv6) accessibleSubnets
                 }
               }
             }

@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   cfg = config.infra.firewall;
   deviceCfg = config.infra.intranet.devices.bob;
@@ -87,18 +87,18 @@ in {
 
               # Allow the specified TCP ports from the private subnet.
               iifname ${lanInterface} ip saddr ${
-                util.ipSubnet privateSubnet.ipv4
+                infra.ipSubnet privateSubnet.ipv4
               } tcp dport @tcp_accepted_lan ct state new accept
               iifname ${lanInterface} ip6 saddr ${
-                util.ipSubnet privateSubnet.ipv6
+                infra.ipSubnet privateSubnet.ipv6
               } tcp dport @tcp_accepted_lan ct state new accept
 
               # Allow the specified UDP ports from the private subnet.
               iifname ${lanInterface} ip saddr ${
-                util.ipSubnet privateSubnet.ipv4
+                infra.ipSubnet privateSubnet.ipv4
               } udp dport @udp_accepted_lan ct state new accept
               iifname ${lanInterface} ip6 saddr ${
-                util.ipSubnet privateSubnet.ipv6
+                infra.ipSubnet privateSubnet.ipv6
               } udp dport @udp_accepted_lan ct state new accept
 
               # Allow the specified TCP and UDP ports from WireGuard.

@@ -1,7 +1,7 @@
 { config, lib, pkgs, secrets, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
@@ -95,7 +95,7 @@ in {
         node = {
           enable = true;
           openFirewall = false;
-          listenAddress = util.ipAddress deviceCfg.wireguard.isolated.ipv4;
+          listenAddress = infra.ipAddress deviceCfg.wireguard.isolated.ipv4;
           port = 9100;
         };
       };
@@ -115,17 +115,17 @@ in {
             port = 53;
           }
           {
-            addr = util.ipAddress deviceCfg.external.lan.ipv4;
+            addr = infra.ipAddress deviceCfg.external.lan.ipv4;
             port = 53;
           }
           {
-            addr = "[${util.ipAddress deviceCfg.external.lan.ipv6}]";
+            addr = "[${infra.ipAddress deviceCfg.external.lan.ipv6}]";
             port = 53;
           }
         ];
 
         metrics = {
-          addr = util.ipAddress deviceCfg.wireguard.isolated.ipv4;
+          addr = infra.ipAddress deviceCfg.wireguard.isolated.ipv4;
           port = 4000;
         };
 

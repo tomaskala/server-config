@@ -1,12 +1,12 @@
 { config, lib, pkgs, secrets, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   cfg = config.infra.miniflux;
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;
-  allowedIPs = builtins.map util.ipSubnet [
+  allowedIPs = builtins.map infra.ipSubnet [
     intranetCfg.wireguard.internal.ipv4
     intranetCfg.wireguard.internal.ipv6
   ];
@@ -69,8 +69,8 @@ in {
 
       virtualHosts.${cfg.domain} = {
         listenAddresses = [
-          (util.ipAddress deviceCfg.wireguard.internal.ipv4)
-          "[${util.ipAddress deviceCfg.wireguard.internal.ipv6}]"
+          (infra.ipAddress deviceCfg.wireguard.internal.ipv4)
+          "[${infra.ipAddress deviceCfg.wireguard.internal.ipv6}]"
         ];
 
         useACMEHost = cfg.domain;

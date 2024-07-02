@@ -54,7 +54,7 @@
         nixpkgs.overlays = [
           (final: prev: {
             unstable = nixpkgs-unstable.legacyPackages.${prev.system};
-            util = import ./util { inherit (final.pkgs) lib; };
+            infra = import ./infra { inherit (final.pkgs) lib; };
           })
         ];
 

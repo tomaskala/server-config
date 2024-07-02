@@ -1,7 +1,7 @@
 { config, pkgs, secrets, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   intranetCfg = config.infra.intranet;
   acmeEmail = "public+acme@tomaskala.com";
@@ -179,12 +179,12 @@ in {
         enable = true;
         listenAddresses = [
           {
-            addr = util.ipAddress
+            addr = infra.ipAddress
               intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
             port = 22;
           }
           {
-            addr = util.ipAddress
+            addr = infra.ipAddress
               intranetCfg.devices.whitelodge.wireguard.internal.ipv6;
             port = 22;
           }
@@ -220,13 +220,13 @@ in {
           # resolving internal domain names as well as to use it for
           # domain filtering when accessing the public internet.
           {
-            addr = util.ipAddress
+            addr = infra.ipAddress
               intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
             port = 53;
           }
           {
             addr = "[${
-                util.ipAddress
+                infra.ipAddress
                 intranetCfg.devices.whitelodge.wireguard.internal.ipv6
               }]";
             port = 53;
@@ -234,13 +234,13 @@ in {
           # Allow isolated peers to use the resolver. This is to allow
           # resolving internal domain names.
           {
-            addr = util.ipAddress
+            addr = infra.ipAddress
               intranetCfg.devices.whitelodge.wireguard.isolated.ipv4;
             port = 53;
           }
           {
             addr = "[${
-                util.ipAddress
+                infra.ipAddress
                 intranetCfg.devices.whitelodge.wireguard.isolated.ipv6
               }]";
             port = 53;
@@ -250,13 +250,13 @@ in {
           # internal domain names, the passthru peers do not have access
           # to those services.
           {
-            addr = util.ipAddress
+            addr = infra.ipAddress
               intranetCfg.devices.whitelodge.wireguard.passthru.ipv4;
             port = 53;
           }
           {
             addr = "[${
-                util.ipAddress
+                infra.ipAddress
                 intranetCfg.devices.whitelodge.wireguard.passthru.ipv6
               }]";
             port = 53;
@@ -300,7 +300,7 @@ in {
               {
                 targets = [
                   "${
-                    util.ipAddress
+                    infra.ipAddress
                     intranetCfg.devices.bob.wireguard.isolated.ipv4
                   }:9100"
                 ];
@@ -318,7 +318,7 @@ in {
               {
                 targets = [
                   "${
-                    util.ipAddress
+                    infra.ipAddress
                     intranetCfg.devices.bob.wireguard.isolated.ipv4
                   }:4000"
                 ];

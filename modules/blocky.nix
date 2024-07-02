@@ -1,7 +1,7 @@
 { config, lib, pkgs, secrets, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   cfg = config.infra.blocky;
 
@@ -53,12 +53,12 @@ in {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           ipv4 = lib.mkOption {
-            type = util.types.ipv4Address;
+            type = infra.types.ipv4Address;
             description = "IPv4 address the domain resolves to";
           };
 
           ipv6 = lib.mkOption {
-            type = util.types.ipv6Address;
+            type = infra.types.ipv6Address;
             description = "IPv6 address the domain resolves to";
           };
         };
@@ -160,7 +160,7 @@ in {
               filterUnmappedTypes = true;
               mapping = builtins.mapAttrs (_:
                 { ipv4, ipv6 }:
-                "${util.ipAddress ipv4},${util.ipAddress ipv6}")
+                "${infra.ipAddress ipv4},${infra.ipAddress ipv6}")
                 cfg.localDomains;
             };
           };

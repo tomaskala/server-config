@@ -1,9 +1,9 @@
 { config, lib, pkgs, ... }:
 
-let inherit (pkgs) util;
+let inherit (pkgs) infra;
 in {
   options.infra.intranet.devices = lib.mkOption {
-    type = lib.types.attrsOf util.types.device;
+    type = lib.types.attrsOf infra.types.device;
     description = "Devices present in the intranet";
     readOnly = true;
   };

@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   cfg = config.infra.wireguard;
   intranetCfg = config.infra.intranet;
@@ -16,10 +16,10 @@ let
         PresharedKeyFile = presharedKeyFile;
 
         AllowedIPs =
-          [ (util.ipAddressMasked ipv4 32) (util.ipAddressMasked ipv6 128) ]
+          [ (infra.ipAddressMasked ipv4 32) (infra.ipAddressMasked ipv6 128) ]
           ++ lib.optionals (subnet != null) [
-            (util.ipSubnet subnet.ipv4)
-            (util.ipSubnet subnet.ipv6)
+            (infra.ipSubnet subnet.ipv4)
+            (infra.ipSubnet subnet.ipv6)
           ];
       };
     };
@@ -27,14 +27,14 @@ let
   mkRoute = { ipv4, ipv6, ... }: [
     {
       routeConfig = {
-        Destination = util.ipSubnet ipv4;
+        Destination = infra.ipSubnet ipv4;
         Scope = "link";
         Type = "unicast";
       };
     }
     {
       routeConfig = {
-        Destination = util.ipSubnet ipv6;
+        Destination = infra.ipSubnet ipv6;
         Scope = "link";
         Type = "unicast";
       };
@@ -79,8 +79,8 @@ let
           networkConfig.IPForward = true;
 
           address = [
-            (util.ipAddressMasked ipv4 subnet.ipv4.mask)
-            (util.ipAddressMasked ipv6 subnet.ipv6.mask)
+            (infra.ipAddressMasked ipv4 subnet.ipv4.mask)
+            (infra.ipAddressMasked ipv6 subnet.ipv6.mask)
           ];
 
           routes = builtins.concatMap mkRoute accessibleSubnets;

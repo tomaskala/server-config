@@ -1,14 +1,14 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (pkgs) util;
+  inherit (pkgs) infra;
 
   cfg = config.infra.navidrome;
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
   privateSubnet = deviceCfg.wireguard.isolated.subnet;
   nasAddr = privateSubnet.services.nas.ipv4;
-  allowedIPs = builtins.map util.ipSubnet [
+  allowedIPs = builtins.map infra.ipSubnet [
     privateSubnet.ipv4
     privateSubnet.ipv6
     intranetCfg.wireguard.internal.ipv4
@@ -35,7 +35,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     fileSystems.${cfg.musicDir} = {
-      device = "${util.ipAddress nasAddr}:/volume1/Music";
+      device = "${infra.ipAddress nasAddr}:/volume1/Music";
       fsType = "nfs";
       options = [
         # Use NFSv4.1 (the highest my NAS supports).
@@ -79,11 +79,11 @@ in {
 
         virtualHosts.${cfg.domain} = {
           listenAddresses = [
-            (util.ipAddress deviceCfg.external.lan.ipv4)
-            "[${util.ipAddress deviceCfg.external.lan.ipv6}]"
+            (infra.ipAddress deviceCfg.external.lan.ipv4)
+            "[${infra.ipAddress deviceCfg.external.lan.ipv6}]"
 
-            (util.ipAddress deviceCfg.wireguard.isolated.ipv4)
-            "[${util.ipAddress deviceCfg.wireguard.isolated.ipv6}]"
+            (infra.ipAddress deviceCfg.wireguard.isolated.ipv4)
+            "[${infra.ipAddress deviceCfg.wireguard.isolated.ipv6}]"
           ];
 
           extraConfig = ''
