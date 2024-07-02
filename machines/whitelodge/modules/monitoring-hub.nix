@@ -1,6 +1,8 @@
-{ config, lib, options, secrets, util, ... }:
+{ config, lib, pkgs, options, secrets, ... }:
 
 let
+  inherit (pkgs) util;
+
   cfg = config.infra.monitoring-hub;
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;

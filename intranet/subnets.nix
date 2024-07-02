@@ -1,6 +1,7 @@
-{ config, lib, util, ... }:
+{ config, lib, pkgs, ... }:
 
-{
+let inherit (pkgs) util;
+in {
   options.infra.intranet.subnets = lib.mkOption {
     type = lib.types.attrsOf util.types.nonWgSubnet;
     description = "Subnets in the intranet accessible from WireGuard";

@@ -1,6 +1,8 @@
-{ config, lib, pkgs, secrets, util, ... }:
+{ config, lib, pkgs, secrets, ... }:
 
 let
+  inherit (pkgs) util;
+
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
 in {

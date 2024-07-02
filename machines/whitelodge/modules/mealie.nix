@@ -1,6 +1,8 @@
-{ config, lib, secrets, util, ... }:
+{ config, lib, pkgs, secrets, ... }:
 
 let
+  inherit (pkgs) util;
+
   cfg = config.infra.mealie;
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;
@@ -54,6 +56,7 @@ in {
     services = {
       mealie = {
         enable = true;
+        package = pkgs.unstable.mealie;
         inherit (cfg) port;
 
         listenAddress = "127.0.0.1";

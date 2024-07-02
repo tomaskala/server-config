@@ -1,6 +1,8 @@
-{ config, lib, secrets, util, ... }:
+{ config, lib, pkgs, secrets, ... }:
 
 let
+  inherit (pkgs) util;
+
   cfg = config.infra.miniflux;
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;

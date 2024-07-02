@@ -1,6 +1,8 @@
-{ config, pkgs, secrets, util, ... }:
+{ config, pkgs, secrets, ... }:
 
 let
+  inherit (pkgs) util;
+
   intranetCfg = config.infra.intranet;
   acmeEmail = "public+acme@tomaskala.com";
 in {

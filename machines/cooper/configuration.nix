@@ -26,7 +26,7 @@
     gnumake
     go
     gotools
-    neovim
+    unstable.neovim
     python3
     shellcheck
 

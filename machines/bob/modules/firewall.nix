@@ -1,6 +1,8 @@
-{ config, lib, util, ... }:
+{ config, lib, pkgs, ... }:
 
 let
+  inherit (pkgs) util;
+
   cfg = config.infra.firewall;
   deviceCfg = config.infra.intranet.devices.bob;
 

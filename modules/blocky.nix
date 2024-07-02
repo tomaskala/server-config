@@ -1,6 +1,8 @@
-{ config, lib, secrets, util, ... }:
+{ config, lib, pkgs, secrets, ... }:
 
 let
+  inherit (pkgs) util;
+
   cfg = config.infra.blocky;
 
   dbName = "blocky";

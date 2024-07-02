@@ -3,9 +3,9 @@
   nixConfig.bash-prompt = "[nix-develop]$ ";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixos-hardware.url = "github:nixos/nixos-hardware/master";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
 
     nix-darwin = {
@@ -40,102 +40,78 @@
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 
       commonConfig = stateVersion: {
-        config = {
-          system.stateVersion = stateVersion;
+        system.stateVersion = stateVersion;
 
-          nix = {
-            # Pin the nixpkgs flake to the same exact version used to build
-            # the system. This has two benefits:
-            # 1. No version mismatch between system packages and those
-            #    brought in by commands like 'nix shell nixpkgs#<package>'.
-            # 2. More efficient evaluation, because many dependencies will
-            # already be present in the Nix store.
-            registry.nixpkgs.flake = nixpkgs;
+        nixpkgs.overlays = [
+          (final: prev: {
+            unstable = nixpkgs-unstable.legacyPackages.${prev.system};
+            util = import ./util { inherit (final.pkgs) lib; };
+          })
+        ];
 
-            settings = {
-              auto-optimise-store = true;
-              experimental-features = [ "nix-command" "flakes" ];
-            };
+        nix = {
+          # Pin the nixpkgs flake to the same exact version used to build
+          # the system. This has two benefits:
+          # 1. No version mismatch between system packages and those
+          #    brought in by commands like 'nix shell nixpkgs#<package>'.
+          # 2. More efficient evaluation, because many dependencies will
+          # already be present in the Nix store.
+          registry.nixpkgs.flake = nixpkgs;
+
+          settings = {
+            auto-optimise-store = true;
+            experimental-features = [ "nix-command" "flakes" ];
           };
         };
       };
 
-      mkUtil = pkgs: import ./util { inherit (pkgs) lib; };
-
       forAllSystems = f:
         nixpkgs.lib.genAttrs systems
-        (system: f (import nixpkgs { inherit system; }));
+        (system: f nixpkgs.legacyPackages.${system});
     in {
       nixosConfigurations = {
-        whitelodge = let
+        whitelodge = nixpkgs.lib.nixosSystem {
+          # TODO: Unstable blocky
           system = "x86_64-linux";
-          pkgs = import nixpkgs {
-            inherit system;
-            overlays =
-              let unstable = import nixpkgs-unstable { inherit system; };
-              in [ (_: _: { inherit (unstable) blocky mealie; }) ];
-          };
-        in nixpkgs.lib.nixosSystem {
-          inherit system pkgs;
 
           modules = [
-            ./machines/whitelodge/configuration.nix
             (commonConfig "23.05")
-            home-manager.nixosModules.home-manager
+            ./machines/whitelodge/configuration.nix
             agenix.nixosModules.default
+            home-manager.nixosModules.home-manager
             vps-admin-os.nixosConfigurations.container
           ];
 
-          specialArgs = {
-            inherit secrets;
-            util = mkUtil pkgs;
-          };
+          specialArgs = { inherit secrets; };
         };
 
-        bob = let
+        bob = nixpkgs.lib.nixosSystem {
+          # TODO: Unstable blocky
           system = "aarch64-linux";
-          pkgs = import nixpkgs {
-            inherit system;
-            overlays =
-              let unstable = import nixpkgs-unstable { inherit system; };
-              in [ (_: _: { inherit (unstable) blocky; }) ];
-          };
-        in nixpkgs.lib.nixosSystem {
-          inherit system pkgs;
 
           modules = [
-            ./machines/bob/configuration.nix
             (commonConfig "23.05")
-            nixos-hardware.nixosModules.raspberry-pi-4
+            ./machines/bob/configuration.nix
             agenix.nixosModules.default
+            nixos-hardware.nixosModules.raspberry-pi-4
           ];
 
-          specialArgs = {
-            inherit secrets;
-            util = mkUtil pkgs;
-          };
+          specialArgs = { inherit secrets; };
         };
       };
 
       darwinConfigurations = {
-        cooper = let
+        cooper = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          pkgs = import nixpkgs {
-            inherit system;
-            overlays =
-              let unstable = import nixpkgs-unstable { inherit system; };
-              in [ (_: _: { inherit (unstable) neovim; }) ];
-          };
-        in nix-darwin.lib.darwinSystem {
-          inherit system pkgs;
 
-          modules = [ ./machines/cooper/configuration.nix (commonConfig 4) ];
+          modules = [ (commonConfig 4) ./machines/cooper/configuration.nix ];
         };
       };
 
-      packages.x86_64-linux.audrey =
-        let pkgs = nixpkgs.legacyPackages.x86_64-linux;
-        in pkgs.callPackage ./machines/audrey { inherit openwrt-imagebuilder; };
+      packages.x86_64-linux.audrey = import ./machines/audrey {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        inherit openwrt-imagebuilder;
+      };
 
       devShells = forAllSystems (pkgs: {
         default = import ./shells/infra.nix { inherit pkgs; };
@@ -152,9 +128,9 @@
         });
 
       checks = forAllSystems (pkgs: {
-        deadnix = pkgs.callPackage ./checks/deadnix.nix { };
-        statix = pkgs.callPackage ./checks/statix.nix { };
-        nixfmt = pkgs.callPackage ./checks/nixfmt.nix { };
+        deadnix = import ./checks/deadnix.nix { inherit pkgs; };
+        statix = import ./checks/statix.nix { inherit pkgs; };
+        nixfmt = import ./checks/nixfmt.nix { inherit pkgs; };
       });
     };
 }

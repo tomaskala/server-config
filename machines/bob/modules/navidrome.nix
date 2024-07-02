@@ -1,6 +1,8 @@
-{ config, lib, util, ... }:
+{ config, lib, pkgs, ... }:
 
 let
+  inherit (pkgs) util;
+
   cfg = config.infra.navidrome;
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
