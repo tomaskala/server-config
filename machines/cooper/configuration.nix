@@ -26,9 +26,10 @@
     gnumake
     go
     gotools
-    unstable.neovim
+    lua
     python3
     shellcheck
+    unstable.neovim
 
     # Media
     hugo
