@@ -46,4 +46,11 @@
     computerName = "cooper";
     hostName = "cooper";
   };
+
+  system.defaults.CustomUserPreferences = {
+    "com.apple.desktopservices" = {
+      DSDontWriteNetworkStores = true;
+      DSDontWriteUSBStores = true;
+    };
+  };
 }
