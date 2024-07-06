@@ -125,14 +125,7 @@
         work = import ./shells/work.nix { inherit pkgs; };
       });
 
-      formatter = forAllSystems (pkgs:
-        pkgs.writeShellApplication {
-          name = "nixfmt";
-          runtimeInputs = with pkgs; [ findutils nixfmt-classic ];
-          text = ''
-            find . -type f -name '*.nix' -exec nixfmt {} \+
-          '';
-        });
+      formatter = forAllSystems (pkgs: pkgs.nixfmt-classic);
 
       checks = forAllSystems (pkgs: {
         deadnix = import ./checks/deadnix.nix { inherit pkgs; };
