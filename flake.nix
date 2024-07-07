@@ -29,7 +29,7 @@
     };
 
     openwrt-imagebuilder = {
-      url = "github:astro/nix-openwrt-imagebuilder";
+      url = "github:tomaskala/nix-openwrt-imagebuilder";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
