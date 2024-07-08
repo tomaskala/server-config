@@ -29,6 +29,7 @@
 
     systemPackages = with pkgs; [
       # System utilities
+      coreutils
       fzf
       gawk
       gnugrep
@@ -38,6 +39,7 @@
       jq
       ripgrep
       rsync
+      tree
 
       # Development
       git
@@ -133,6 +135,11 @@
         # Do not beep when changing volume.
         "com.apple.sound.beep.feedback" = 0;
 
+        # Sensible behavior for pressing and holding keys, useful in vim.
+        ApplePressAndHoldEnabled = true;
+        InitialKeyRepeat = 15;
+        KeyRepeat = 3;
+
         NSAutomaticCapitalizationEnabled = false;
         NSAutomaticDashSubstitutionEnabled = false;
         NSAutomaticPeriodSubstitutionEnabled = false;
@@ -146,7 +153,6 @@
       };
 
       CustomUserPreferences = {
-        "com.apple.Safari".HomePage = "about:blank";
         "com.apple.AdLib".allowApplePersonalizedAdvertising = false;
         "com.apple.finder"._FXSortFoldersFirst = true;
 
