@@ -123,11 +123,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1720342111,
-        "narHash": "sha256-MV7QPZQJpWK1sE30ddVd0hbzLT8VA51fruzcyI450js=",
+        "lastModified": 1720428772,
+        "narHash": "sha256-7C5RasMMuF42NEwZyedX9GMX3YflljEDhXBJqxNAY5k=",
         "owner": "tomaskala",
         "repo": "nix-openwrt-imagebuilder",
-        "rev": "6a3aec002077e99c464798b81d1854f0be0c461f",
+        "rev": "5833a1c21749d8660e4dae5112dc642506b12237",
         "type": "github"
       },
       "original": {
