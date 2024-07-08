@@ -108,10 +108,10 @@
       };
 
       darwinConfigurations = {
-        cooper = nix-darwin.lib.darwinSystem {
+        gordon = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
 
-          modules = [ (commonConfig 4) ./machines/cooper/configuration.nix ];
+          modules = [ (commonConfig 4) ./machines/gordon/configuration.nix ];
         };
       };
 

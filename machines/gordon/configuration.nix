@@ -86,8 +86,8 @@
   };
 
   networking = {
-    computerName = "cooper";
-    hostName = "cooper";
+    computerName = "gordon";
+    hostName = "gordon";
   };
 
   security.pam.enableSudoTouchIdAuth = true;
@@ -102,7 +102,7 @@
     '';
 
     defaults = {
-      smb.NetBIOSName = "cooper";
+      smb.NetBIOSName = "gordon";
 
       dock = {
         autohide = true;
