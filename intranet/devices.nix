@@ -196,6 +196,30 @@ in {
         };
       };
 
+      gordon = {
+        wireguard = {
+          internal = {
+            name = "wg0";
+            privateKeyFile = null;
+            publicKey = "rPkDvc0kutSN4hE+lIIk/tMj6IGlaXUB1Z4NlmHZpRA=";
+            port = null;
+            subnet = null;
+
+            ipv4 = {
+              inherit (config.infra.intranet.ranges.wg-internal)
+                location subnet;
+              host = 53;
+            };
+
+            ipv6 = {
+              inherit (config.infra.intranet.ranges.wg-internal)
+                location subnet;
+              host = 53;
+            };
+          };
+        };
+      };
+
       audrey = {
         wireguard = {
           passthru = {

@@ -106,6 +106,13 @@ in {
         owner = "root";
         group = "systemd-network";
       };
+
+      wg-gordon2whitelodge = {
+        file = "${secrets}/secrets/wg-psk/gordon2whitelodge.age";
+        mode = "0640";
+        owner = "root";
+        group = "systemd-network";
+      };
     };
 
     users = {
@@ -121,6 +128,7 @@ in {
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMvN19BcNTeaVAF291lBG0z9ROD6J91XAMyy+0VP6CdL cooper2whitelodge"
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGRpAi2U+EW2dhKv/tu2DVJPNZnrqgQway2CSAs38tFl blacklodge2whitelodge"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICnSCqYOxP/hkkgquZ8XM5OvssH7BpHUouGS5TvEIvnC gordon2whitelodge"
           ];
         };
 
@@ -134,6 +142,7 @@ in {
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGbhtSz3s/zgTVWg7d37J9qeKk+u4H+jJhwvj/QXjaIW cooper2whitelodge-git"
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIApzsZJs9oocJnP2JnIsSZFmmyWdUm/2IgRHcJgCqFc1 tomas-phone2whitelodge-git"
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP3iFrxprV/hToSeHEIo2abt/IcK/M86iqF4mV6S81Rf blacklodge2whitelodge-git"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBH+pyD14TFgpAfoK8NZmNjB5PkfiA5Uil9yrZqnSCf8 gordon2whitelodge-git"
           ];
         };
       };

@@ -36,6 +36,10 @@ in {
             presharedKeyFile =
               config.age.secrets.wg-tomas-phone2whitelodge.path;
           }
+          {
+            interface = config.infra.intranet.devices.gordon.wireguard.internal;
+            presharedKeyFile = config.age.secrets.wg-gordon2whitelodge.path;
+          }
         ];
       };
 
