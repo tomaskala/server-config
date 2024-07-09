@@ -71,7 +71,10 @@
       cleanup = "zap";
     };
 
-    masApps = { WireGuard = 1451685025; };
+    masApps = {
+      Slack = 803453959;
+      WireGuard = 1451685025;
+    };
 
     # Curl should be installed using homebrew, as the nixpkgs version has
     # issues with finding ca-certificates.
@@ -84,6 +87,7 @@
       "iina"
       "iterm2"
       "telegram"
+      "tunnelblick"
       "visual-studio-code"
       "wireshark"
     ];
