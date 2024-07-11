@@ -12,7 +12,6 @@ in {
     ./modules/mealie.nix
     ./modules/miniflux.nix
     ./modules/monitoring-hub.nix
-    ./modules/radicale.nix
     ./modules/website.nix
     ./modules/wireguard.nix
     ../../intranet
@@ -336,12 +335,6 @@ in {
             ];
           }
         ];
-      };
-
-      radicale = {
-        enable = true;
-        port = 5232;
-        inherit acmeEmail;
       };
 
       website = {
