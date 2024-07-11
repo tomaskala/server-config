@@ -16,7 +16,6 @@ in {
     ./modules/wireguard.nix
     ../../intranet
     ../../modules/blocky.nix
-    ../../modules/openssh.nix
   ];
 
   config = {
@@ -185,6 +184,15 @@ in {
 
       openssh = {
         enable = true;
+        openFirewall = false;
+
+        settings = {
+          X11Forwarding = false;
+          GatewayPorts = "no";
+          PermitRootLogin = "no";
+          PasswordAuthentication = false;
+        };
+
         listenAddresses = [
           {
             addr = infra.ipAddress

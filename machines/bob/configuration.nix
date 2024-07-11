@@ -14,7 +14,6 @@ in {
     ./modules/wireguard.nix
     ../../intranet
     ../../modules/blocky.nix
-    ../../modules/openssh.nix
   ];
 
   config = {
@@ -89,7 +88,17 @@ in {
       ntp.enable = false;
       timesyncd.enable = true;
 
-      openssh.enable = true;
+      openssh = {
+        enable = true;
+        openFirewall = false;
+
+        settings = {
+          X11Forwarding = false;
+          GatewayPorts = "no";
+          PermitRootLogin = "no";
+          PasswordAuthentication = false;
+        };
+      };
 
       prometheus.exporters = {
         node = {
