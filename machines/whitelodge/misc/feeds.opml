@@ -2,7 +2,7 @@
 <opml version="2.0">
     <head>
         <title>Miniflux</title>
-        <dateCreated>Mon, 03 Jun 2024 08:16:19 UTC</dateCreated>
+        <dateCreated>Thu, 11 Jul 2024 18:54:16 UTC</dateCreated>
     </head>
     <body>
         <outline text="Dev">
@@ -25,6 +25,7 @@
         </outline>
         <outline text="Misc">
             <outline title="A Collection of Unmitigated Pedantry" text="A Collection of Unmitigated Pedantry" xmlUrl="https://acoup.blog/feed/" htmlUrl="https://acoup.blog" type="rss"></outline>
+            <outline title="Home on Petr Kubelka" text="Home on Petr Kubelka" xmlUrl="https://pkubelka.cz/index.xml" htmlUrl="https://pkubelka.cz/" type="rss"></outline>
             <outline title="Luke&#39;s Webpage" text="Luke&#39;s Webpage" xmlUrl="https://lukesmith.xyz/rss.xml" htmlUrl="https://lukesmith.xyz/" type="rss"></outline>
         </outline>
         <outline text="Security">
