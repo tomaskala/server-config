@@ -2,9 +2,12 @@
 <opml version="2.0">
     <head>
         <title>Miniflux</title>
-        <dateCreated>Thu, 11 Jul 2024 18:54:16 UTC</dateCreated>
+        <dateCreated>Sun, 14 Jul 2024 21:15:57 UTC</dateCreated>
     </head>
     <body>
+        <outline text="All">
+            <outline title="M. Bjoernstroem" text="M. Bjoernstroem" xmlUrl="https://www.youtube.com/feeds/videos.xml?channel_id=UCzoOaL6EkzY4t0TQ0kT8Jcg" htmlUrl="https://www.youtube.com/channel/UCzoOaL6EkzY4t0TQ0kT8Jcg" type="rss"></outline>
+        </outline>
         <outline text="Dev">
             <outline title="Andreas Kling" text="Andreas Kling" xmlUrl="https://awesomekling.github.io/feed.xml" htmlUrl="https://awesomekling.github.io/" type="rss"></outline>
             <outline title="beepb00p" text="beepb00p" xmlUrl="https://beepb00p.xyz/atom.xml" htmlUrl="https://beepb00p.xyz" type="rss"></outline>
