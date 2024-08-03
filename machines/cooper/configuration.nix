@@ -12,7 +12,6 @@
     ./modules/sway.nix
     ./modules/virtualisation.nix
     ./modules/wireguard.nix
-    ./modules/work.nix
     ../../intranet
   ];
 
