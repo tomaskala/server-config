@@ -2,6 +2,16 @@
 
 Configuration for my network infrastructure.
 
+## Machines
+
+- `whitelodge`: My VPS running NixOS.
+- `blacklodge`: My desktop computer running Arch Linux.
+- `cooper`: Lenovo Thinkpad T14 Gen 2 running Arch Linux.
+- `gordon`: MacBook Air M3.
+- `bob`: Raspberry Pi 4 Model B running NixOS.
+- `hawk`: iPhone SE 2022.
+- `audrey`: MikroTik hAP ac lite TC running OpenWRT.
+
 ## Deployment
 
 To define and deploy a machine (called `twinpeaks` in this example), do the 
