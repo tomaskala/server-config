@@ -172,7 +172,7 @@ in {
         };
       };
 
-      tomas-phone = {
+      hawk = {
         wireguard = {
           internal = {
             name = "wg0";

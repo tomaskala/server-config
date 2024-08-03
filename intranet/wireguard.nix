@@ -31,10 +31,8 @@ in {
             presharedKeyFile = config.age.secrets.wg-cooper2whitelodge.path;
           }
           {
-            interface =
-              config.infra.intranet.devices.tomas-phone.wireguard.internal;
-            presharedKeyFile =
-              config.age.secrets.wg-tomas-phone2whitelodge.path;
+            interface = config.infra.intranet.devices.hawk.wireguard.internal;
+            presharedKeyFile = config.age.secrets.wg-hawk2whitelodge.path;
           }
           {
             interface = config.infra.intranet.devices.gordon.wireguard.internal;
