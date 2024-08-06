@@ -123,15 +123,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1720428772,
-        "narHash": "sha256-7C5RasMMuF42NEwZyedX9GMX3YflljEDhXBJqxNAY5k=",
-        "owner": "tomaskala",
+        "lastModified": 1722934242,
+        "narHash": "sha256-51jhDGOGO34W7XYgVwGbb3fhyPCVN4uX4mkYEkmUqGE=",
+        "owner": "astro",
         "repo": "nix-openwrt-imagebuilder",
-        "rev": "5833a1c21749d8660e4dae5112dc642506b12237",
+        "rev": "6dc6adedb283ca63fba45740f9492e94b1831cac",
         "type": "github"
       },
       "original": {
-        "owner": "tomaskala",
+        "owner": "astro",
         "repo": "nix-openwrt-imagebuilder",
         "type": "github"
       }

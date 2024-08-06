@@ -29,7 +29,7 @@
     };
 
     openwrt-imagebuilder = {
-      url = "github:tomaskala/nix-openwrt-imagebuilder";
+      url = "github:astro/nix-openwrt-imagebuilder";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -115,7 +115,7 @@
         };
       };
 
-      packages.x86_64-linux.audrey = import ./machines/audrey {
+      infra.x86_64-linux.audrey = import ./machines/audrey {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         inherit openwrt-imagebuilder;
       };
