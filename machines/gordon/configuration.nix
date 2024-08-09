@@ -72,6 +72,7 @@
     };
 
     masApps = {
+      Bitwarden = 1352778147;
       Slack = 803453959;
       WireGuard = 1451685025;
     };
