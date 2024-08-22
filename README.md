@@ -5,7 +5,7 @@ Configuration for my network infrastructure.
 ## Machines
 
 - `whitelodge`: My VPS running NixOS.
-- `blacklodge`: My desktop computer running Arch Linux.
+- `blacklodge`: My desktop computer running Pop!_OS.
 - `cooper`: Lenovo Thinkpad T14 Gen 2 running Arch Linux.
 - `gordon`: MacBook Air M3.
 - `bob`: Raspberry Pi 4 Model B running NixOS.

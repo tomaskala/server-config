@@ -153,7 +153,7 @@ in {
           internal = {
             name = "wg0";
             privateKeyFile = null;
-            publicKey = "b1vNeOy10kbXfldKbaAd5xa2cndgzOE8kQ63HoWXIko=";
+            publicKey = "iiES+M3jIP4XUD1X4G/mh4lwKbhtTVjjvhTtHCweLH4=";
             port = null;
             subnet = null;
 
