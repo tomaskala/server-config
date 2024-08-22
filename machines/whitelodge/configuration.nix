@@ -287,7 +287,7 @@ in {
       firewall.enable = true;
 
       mealie = {
-        enable = false;
+        enable = true;
         port = 9000;
         inherit acmeEmail;
       };
