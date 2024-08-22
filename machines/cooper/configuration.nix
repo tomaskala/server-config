@@ -29,6 +29,8 @@
         useTmpfs = true;
       };
 
+      initrd.systemd.enable = true;
+
       loader = {
         grub.enable = false;
 
@@ -38,6 +40,8 @@
         };
       };
     };
+
+    systemd.services.nix-daemon.environment.TMPDIR = "/var/tmp";
 
     nix.settings = {
       auto-optimise-store = true;
@@ -164,6 +168,7 @@
     services = {
       ntp.enable = false;
       timesyncd.enable = true;
+      # TODO: Also enable boot.initrd.luks.devices.<name>.allowDiscards.
       fstrim.enable = true;
       fwupd.enable = true;
       tlp.enable = true;
