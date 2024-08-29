@@ -39,6 +39,10 @@ in pkgs.mkShell {
     typescript
     yarn
 
+    # Python development
+    poetry
+    python3
+
     # My utilities
     work
   ];
