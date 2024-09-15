@@ -15,6 +15,7 @@
   };
 
   programs = {
+    fish.enable = true;
     tmux.enable = true;
     zsh.enable = true;
 
