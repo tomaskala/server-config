@@ -9,7 +9,7 @@ in {
 
   services.avahi = {
     enable = true;
-    openFirewall = false;
+    openFirewall = true;
   };
 
   systemd.network = {
