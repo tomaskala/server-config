@@ -8,6 +8,13 @@
       firewall = {
         family = "inet";
         content = ''
+          set udp_accepted {
+            type inet_service
+            elements = {
+             5353,
+           }
+          }
+
           chain input {
             type filter hook input priority 0; policy drop;
 
@@ -42,6 +49,8 @@
               parameter-problem,
               time-exceeded,
             } accept
+
+            udp dport @udp_accepted ct state new accept
           }
 
           chain forward {
