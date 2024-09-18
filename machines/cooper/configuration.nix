@@ -115,9 +115,9 @@
 
     environment.systemPackages = with pkgs; [
       # System utilities
-      bc
       fzf
       htop
+      jq
       man-pages
       man-pages-posix
       ripgrep
@@ -128,6 +128,7 @@
       # Networking
       curl
       ldns
+      nmap
       openssl
       tcpdump
       whois
@@ -140,11 +141,11 @@
       gnumake
       go
       gotools
-      hugo
       python3
       shellcheck
 
       # Media
+      hugo
       libreoffice-still
       mpv
       yt-dlp
