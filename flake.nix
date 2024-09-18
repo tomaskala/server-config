@@ -51,6 +51,11 @@
       commonConfig = stateVersion: {
         system.stateVersion = stateVersion;
 
+        home-manager = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+        };
+
         nixpkgs.overlays = [
           (final: prev: {
             unstable = nixpkgs-unstable.legacyPackages.${prev.system};
@@ -100,6 +105,7 @@
             (commonConfig "23.05")
             ./machines/bob/configuration.nix
             agenix.nixosModules.default
+            home-manager.nixosModules.home-manager
             nixos-hardware.nixosModules.raspberry-pi-4
           ];
 
@@ -111,7 +117,11 @@
         gordon = nix-darwin.lib.darwinSystem {
           system = "aarch64-darwin";
 
-          modules = [ (commonConfig 4) ./machines/gordon/configuration.nix ];
+          modules = [
+            (commonConfig 4)
+            ./machines/gordon/configuration.nix
+            home-manager.darwinModules.home-manager
+          ];
         };
       };
 
