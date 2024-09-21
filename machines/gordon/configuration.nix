@@ -45,7 +45,6 @@
         tree
 
         # Development
-        git
         gnumake
         go
         gotools
