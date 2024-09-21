@@ -38,9 +38,6 @@
         gnugrep
         gnused
         gnutar
-        htop
-        jq
-        ripgrep
         rsync
         tree
 
@@ -55,7 +52,6 @@
 
         # Media
         hugo
-        yt-dlp
 
         # Networking
         ldns

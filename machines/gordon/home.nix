@@ -8,6 +8,20 @@
       home-manager.enable = true;
 
       fzf.enable = true;
+      htop.enable = true;
+      jq.enable = true;
+      ripgrep.enable = true;
+
+      yt-dlp = {
+        enable = true;
+
+        settings = {
+          mtime = false;
+          restrict-filenames = true;
+          format = "bestvideo[height<=1080]+bestaudio/best[height<=1080]";
+          merge-output-format = "mkv";
+        };
+      };
 
       fish = {
         enable = true;
