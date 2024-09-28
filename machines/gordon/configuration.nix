@@ -33,6 +33,7 @@
       systemPackages = with pkgs; [
         # System utilities
         coreutils
+        diffutils
         gawk
         gnugrep
         gnused

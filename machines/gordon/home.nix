@@ -257,14 +257,13 @@
         '';
 
         functions = {
-          diff = "diff --color=auto $argv";
-          grep = "grep --color=auto $argv";
+          diff = "${pkgs.diffutils}/bin/diff -v diff --color=auto $argv";
+          grep = "${pkgs.gnugrep}/bin/grep --color=auto $argv";
           ll = "ls -l $argv";
           lla = "ls -la $argv";
           ls =
             "${pkgs.coreutils}/bin/ls -FNh --color=auto --group-directories-first $argv";
           vim = "nvim $argv";
-          ya = "mpv --no-video --ytdl-format=bestaudio $argv";
         };
       };
 
