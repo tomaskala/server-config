@@ -120,8 +120,11 @@
           modules = [
             (commonConfig 4)
             ./machines/gordon/configuration.nix
+            agenix.darwinModules.default
             home-manager.darwinModules.home-manager
           ];
+
+          specialArgs = { inherit secrets; };
         };
       };
 

@@ -1,6 +1,19 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, secrets, ... }:
 
-{
+let
+  inherit (pkgs) infra;
+  intranetCfg = config.infra.intranet;
+in {
+  age = {
+    identityPaths = [ "/Users/tomas/.ssh/id_ed25519_agenix" ];
+
+    secrets.work-ssh-config = {
+      file = "${secrets}/secrets/other/gordon/work-ssh-config.age";
+      path = "/Users/tomas/.ssh/config.d/work";
+      owner = "tomas";
+    };
+  };
+
   home-manager.users.tomas = {
     home.stateVersion = "24.05";
 
@@ -381,6 +394,58 @@
           condition = "gitdir:~/IPFabric/";
           contents.user.email = "tomas.kala@ipfabric.io";
         }];
+      };
+
+      ssh = {
+        enable = true;
+        addKeysToAgent = "yes";
+        serverAliveInterval = 60;
+
+        extraConfig = ''
+          IgnoreUnknown UseKeychain
+          UseKeychain yes
+        '';
+
+        matchBlocks = {
+          "github.com" = {
+            user = "tomaskala";
+            identitiesOnly = true;
+            identityFile = "~/.ssh/id_ed25519_github";
+          };
+
+          whitelodge = {
+            user = "tomas";
+            hostname = infra.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
+            identitiesOnly = true;
+            identityFile = "~/.ssh/id_ed25519_whitelodge";
+          };
+
+          whitelodge-git = {
+            user = "git";
+            hostname = infra.ipAddress
+              intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
+            identitiesOnly = true;
+            identityFile = "~/.ssh/id_ed25519_whitelodge_git";
+          };
+
+          bob = {
+            user = "tomas";
+            hostname =
+              infra.ipAddress intranetCfg.devices.bob.external.lan.ipv4;
+            identitiesOnly = true;
+            identityFile = "~/.ssh/id_ed25519_bob";
+          };
+
+          seedbox = {
+            user = "return9826";
+            hostname = "nexus.usbx.me";
+            identitiesOnly = true;
+            identityFile = "~/.ssh/id_ed25519_seedbox";
+          };
+        };
+
+        includes = [ "/Users/tomas/.ssh/config.d/work" ];
       };
 
       tmux = {

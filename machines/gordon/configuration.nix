@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./home.nix ];
+  imports = [ ./home.nix ../../intranet ];
 
   config = {
     services.nix-daemon.enable = true;
