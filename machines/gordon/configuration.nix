@@ -78,7 +78,8 @@
       # https://github.com/NixOS/nixpkgs/issues/283793
       brews = [ "curl" ];
 
-      casks = [ "discord" "firefox" "iina" "iterm2" "telegram" "wireshark" ];
+      casks =
+        [ "discord" "firefox" "iina" "iterm2" "signal" "telegram" "wireshark" ];
     };
 
     networking = {
