@@ -7,7 +7,6 @@ let
   acmeEmail = "public+acme@tomaskala.com";
 in {
   imports = [
-    ./home.nix
     ./modules/firewall.nix
     ./modules/mealie.nix
     ./modules/miniflux.nix

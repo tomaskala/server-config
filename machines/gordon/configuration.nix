@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./home.nix ../../intranet ];
+  imports = [ ./work.nix ];
 
   config = {
     services.nix-daemon.enable = true;
@@ -17,14 +17,11 @@
       description = "tomas";
     };
 
+    age.identityPaths = [ "/Users/tomas/.ssh/id_ed25519_agenix" ];
+
     programs = {
       fish.enable = true;
       zsh.enable = true;
-
-      direnv = {
-        enable = true;
-        silent = true;
-      };
     };
 
     environment = {
@@ -73,7 +70,6 @@
 
       masApps = {
         Bitwarden = 1352778147;
-        Slack = 803453959;
         WireGuard = 1451685025;
       };
 
@@ -82,16 +78,7 @@
       # https://github.com/NixOS/nixpkgs/issues/283793
       brews = [ "curl" ];
 
-      casks = [
-        "discord"
-        "firefox"
-        "iina"
-        "iterm2"
-        "telegram"
-        "tunnelblick"
-        "visual-studio-code"
-        "wireshark"
-      ];
+      casks = [ "discord" "firefox" "iina" "iterm2" "telegram" "wireshark" ];
     };
 
     networking = {

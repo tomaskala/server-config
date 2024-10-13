@@ -92,6 +92,7 @@
             ./machines/whitelodge/configuration.nix
             agenix.nixosModules.default
             home-manager.nixosModules.home-manager
+            { home-manager.users.root = import ./machines/whitelodge/home.nix; }
             vps-admin-os.nixosConfigurations.container
           ];
 
@@ -122,6 +123,7 @@
             ./machines/gordon/configuration.nix
             agenix.darwinModules.default
             home-manager.darwinModules.home-manager
+            { home-manager.users.tomas = import ./machines/gordon/home.nix; }
           ];
 
           specialArgs = { inherit secrets; };
