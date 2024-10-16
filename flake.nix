@@ -130,6 +130,22 @@
         };
       };
 
+      homeConfigurations = {
+        blacklodge = home-manager.lib.homeManagerConfiguration {
+          system = "x86_64-linux";
+
+          modules = [
+            (commonConfig "24.05")
+            agenix.homeManagerModules.default
+            {
+              home-manager.users.tomas = import ./machines/blacklodge/home.nix;
+            }
+          ];
+
+          specialArgs = { inherit secrets; };
+        };
+      };
+
       infra.x86_64-linux.audrey = import ./machines/audrey {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         inherit openwrt-imagebuilder;
