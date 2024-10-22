@@ -105,6 +105,7 @@
           autohide = true;
           show-recents = false;
           mru-spaces = false;
+          static-only = true;
         };
 
         finder = {
