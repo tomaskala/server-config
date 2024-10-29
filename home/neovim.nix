@@ -124,9 +124,56 @@
           })
         '';
       }
+      {
+        plugin = nvim-web-devicons;
+        type = "lua";
+        config = ''
+          require("nvim-web-devicons").setup()
+        '';
+      }
+      {
+        plugin = nvim-tree-lua;
+        type = "lua";
+        config = ''
+          require("nvim-tree").setup({
+            on_attach = function(bufnr)
+              local api = require("nvim-tree.api")
+              local opts = { buffer = bufnr, noremap = true, silent = true, nowait = true }
+
+              local function edit_or_open()
+                local node = api.tree.get_node_under_cursor()
+                api.node.open.edit()
+                if node.nodes == nil then
+                  api.tree.close()
+                end
+              end
+
+              local function vsplit_preview()
+                local node = api.tree.get_node_under_cursor()
+                if node.nodes == nil then
+                  api.node.open.vertical()
+                else
+                  api.node.open.edit()
+                end
+                api.tree.focus()
+              end
+
+              api.config.mappings.default_on_attach(bufnr)
+              vim.keymap.set("n", "l", edit_or_open, opts)
+              vim.keymap.set("n", "L", vsplit_preview, opts)
+              vim.keymap.set("n", "h", api.node.navigate.parent_close, opts)
+              vim.keymap.set("n", "H", api.tree.collapse_all, opts)
+            end,
+          })
+
+          vim.api.nvim_set_keymap("n", "<C-h>", ":NvimTreeToggle<cr>", { silent = true, noremap = true })
+        '';
+      }
     ];
 
     extraLuaConfig = ''
+      vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
       vim.g.mapleader = ","
 
       vim.opt.path = "**"
@@ -158,9 +205,6 @@
 
       vim.opt.cinoptions = { "t0", "l1", ":0" }
       vim.opt.cinkeys:remove("0#")
-
-      vim.g.netrw_banner = 0
-      vim.g.netrw_winsize = 25
 
       vim.keymap.set("n", "<leader><space>", ":nohlsearch<CR>", { noremap = true })
       vim.keymap.set("n", "[q", ":cprevious<CR>", { noremap = true })
