@@ -48,14 +48,7 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 
-      commonConfig = stateVersion: {
-        system.stateVersion = stateVersion;
-
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-        };
-
+      commonConfig = {
         nixpkgs.overlays = [
           (final: prev: {
             unstable = nixpkgs-unstable.legacyPackages.${prev.system};
@@ -88,11 +81,18 @@
           system = "x86_64-linux";
 
           modules = [
-            (commonConfig "23.05")
+            commonConfig
+            { system.stateVersion = "23.05"; }
             ./machines/whitelodge/configuration.nix
             agenix.nixosModules.default
             home-manager.nixosModules.home-manager
-            { home-manager.users.root = import ./machines/whitelodge/home.nix; }
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.root = import ./machines/whitelodge/home.nix;
+              };
+            }
             vps-admin-os.nixosConfigurations.container
           ];
 
@@ -103,7 +103,8 @@
           system = "aarch64-linux";
 
           modules = [
-            (commonConfig "23.05")
+            commonConfig
+            { system.stateVersion = "23.05"; }
             ./machines/bob/configuration.nix
             agenix.nixosModules.default
             home-manager.nixosModules.home-manager
@@ -119,11 +120,18 @@
           system = "aarch64-darwin";
 
           modules = [
-            (commonConfig 4)
+            commonConfig
+            { system.stateVersion = 4; }
             ./machines/gordon/configuration.nix
             agenix.darwinModules.default
             home-manager.darwinModules.home-manager
-            { home-manager.users.tomas = import ./machines/gordon/home.nix; }
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.tomas = import ./machines/gordon/home.nix;
+              };
+            }
           ];
 
           specialArgs = { inherit secrets; };
@@ -131,18 +139,16 @@
       };
 
       homeConfigurations = {
-        blacklodge = home-manager.lib.homeManagerConfiguration {
-          system = "x86_64-linux";
+        "tomas@blacklodge" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
 
           modules = [
-            (commonConfig "24.05")
+            commonConfig
             agenix.homeManagerModules.default
-            {
-              home-manager.users.tomas = import ./machines/blacklodge/home.nix;
-            }
+            ./machines/blacklodge/home.nix
           ];
 
-          specialArgs = { inherit secrets; };
+          extraSpecialArgs = { inherit secrets; };
         };
       };
 

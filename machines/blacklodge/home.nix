@@ -14,23 +14,32 @@
     ../../intranet
   ];
 
-  config.home = {
-    stateVersion = "24.05";
-    homeDirectory = "/home/tomas";
+  config = {
+    nix.package = pkgs.nix;
 
-    packages = with pkgs; [
-      # Development
-      go
-      gotools
-      lua
-      python3
-      shellcheck
+    home = {
+      stateVersion = "24.05";
+      username = "tomas";
+      homeDirectory = "/home/tomas";
 
-      # Media
-      hugo
+      packages = with pkgs; [
+        # Development
+        go
+        gotools
+        lua
+        python3
+        shellcheck
 
-      # Networking
-      ldns
-    ];
+        # Media
+        hugo
+        wineWowPackages.stable
+
+        # Networking
+        curl
+        ldns
+        rsync
+        wireguard-tools
+      ];
+    };
   };
 }
