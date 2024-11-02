@@ -90,7 +90,7 @@
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users.root = import ./machines/whitelodge/home.nix;
+                users.root = import ./machines/whitelodge/root.nix;
               };
             }
             vps-admin-os.nixosConfigurations.container
@@ -129,7 +129,7 @@
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users.tomas = import ./machines/gordon/home.nix;
+                users.tomas = import ./machines/gordon/tomas.nix;
               };
             }
           ];
@@ -145,7 +145,7 @@
           modules = [
             commonConfig
             agenix.homeManagerModules.default
-            ./machines/blacklodge/home.nix
+            ./machines/blacklodge/tomas.nix
           ];
 
           extraSpecialArgs = { inherit secrets; };
