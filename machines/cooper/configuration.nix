@@ -2,14 +2,14 @@
 
 {
   imports = [
-    ./home.nix
     ./modules/audio.nix
+    ./modules/desktop.nix
     ./modules/firewall.nix
     ./modules/fonts.nix
+    ./modules/locale.nix
     ./modules/network.nix
     ./modules/phone.nix
     ./modules/printing.nix
-    ./modules/sway.nix
     ./modules/virtualisation.nix
     ./modules/wireguard.nix
     ../../intranet
@@ -43,11 +43,7 @@
 
     systemd.services.nix-daemon.environment.TMPDIR = "/var/tmp";
 
-    nix.settings = {
-      auto-optimise-store = true;
-      experimental-features = [ "nix-commands" "flakes" ];
-      trusted-users = [ "root" "tomas" ];
-    };
+    nix.settings.trusted-users = [ "root" "tomas" ];
 
     age = {
       identityPaths = [ "/home/tomas/.ssh/id_ed25519_agenix" ];
@@ -80,49 +76,28 @@
 
         tomas = {
           isNormalUser = true;
-          extraGroups = [ "wheel" "wireshark" ];
+          extraGroups = [ "audio" "networkmanager" "users" "video" "wheel" "wireshark" ];
           hashedPasswordFile = config.age.secrets.users-tomas-password.path;
           shell = pkgs.zsh;
         };
       };
     };
 
-    time.timeZone = "Europe/Prague";
-
     programs = {
       firefox.enable = true;
-
-      git = {
-        enable = true;
-        lfs.enable = true;
-      };
-
-      neovim = {
-        enable = true;
-        defaultEditor = true;
-        vimAlias = true;
-      };
-
       ssh.startAgent = true;
 
       wireshark = {
         enable = true;
         package = pkgs.wireshark-qt;
       };
-
-      zsh.enable = true;
     };
 
     environment.systemPackages = with pkgs; [
       # System utilities
-      fzf
-      htop
-      jq
       man-pages
       man-pages-posix
-      ripgrep
       rsync
-      tmux
       tree
 
       # Networking
@@ -141,14 +116,13 @@
       gnumake
       go
       gotools
+      lua
       python3
       shellcheck
 
       # Media
       hugo
       libreoffice-still
-      mpv
-      yt-dlp
       zathura
 
       # Communication
@@ -161,9 +135,13 @@
 
     networking.hostName = "cooper";
 
-    security.sudo = {
-      enable = true;
-      execWheelOnly = true;
+    security = {
+      polkit.enable = true;
+
+      sudo = {
+        enable = true;
+        execWheelOnly = true;
+      };
     };
 
     services = {

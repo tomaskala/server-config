@@ -3,8 +3,7 @@
 {
   fonts = {
     packages = with pkgs; [
-      jetbrains-mono
-      (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+      (nerdfonts.override { fonts = [ "FiraCode" ]; })
       noto-fonts
       noto-fonts-color-emoji
       ttf_bitstream_vera

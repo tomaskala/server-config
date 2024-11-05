@@ -120,10 +120,18 @@
           system = "x86_64-linux";
 
           modules = [
-            (commonConfig "23.05")
+            commonConfig
+            { system.stateVersion = "24.05"; }
             ./machines/cooper/configuration.nix
             agenix.nixosModules.default
             home-manager.nixosModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.root = import ./machines/cooper/tomas.nix;
+              };
+            }
             nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
           ];
 
