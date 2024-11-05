@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ../../home/desktop
     ../../home/fish.nix
     ../../home/git.nix
     ../../home/mpv.nix

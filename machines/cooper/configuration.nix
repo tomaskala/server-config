@@ -76,7 +76,8 @@
 
         tomas = {
           isNormalUser = true;
-          extraGroups = [ "audio" "networkmanager" "users" "video" "wheel" "wireshark" ];
+          extraGroups =
+            [ "audio" "networkmanager" "users" "video" "wheel" "wireshark" ];
           hashedPasswordFile = config.age.secrets.users-tomas-password.path;
           shell = pkgs.zsh;
         };
@@ -123,7 +124,6 @@
       # Media
       hugo
       libreoffice-still
-      zathura
 
       # Communication
       discord

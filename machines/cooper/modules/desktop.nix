@@ -1,16 +1,20 @@
 { lib, pkgs, ... }:
 
 let
-  hypr-run = pkgs.writeShellScriptBin "hypr-run" ''
-    export XDG_SESSION_TYPE="wayland"
-    export XDG_SESSION_DESKTOP="Hyprland"
-    export XDG_CURRENT_DESKTOP="Hyprland"
+  hypr-run = pkgs.writeShellApplication {
+    name = "hypr-run";
+    runtimeInputs = [ pkgs.hyprland ];
+    text = ''
+      export XDG_SESSION_TYPE="wayland"
+      export XDG_SESSION_DESKTOP="Hyprland"
+      export XDG_CURRENT_DESKTOP="Hyprland"
 
-    systemd-run --user --scope --collect --quiet --unit="hyprland" \
-        systemd-cat --identifier="hyprland" ${pkgs.hyprland}/bin/Hyprland $@
+      systemd-run --user --scope --collect --quiet --unit="hyprland" \
+          systemd-cat --identifier="hyprland" Hyprland $@
 
-    ${pkgs.hyprland}/bin/hyprctl dispatch exit
-  '';
+      hyprctl dispatch exit
+    '';
+  };
 in {
   programs = {
     dconf.enable = true;
@@ -48,7 +52,9 @@ in {
     greetd = {
       enable = true;
       settings.default_session.command = ''
-        ${lib.makeBinPath [ pkgs.greetd.tuigreet ]}/tuigreet -r --asterisks --time --cmd ${lib.getExe hypr-run}
+        ${
+          lib.makeBinPath [ pkgs.greetd.tuigreet ]
+        }/tuigreet -r --asterisks --time --cmd ${lib.getExe hypr-run}
       '';
     };
   };
