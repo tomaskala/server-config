@@ -87,6 +87,7 @@
     programs = {
       firefox.enable = true;
       ssh.startAgent = true;
+      zsh.enable = true;
 
       wireshark = {
         enable = true;

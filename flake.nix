@@ -129,7 +129,7 @@
               home-manager = {
                 useGlobalPkgs = true;
                 useUserPackages = true;
-                users.root = import ./machines/cooper/tomas.nix;
+                users.tomas = import ./machines/cooper/tomas.nix;
               };
             }
             nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2

@@ -1,8 +1,6 @@
 { config, ... }:
 
 {
-  home.pointerCursor.gtk.enable = true;
-
   gtk = {
     enable = true;
 
