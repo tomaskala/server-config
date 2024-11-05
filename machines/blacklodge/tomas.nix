@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -39,7 +39,21 @@
         ldns
         rsync
         wireguard-tools
+
+        # Fonts
+        (nerdfonts.override { fonts = [ "FiraCode" ]; })
       ];
     };
+
+    fonts.fontconfig.enable = true;
+
+    catppuccin = {
+      accent = "mauve";
+      flavor = "macchiato";
+      enable = true;
+    };
+
+    # Catppuccin for GTK has been discontinued.
+    gtk.catppuccin.enable = lib.mkForce false;
   };
 }

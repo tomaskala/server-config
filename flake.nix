@@ -7,6 +7,7 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
+    catppuccin.url = "github:catppuccin/nix";
 
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
@@ -44,7 +45,8 @@
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, nixos-hardware, vps-admin-os
-    , nix-darwin, home-manager, agenix, openwrt-imagebuilder, secrets, ... }:
+    , catppuccin, nix-darwin, home-manager, agenix, openwrt-imagebuilder
+    , secrets, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 
@@ -144,6 +146,7 @@
 
           modules = [
             commonConfig
+            catppuccin.homeManagerModules.catppuccin
             agenix.homeManagerModules.default
             ./machines/blacklodge/tomas.nix
           ];
