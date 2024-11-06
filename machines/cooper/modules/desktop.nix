@@ -10,7 +10,7 @@ let
       export XDG_CURRENT_DESKTOP="Hyprland"
 
       systemd-run --user --scope --collect --quiet --unit="hyprland" \
-          systemd-cat --identifier="hyprland" Hyprland $@
+          systemd-cat --identifier="hyprland" Hyprland "$@"
 
       hyprctl dispatch exit
     '';
