@@ -1,4 +1,4 @@
-{ config, pkgs, secrets, ... }:
+{ config, lib, pkgs, secrets, ... }:
 
 {
   imports = [
@@ -32,12 +32,13 @@
       initrd.systemd.enable = true;
 
       loader = {
-        grub.enable = false;
+        grub.enable = lib.mkForce false;
+        systemd-boot.enable = lib.mkForce false;
+      };
 
-        systemd-boot = {
-          enable = true;
-          editor = false;
-        };
+      lanzaboote = {
+        enable = true;
+        pkiBundle = "/etc/secureboot";
       };
     };
 
@@ -100,6 +101,7 @@
       man-pages
       man-pages-posix
       rsync
+      sbctl
       tree
 
       # Networking
