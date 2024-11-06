@@ -1,19 +1,21 @@
-{ config, pkgs, util, ... }:
+{ config, pkgs, ... }:
 
 let
+  inherit (pkgs) infra;
+
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.cooper;
   serverCfg = intranetCfg.devices.whitelodge;
 
-  serverIPv4 = util.ipAddress serverCfg.wireguard.internal.ipv4;
-  serverIPv6 = util.ipAddress serverCfg.wireguard.internal.ipv6;
+  serverIPv4 = infra.ipAddress serverCfg.wireguard.internal.ipv4;
+  serverIPv6 = infra.ipAddress serverCfg.wireguard.internal.ipv6;
 
   wgInterfaceCfg = {
     privateKeyFile = config.age.secrets.wg-cooper-internal-pk.path;
     address = [
-      (util.ipAddressMasked deviceCfg.wireguard.internal.ipv4
+      (infra.ipAddressMasked deviceCfg.wireguard.internal.ipv4
         intranetCfg.wireguard.internal.ipv4.mask)
-      (util.ipAddressMasked deviceCfg.wireguard.internal.ipv6
+      (infra.ipAddressMasked deviceCfg.wireguard.internal.ipv6
         intranetCfg.wireguard.internal.ipv6.mask)
     ];
   };
@@ -50,8 +52,8 @@ in {
       peers = [
         (peerCommonCfg // {
           allowedIPs = [
-            (util.ipSubnet intranetCfg.wireguard.internal.ipv4)
-            (util.ipSubnet intranetCfg.wireguard.internal.ipv6)
+            (infra.ipSubnet intranetCfg.wireguard.internal.ipv4)
+            (infra.ipSubnet intranetCfg.wireguard.internal.ipv6)
           ];
         })
       ];

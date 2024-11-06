@@ -3,21 +3,26 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules =
-    [ "nvme" "xhci_pci" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot = {
+    initrd = {
+      availableKernelModules =
+        [ "nvme" "xhci_pci" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
+      kernelModules = [ ];
+
+      luks.devices."luks-188fa8c4-d7dc-420d-ae6d-3b8d46a32229" = {
+        device = "/dev/disk/by-uuid/188fa8c4-d7dc-420d-ae6d-3b8d46a32229";
+        allowDiscards = true;
+      };
+    };
+
+    kernelModules = [ "kvm-amd" ];
+    extraModulePackages = [ ];
+  };
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/6dfc63b4-6110-49d6-9dc9-544813e8a9f9";
     fsType = "ext4";
   };
-
-  boot.initrd.luks.devices."luks-188fa8c4-d7dc-420d-ae6d-3b8d46a32229".device =
-    "/dev/disk/by-uuid/188fa8c4-d7dc-420d-ae6d-3b8d46a32229";
-  boot.initrd.luks.devices."luks-188fa8c4-d7dc-420d-ae6d-3b8d46a32229".allowDiscards =
-    true;
 
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/E51A-F2EF";

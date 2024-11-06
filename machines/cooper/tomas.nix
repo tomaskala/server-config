@@ -1,5 +1,3 @@
-{ pkgs, ... }:
-
 {
   imports = [
     ../../home/desktop
@@ -16,8 +14,6 @@
   ];
 
   config = {
-    nix.package = pkgs.nix;
-
     home = {
       stateVersion = "24.05";
       username = "tomas";

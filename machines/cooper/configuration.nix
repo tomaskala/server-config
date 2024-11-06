@@ -10,7 +10,6 @@
     ./modules/locale.nix
     ./modules/network.nix
     ./modules/phone.nix
-    ./modules/printing.nix
     ./modules/virtualisation.nix
     ./modules/wireguard.nix
     ../../intranet
@@ -46,6 +45,8 @@
     systemd.services.nix-daemon.environment.TMPDIR = "/var/tmp";
 
     nix.settings.trusted-users = [ "root" "tomas" ];
+
+    nixpkgs.config.allowUnfree = true;
 
     age = {
       identityPaths = [ "/home/tomas/.ssh/id_ed25519_agenix" ];
