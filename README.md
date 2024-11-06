@@ -6,7 +6,7 @@ Configuration for my network infrastructure.
 
 - `whitelodge`: My VPS running NixOS.
 - `blacklodge`: My desktop computer running Pop!_OS.
-- `cooper`: Lenovo Thinkpad T14 Gen 2 running Arch Linux.
+- `cooper`: Lenovo Thinkpad T14 Gen 2 running NixOS.
 - `gordon`: MacBook Air M3.
 - `bob`: Raspberry Pi 4 Model B running NixOS.
 - `hawk`: iPhone SE 2022.
