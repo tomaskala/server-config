@@ -151,7 +151,6 @@
     services = {
       ntp.enable = false;
       timesyncd.enable = true;
-      # TODO: Also enable boot.initrd.luks.devices.<name>.allowDiscards.
       fstrim.enable = true;
       fwupd.enable = true;
       tlp.enable = true;
