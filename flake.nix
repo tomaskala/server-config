@@ -19,6 +19,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     agenix = {
       url = "github:ryantm/agenix";
 
@@ -45,8 +50,8 @@
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, nixos-hardware, vps-admin-os
-    , catppuccin, nix-darwin, home-manager, agenix, openwrt-imagebuilder
-    , secrets, ... }:
+    , catppuccin, nix-darwin, home-manager, lanzaboote, agenix
+    , openwrt-imagebuilder, secrets, ... }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
 
@@ -111,6 +116,29 @@
             agenix.nixosModules.default
             home-manager.nixosModules.home-manager
             nixos-hardware.nixosModules.raspberry-pi-4
+          ];
+
+          specialArgs = { inherit secrets; };
+        };
+
+        cooper = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+
+          modules = [
+            commonConfig
+            { system.stateVersion = "24.05"; }
+            ./machines/cooper/configuration.nix
+            agenix.nixosModules.default
+            home-manager.nixosModules.home-manager
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                users.tomas = import ./machines/cooper/tomas.nix;
+              };
+            }
+            lanzaboote.nixosModules.lanzaboote
+            nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
           ];
 
           specialArgs = { inherit secrets; };
