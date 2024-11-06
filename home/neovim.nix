@@ -136,6 +136,7 @@
         type = "lua";
         config = ''
           require("nvim-tree").setup({
+            update_focused_file = { enable = true },
             on_attach = function(bufnr)
               local api = require("nvim-tree.api")
               local opts = { buffer = bufnr, noremap = true, silent = true, nowait = true }
