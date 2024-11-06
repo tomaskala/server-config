@@ -2,6 +2,7 @@
 
 {
   imports = [
+    ./hardware-configuration.nix
     ./modules/audio.nix
     ./modules/desktop.nix
     ./modules/firewall.nix
