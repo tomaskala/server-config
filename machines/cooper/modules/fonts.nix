@@ -7,6 +7,7 @@
       noto-fonts
       noto-fonts-color-emoji
       ttf_bitstream_vera
+      inter
     ];
 
     fontconfig = {

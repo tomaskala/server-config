@@ -1,6 +1,50 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
-{
+let
+  mkValueString = value:
+    if lib.isBool value then
+      if value then "true" else "false"
+    else if lib.isInt value then
+      builtins.toString value
+    else if (value._type or "") == "literal" then
+      value.value
+    else if builtins.isString value then
+      ''"${value}"''
+    else if builtins.isList value then
+      "[ ${builtins.concatStringsSep "," (map mkValueString value)} ]"
+    else
+      abort "Unhandled value type ${builtins.typeOf value}";
+
+  mkKeyValue = { sep ? ": ", end ? ";", }:
+    name: value:
+    "${name}${sep}${mkValueString value}${end}";
+
+  mkRasiSection = name: value:
+    if builtins.isAttrs value then
+      let
+        toRasiKeyValue =
+          lib.generators.toKeyValue { mkKeyValue = mkKeyValue { }; };
+        # Remove null values so the resulting config does not have empty lines
+        configStr =
+          toRasiKeyValue (lib.attrsets.filterAttrs (_: v: v != null) value);
+      in ''
+        ${name} {
+        ${configStr}}
+      ''
+    else
+      (mkKeyValue {
+        sep = " ";
+        end = "";
+      } name value) + "\n";
+
+  toRasi = attrs:
+    builtins.concatStringsSep "\n"
+    (builtins.concatMap (lib.attrsets.mapAttrsToList mkRasiSection) [
+      (lib.attrsets.filterAttrs (n: _: n == "@theme") attrs)
+      (lib.attrsets.filterAttrs (n: _: n == "@import") attrs)
+      (builtins.removeAttrs attrs [ "@theme" "@import" ])
+    ]);
+in {
   programs.waybar = {
     enable = true;
 
@@ -15,7 +59,7 @@
       gtk-layer-shell = true;
 
       modules-left = [ "hyprland/workspaces" ];
-      modules-center = [ "clock" "idle_inhibitor" ];
+      modules-center = [ "clock" ];
       modules-right = [
         "network"
         "battery"
@@ -47,14 +91,6 @@
         max-length = 15;
         on-click =
           "${pkgs.alacritty}/bin/alacritty -e ${pkgs.networkmanager}/bin/nmtui";
-      };
-
-      "idle_inhibitor" = {
-        format = "{icon}";
-        format-icons = {
-          activated = "";
-          deactivated = "";
-        };
       };
 
       "battery" = {
@@ -124,6 +160,8 @@
         tooltip-format = "{source_volume}% / {desc}";
       };
     }];
+
+    style = toRasi (import ./waybar-theme.nix { inherit config; });
   };
 
   # This is a hack to ensure that hyprctl ends up in the PATH for the waybar service on hyprland
