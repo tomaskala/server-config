@@ -3,7 +3,8 @@
 {
   qt = {
     enable = true;
-    platformTheme.name = "gtk";
+    style.name = "kvantum";
+    platformTheme.name = "kvantum";
   };
 
   home = {

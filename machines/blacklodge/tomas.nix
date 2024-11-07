@@ -48,9 +48,9 @@
     fonts.fontconfig.enable = true;
 
     catppuccin = {
+      enable = true;
       accent = "mauve";
       flavor = "macchiato";
-      enable = true;
     };
 
     # Catppuccin for GTK has been discontinued.

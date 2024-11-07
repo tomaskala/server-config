@@ -128,15 +128,8 @@
             commonConfig
             { system.stateVersion = "24.05"; }
             ./machines/cooper/configuration.nix
+            catppuccin.nixosModules.catppuccin
             agenix.nixosModules.default
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                users.tomas = import ./machines/cooper/tomas.nix;
-              };
-            }
             lanzaboote.nixosModules.lanzaboote
             nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
           ];
@@ -169,6 +162,16 @@
       };
 
       homeConfigurations = {
+        "tomas@cooper" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages.x86_64-linux;
+
+          modules = [
+            commonConfig
+            catppuccin.homeManagerModules.catppuccin
+            ./machines/cooper/tomas.nix
+          ];
+        };
+
         "tomas@blacklodge" = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
 

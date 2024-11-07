@@ -83,6 +83,12 @@
       };
     };
 
+    catppuccin = {
+      enable = true;
+      flavor = "macchiato";
+      accent = "mauve";
+    };
+
     programs = {
       firefox.enable = true;
       ssh.startAgent = true;

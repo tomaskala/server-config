@@ -1,3 +1,5 @@
+{ lib, pkgs, ... }:
+
 {
   imports = [
     ../../home/desktop
@@ -14,10 +16,21 @@
   ];
 
   config = {
+    nix.package = pkgs.nix;
+
     home = {
       stateVersion = "24.05";
       username = "tomas";
       homeDirectory = "/home/tomas";
     };
+
+    catppuccin = {
+      enable = true;
+      accent = "mauve";
+      flavor = "macchiato";
+    };
+
+    # Catppuccin for GTK has been discontinued.
+    gtk.catppuccin.enable = lib.mkForce false;
   };
 }
