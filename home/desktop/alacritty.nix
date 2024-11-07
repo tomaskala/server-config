@@ -1,3 +1,5 @@
+{ lib, pkgs, ... }:
+
 {
   programs.alacritty = {
     enable = true;
@@ -6,6 +8,8 @@
       env.TERM = "alacritty";
       live_config_reload = true;
       scrolling.history = 100000;
+
+      shell.program = lib.getExe pkgs.fish;
 
       window.padding = {
         x = 20;
