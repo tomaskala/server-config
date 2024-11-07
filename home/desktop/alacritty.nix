@@ -18,7 +18,7 @@
 
       font = {
         normal.family = "FiraCode NerdFont Mono";
-        size = 14;
+        size = 12;
       };
     };
   };
