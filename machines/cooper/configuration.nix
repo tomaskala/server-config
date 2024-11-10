@@ -42,6 +42,8 @@
 
     nix.settings.trusted-users = [ "root" "tomas" ];
 
+    system.stateVersion = "24.05";
+
     nixpkgs.config.allowUnfree = true;
 
     age = {

@@ -89,7 +89,6 @@
 
           modules = [
             commonConfig
-            { system.stateVersion = "23.05"; }
             ./machines/whitelodge/configuration.nix
             agenix.nixosModules.default
             home-manager.nixosModules.home-manager
@@ -111,7 +110,6 @@
 
           modules = [
             commonConfig
-            { system.stateVersion = "23.05"; }
             ./machines/bob/configuration.nix
             agenix.nixosModules.default
             home-manager.nixosModules.home-manager
@@ -126,7 +124,6 @@
 
           modules = [
             commonConfig
-            { system.stateVersion = "24.05"; }
             ./machines/cooper/configuration.nix
             catppuccin.nixosModules.catppuccin
             agenix.nixosModules.default
@@ -144,7 +141,6 @@
 
           modules = [
             commonConfig
-            { system.stateVersion = 4; }
             ./machines/gordon/configuration.nix
             agenix.darwinModules.default
             home-manager.darwinModules.home-manager

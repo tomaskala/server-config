@@ -29,6 +29,8 @@ in {
       };
     };
 
+    system.stateVersion = "23.05";
+
     age.secrets = {
       users-tomas-password.file = "${secrets}/secrets/users/bob/tomas.age";
       users-root-password.file = "${secrets}/secrets/users/bob/root.age";

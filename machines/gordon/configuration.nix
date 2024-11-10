@@ -98,6 +98,8 @@
     security.pam.enableSudoTouchIdAuth = true;
 
     system = {
+      stateVersion = 4;
+
       # activateSettings -u will reload the settings from the database and apply
       # them to the current session, so we do not need to log out and log in
       # again to make the changes take effect.
