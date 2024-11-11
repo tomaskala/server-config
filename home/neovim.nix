@@ -92,22 +92,10 @@
             desc = "Configure LSP keymaps",
             group = vim.api.nvim_create_augroup("lsp", { clear = true }),
             callback = function(args)
-              local opts = { buffer = args.buf }
+              local opts = { buffer = args.buf, noremap = true, silent = true }
 
               -- Trigger code completion
               vim.keymap.set("i", "<C-Space>", "<C-x><C-o>")
-
-              -- Go to definition
-              vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
-
-              -- List implementations
-              vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>")
-
-              -- Go to type definition
-              vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>")
-
-              -- List references
-              vim.keymap.set("n", "grr", "<cmd>lua vim.lsp.buf.references()<cr>")
 
               -- Display a function's signature
               vim.keymap.set("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<cr>")
@@ -120,6 +108,19 @@
 
               -- Select a code action
               vim.keymap.set("n", "gra", "<cmd>lua vim.lsp.buf.code_action()<cr>")
+
+              -- The following is done using telescope.nvim.
+              -- List references
+              -- vim.keymap.set("n", "grr", "<cmd>lua vim.lsp.buf.references()<cr>")
+
+              -- Go to definition
+              -- vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
+
+              -- List implementations
+              -- vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>")
+
+              -- Go to type definition
+              -- vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>")
             end,
           })
         '';
@@ -168,6 +169,29 @@
           })
 
           vim.api.nvim_set_keymap("n", "<C-h>", ":NvimTreeToggle<cr>", { silent = true, noremap = true })
+        '';
+      }
+      {
+        plugin = telescope-nvim;
+        type = "lua";
+        config = ''
+          local telescope = require("telescope.builtin")
+          local opts = { noremap = true, silent = true }
+
+          vim.keymap.set("n", "<C-p>", telescope.find_files, opts)
+          vim.keymap.set("n", "<C-S-p>", telescope.live_grep, opts)
+          vim.keymap.set("n", "<C-b>", telescope.buffers, opts)
+
+          vim.keymap.set("n", "grr", telescope.lsp_references, opts)
+          vim.keymap.set("n", "gd", function()
+            telescope.lsp_definitions({ reuse_win = true })
+          end, opts)
+          vim.keymap.set("n", "gi", function()
+            telescope.lsp_implementations({ reuse_win = true })
+          end, opts)
+          vim.keymap.set("n", "go", function()
+            telescope.lsp_type_definitions({ reuse_win = true })
+          end, opts)
         '';
       }
     ];
