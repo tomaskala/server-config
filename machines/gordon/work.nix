@@ -32,9 +32,11 @@
         ];
 
         extraLuaConfig = lib.mkAfter ''
-          local lspconfig = require("lspconfig")
-          lspconfig.biome.setup({})
-          lspconfig.tsserver.setup({})
+          do
+            local lspconfig = require("lspconfig")
+            lspconfig.biome.setup({})
+            lspconfig.tsserver.setup({})
+          end
         '';
       };
 
