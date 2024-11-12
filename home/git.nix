@@ -2,7 +2,11 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
-    delta.enable = true;
+
+    delta = {
+      enable = true;
+      options.syntax-theme = "ansi";
+    };
 
     extraConfig = {
       user = {

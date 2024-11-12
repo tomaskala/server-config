@@ -1,6 +1,10 @@
 {
   programs = {
-    bat.enable = true;
+    bat = {
+      enable = true;
+      config.theme = "ansi";
+    };
+
     fd.enable = true;
     fzf.enable = true;
     home-manager.enable = true;
