@@ -1,0 +1,33 @@
+name: 'Flake check'
+
+on:
+  push:
+
+jobs:
+  flake-check:
+    strategy:
+      matrix:
+        os:
+          - 'ubuntu-latest'
+          - 'macos-latest'
+    runs-on: '${{ matrix.os }}'
+    steps:
+      - name: 'Checkout the repository'
+        uses: 'actions/checkout@v4'
+
+      - name: 'Install Nix'
+        uses: 'DeterminateSystems/nix-installer-action@v15'
+
+      - name: 'Setup Magic Nix Cache'
+        uses: 'DeterminateSystems/magic-nix-cache-action@v8'
+
+      - name: 'Give GitHub Actions access to infra-secrets'
+        uses: 'webfactory/ssh-agent@v0.9.0'
+        with:
+          ssh-private-key: '${{ secrets.INFRA_SECRETS_DEPLOY_KEY }}'
+
+      - name: 'Nix Flake Checker'
+        uses: 'DeterminateSystems/flake-checker-action@v9'
+
+      - name: 'Run checks'
+        run: 'nix flake check'

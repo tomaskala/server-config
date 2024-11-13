@@ -28,9 +28,6 @@ jobs:
       - name: 'Update flake.lock'
         run: 'nix flake update'
 
-      - name: 'Run checks'
-        run: 'nix flake check --all-systems'
-
       - name: 'Commit & push flake.lock'
         run: |
           git config --global user.name 'Github Actions'
