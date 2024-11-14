@@ -153,11 +153,7 @@ in {
     time.timeZone = "Etc/UTC";
 
     programs = {
-      git = {
-        enable = true;
-        config.init.defaultBranch = "master";
-      };
-
+      git.enable = true;
       htop.enable = true;
 
       tmux = {
