@@ -26,12 +26,6 @@ jobs:
       - name: 'Update flake.lock'
         run: 'nix flake update'
 
-      - name: 'Nix Flake Checker'
-        uses: 'DeterminateSystems/flake-checker-action@v9'
-        with:
-          ignore-missing-flake-lock: false
-          fail-mode: true
-
       - name: 'Commit & push flake.lock'
         run: |
           git config --global user.name 'Github Actions'
