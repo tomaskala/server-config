@@ -43,6 +43,9 @@ in pkgs.mkShell {
     poetry
     python3
 
+    # Infrastructure
+    hcloud
+
     # My utilities
     work
   ];
