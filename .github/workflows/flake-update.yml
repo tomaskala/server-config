@@ -25,3 +25,5 @@ jobs:
 
       - name: 'Update Nix Flake Lock'
         uses: 'DeterminateSystems/update-flake-lock@v24'
+        with:
+          token: '${{ secrets.GITHUB_TOKEN }}'
