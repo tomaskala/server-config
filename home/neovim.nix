@@ -8,13 +8,7 @@
     withPython3 = false;
     withRuby = false;
 
-    extraPackages = with pkgs; [
-      gopls
-      lua-language-server
-      nil
-      pyright
-      unstable.ruff
-    ];
+    extraPackages = with pkgs; [ gopls lua-language-server nil pyright ruff ];
 
     plugins = with pkgs.vimPlugins; [
       {
