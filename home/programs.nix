@@ -1,8 +1,10 @@
+{ lib, ... }:
+
 {
   programs = {
     bat = {
       enable = true;
-      config.theme = "ansi";
+      config.theme = lib.mkDefault "ansi";
     };
 
     fd.enable = true;
