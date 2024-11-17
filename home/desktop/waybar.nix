@@ -44,6 +44,31 @@ let
       (lib.attrsets.filterAttrs (n: _: n == "@import") attrs)
       (builtins.removeAttrs attrs [ "@theme" "@import" ])
     ]);
+
+  tsCheck = pkgs.writeShellApplication {
+    name = "tscheck";
+    runtimeInputs = [ pkgs.jq pkgs.tailscale ];
+    text = ''
+      if [[ "$1" == "toggle" ]]; then
+        if [[ "$(tailscale status --json | jq -r '.BackendState')" == "Stopped" ]]; then
+          tailscale up --operator=tomas --reset
+        else
+          tailscale down
+        fi
+      fi
+
+      if tailscale status &>/dev/null; then
+        if [[ "$(tailscale status --json | jq -r '.ExitNodeStatus.Online')" == "true" ]]; then
+          ip="$(tailscale status --json | jq -r '.ExitNodeStatus.TailscaleIPs[0]')"
+          echo "{\"text\": \"󰖂\", \"tooltip\": \"Connected to exit node ($ip)\", \"class\": \"exitNode\"}" | jq --unbuffered --compact-output
+        else
+          echo "{\"text\": \"󰖂\", \"tooltip\": \"Connected to tailnet\", \"class\": \"tailnet\"}" | jq --unbuffered --compact-output
+        fi
+      else
+        echo '{"text": "󰖂", "tooltip": "Disconnected", "class": "disconnected"}' | jq --unbuffered --compact-output
+      fi
+    '';
+  };
 in {
   programs.waybar = {
     enable = true;
@@ -63,6 +88,7 @@ in {
       modules-right = [
         "network"
         "battery"
+        "custom/vpn"
         "wireplumber"
         "pulseaudio#source"
         "group/group-power"
@@ -106,6 +132,14 @@ in {
         format-alt = "{time} {icon}";
         format-full = "";
         format-icons = [ "" "" "" "" "" ];
+      };
+
+      "custom/vpn" = {
+        format = "{}";
+        exec = "${lib.getExe tsCheck} status";
+        on-click = "${lib.getExe tsCheck} toggle";
+        return-type = "json";
+        interval = 1;
       };
 
       "group/group-power" = {

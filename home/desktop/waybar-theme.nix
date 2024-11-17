@@ -9,6 +9,7 @@ let
 
   red = "#ed8796";
   green = "#a6da95";
+  blue = "#7dc4e4";
   orange = "#f5a97f";
 in {
   "*" = {
@@ -60,11 +61,24 @@ in {
     background-color = mkLiteral "transparent";
   };
 
-  "#battery,\n      #clock,\n      #cpu,\n      #custom-lock,\n      #custom-power,\n      #custom-quit,\n      #custom-reboot,\n      #group-group-power,\n      #memory,\n      #network,\n      #pulseaudio,\n      #wireplumber" =
+  "#battery,\n      #clock,\n      #cpu,\n      #custom-lock,\n      #custom-power,\n      #custom-quit,\n      #custom-reboot,\n      #custom-vpn,\n      #group-group-power,\n      #memory,\n      #network,\n      #pulseaudio,\n      #wireplumber" =
     {
       padding = mkLiteral "0px 10px";
       color = mkLiteral "${text}";
     };
+
+  "#custom-vpn.tailnet" = {
+    color = mkLiteral "${blue}";
+    background-color = mkLiteral "transparent";
+  };
+  "#custom-vpn.exitNode" = {
+    color = mkLiteral "${green}";
+    background-color = mkLiteral "transparent";
+  };
+  "#custom-vpn.disconnected" = {
+    color = mkLiteral "${red}";
+    background-color = mkLiteral "transparent";
+  };
 
   "#custom-power" = {
     color = mkLiteral "${accent}";

@@ -10,6 +10,7 @@
     ./modules/locale.nix
     ./modules/network.nix
     ./modules/phone.nix
+    ./modules/tailscale.nix
     ./modules/virtualisation.nix
     ./modules/wireguard.nix
     ../../intranet
