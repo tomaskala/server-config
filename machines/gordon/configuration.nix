@@ -141,8 +141,9 @@
           # Do not beep when changing volume.
           "com.apple.sound.beep.feedback" = 0;
 
-          # Sensible behavior for pressing and holding keys, useful in vim.
-          ApplePressAndHoldEnabled = true;
+          # Unset displaying the accented characters prompt on key hold by
+          # default, this makes it true by default.
+          ApplePressAndHoldEnabled = null;
           InitialKeyRepeat = 15;
           KeyRepeat = 3;
 
@@ -161,6 +162,10 @@
         CustomUserPreferences = {
           "com.apple.AdLib".allowApplePersonalizedAdvertising = false;
           "com.apple.finder"._FXSortFoldersFirst = true;
+
+          # Explicitly disable displaying the accented characters prompt on key
+          # hold for the terminal.
+          "com.googlecode.iterm2".ApplePressAndHoldEnabled = false;
 
           "com.apple.desktopservices" = {
             DSDontWriteNetworkStores = true;
