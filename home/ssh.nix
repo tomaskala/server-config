@@ -3,7 +3,8 @@
 let
   inherit (pkgs) infra;
   intranetCfg = config.infra.intranet;
-in {
+in
+{
   programs.ssh = {
     enable = true;
     addKeysToAgent = "yes";
@@ -23,16 +24,14 @@ in {
 
       whitelodge = {
         user = "tomas";
-        hostname = infra.ipAddress
-          intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
+        hostname = infra.ipAddress intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
         identitiesOnly = true;
         identityFile = "~/.ssh/id_ed25519_whitelodge";
       };
 
       whitelodge-git = {
         user = "git";
-        hostname = infra.ipAddress
-          intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
+        hostname = infra.ipAddress intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
         identitiesOnly = true;
         identityFile = "~/.ssh/id_ed25519_whitelodge_git";
       };

@@ -8,7 +8,8 @@ let
 
   black = "#181926";
   purple = "#c6a0f6";
-in {
+in
+{
   programs.hyprlock = {
     enable = true;
     settings = {
@@ -17,15 +18,17 @@ in {
         hide_cursor = true;
       };
 
-      background = [{ color = bg; }];
+      background = [ { color = bg; } ];
 
-      input-field = [{
-        size = "250, 60";
-        outer_color = "rgb(${black})";
-        inner_color = "rgb(${dark})";
-        font_color = "rgb(${purple})";
-        placeholder_text = "";
-      }];
+      input-field = [
+        {
+          size = "250, 60";
+          outer_color = "rgb(${black})";
+          inner_color = "rgb(${dark})";
+          font_color = "rgb(${purple})";
+          placeholder_text = "";
+        }
+      ];
 
       label = [
         {

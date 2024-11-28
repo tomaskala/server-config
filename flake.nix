@@ -50,8 +50,7 @@
       };
     };
 
-    # Transitive dependencies that are only pinned here to minimize the
-    # closure size.
+    # Transitive dependencies only pinned here to minimize the closure size.
     systems.url = "github:nix-systems/default";
 
     flake-utils = {
@@ -60,11 +59,27 @@
     };
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, nixos-hardware, vps-admin-os
-    , catppuccin, nix-darwin, home-manager, lanzaboote, agenix
-    , openwrt-imagebuilder, secrets, ... }:
+  outputs =
+    {
+      nixpkgs,
+      nixpkgs-unstable,
+      nixos-hardware,
+      vps-admin-os,
+      catppuccin,
+      nix-darwin,
+      home-manager,
+      lanzaboote,
+      agenix,
+      openwrt-imagebuilder,
+      secrets,
+      ...
+    }:
     let
-      systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
 
       commonConfig = {
         nixpkgs.overlays = [
@@ -85,15 +100,17 @@
 
           settings = {
             auto-optimise-store = true;
-            experimental-features = [ "nix-command" "flakes" ];
+            experimental-features = [
+              "nix-command"
+              "flakes"
+            ];
           };
         };
       };
 
-      forAllSystems = f:
-        nixpkgs.lib.genAttrs systems
-        (system: f nixpkgs.legacyPackages.${system});
-    in {
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
+    in
+    {
       nixosConfigurations = {
         whitelodge = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
@@ -113,7 +130,9 @@
             vps-admin-os.nixosConfigurations.container
           ];
 
-          specialArgs = { inherit secrets; };
+          specialArgs = {
+            inherit secrets;
+          };
         };
 
         bob = nixpkgs.lib.nixosSystem {
@@ -127,7 +146,9 @@
             nixos-hardware.nixosModules.raspberry-pi-4
           ];
 
-          specialArgs = { inherit secrets; };
+          specialArgs = {
+            inherit secrets;
+          };
         };
 
         cooper = nixpkgs.lib.nixosSystem {
@@ -142,7 +163,9 @@
             nixos-hardware.nixosModules.lenovo-thinkpad-t14-amd-gen2
           ];
 
-          specialArgs = { inherit secrets; };
+          specialArgs = {
+            inherit secrets;
+          };
         };
       };
 
@@ -164,7 +187,9 @@
             }
           ];
 
-          specialArgs = { inherit secrets; };
+          specialArgs = {
+            inherit secrets;
+          };
         };
       };
 
@@ -189,7 +214,9 @@
             ./machines/blacklodge/tomas.nix
           ];
 
-          extraSpecialArgs = { inherit secrets; };
+          extraSpecialArgs = {
+            inherit secrets;
+          };
         };
       };
 

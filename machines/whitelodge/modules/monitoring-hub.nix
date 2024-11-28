@@ -1,4 +1,11 @@
-{ config, lib, pkgs, options, secrets, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  options,
+  secrets,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
@@ -11,7 +18,8 @@ let
     intranetCfg.wireguard.internal.ipv6
   ];
   dbName = "grafana";
-in {
+in
+{
   options.infra.monitoring-hub = {
     enable = lib.mkEnableOption "monitoring-hub";
 
@@ -48,10 +56,8 @@ in {
 
   config = lib.mkIf cfg.enable {
     age.secrets = {
-      cloudflare-dns-challenge-api-tokens.file =
-        "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
-      postgresql-grafana-password.file =
-        "${secrets}/secrets/other/whitelodge/postgresql-grafana.age";
+      cloudflare-dns-challenge-api-tokens.file = "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
+      postgresql-grafana-password.file = "${secrets}/secrets/other/whitelodge/postgresql-grafana.age";
 
       grafana-admin-password = {
         file = "${secrets}/secrets/other/whitelodge/grafana-admin.age";
@@ -67,8 +73,7 @@ in {
       certs.${cfg.domain} = {
         dnsProvider = "cloudflare";
         email = cfg.acmeEmail;
-        environmentFile =
-          config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
+        environmentFile = config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
       };
     };
 
@@ -79,12 +84,14 @@ in {
         provision = {
           enable = true;
 
-          datasources.settings.datasources = [{
-            name = "Prometheus";
-            type = "prometheus";
-            access = "proxy";
-            url = "http://127.0.0.1:${builtins.toString cfg.prometheusPort}";
-          }];
+          datasources.settings.datasources = [
+            {
+              name = "Prometheus";
+              type = "prometheus";
+              access = "proxy";
+              url = "http://127.0.0.1:${builtins.toString cfg.prometheusPort}";
+            }
+          ];
         };
 
         settings = {
@@ -112,8 +119,7 @@ in {
 
           security = {
             disable_gravatar = true;
-            admin_password =
-              "$__file{${config.age.secrets.grafana-admin-password.path}}";
+            admin_password = "$__file{${config.age.secrets.grafana-admin-password.path}}";
           };
 
           "auth.anonymous" = {
@@ -127,10 +133,12 @@ in {
       postgresql = {
         enable = true;
         ensureDatabases = [ dbName ];
-        ensureUsers = [{
-          name = dbName;
-          ensureDBOwnership = true;
-        }];
+        ensureUsers = [
+          {
+            name = dbName;
+            ensureDBOwnership = true;
+          }
+        ];
       };
 
       prometheus = {
@@ -162,10 +170,7 @@ in {
             }
 
             handle @internal {
-              reverse_proxy :${
-                builtins.toString
-                config.services.grafana.settings.server.http_port
-              }
+              reverse_proxy :${builtins.toString config.services.grafana.settings.server.http_port}
             }
 
             respond "Access denied" 403 {

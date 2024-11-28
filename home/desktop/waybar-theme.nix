@@ -11,7 +11,8 @@ let
   green = "#a6da95";
   blue = "#7dc4e4";
   orange = "#f5a97f";
-in {
+in
+{
   "*" = {
     border = mkLiteral "none";
     padding = mkLiteral "0px";
@@ -19,7 +20,9 @@ in {
     font-size = mkLiteral "15px";
   };
 
-  "window#waybar" = { background-color = mkLiteral "transparent"; };
+  "window#waybar" = {
+    background-color = mkLiteral "transparent";
+  };
 
   "window>box" = {
     margin = mkLiteral "8px 8px 0px 8px";
@@ -61,11 +64,10 @@ in {
     background-color = mkLiteral "transparent";
   };
 
-  "#battery,\n      #clock,\n      #cpu,\n      #custom-lock,\n      #custom-power,\n      #custom-quit,\n      #custom-reboot,\n      #custom-vpn,\n      #group-group-power,\n      #memory,\n      #network,\n      #pulseaudio,\n      #wireplumber" =
-    {
-      padding = mkLiteral "0px 10px";
-      color = mkLiteral "${text}";
-    };
+  "#battery,\n      #clock,\n      #cpu,\n      #custom-lock,\n      #custom-power,\n      #custom-quit,\n      #custom-reboot,\n      #custom-vpn,\n      #group-group-power,\n      #memory,\n      #network,\n      #pulseaudio,\n      #wireplumber" = {
+    padding = mkLiteral "0px 10px";
+    color = mkLiteral "${text}";
+  };
 
   "#custom-vpn.tailnet" = {
     color = mkLiteral "${blue}";
@@ -91,16 +93,27 @@ in {
   };
 
   # -----Indicators----
-  "#battery.charging" = { color = mkLiteral "${green}"; };
+  "#battery.charging" = {
+    color = mkLiteral "${green}";
+  };
 
-  "#battery.warning:not(.charging)" = { color = mkLiteral "${orange}"; };
+  "#battery.warning:not(.charging)" = {
+    color = mkLiteral "${orange}";
+  };
 
-  "#battery.critical:not(.charging)" = { color = mkLiteral "${red}"; };
+  "#battery.critical:not(.charging)" = {
+    color = mkLiteral "${red}";
+  };
 
-  "#temperature.critical" = { color = mkLiteral "${red}"; };
+  "#temperature.critical" = {
+    color = mkLiteral "${red}";
+  };
 
-  "#wireplumber.muted" = { color = mkLiteral "${orange}"; };
+  "#wireplumber.muted" = {
+    color = mkLiteral "${orange}";
+  };
 
-  "#pulseaudio.source-muted" = { color = mkLiteral "${orange}"; };
+  "#pulseaudio.source-muted" = {
+    color = mkLiteral "${orange}";
+  };
 }
-

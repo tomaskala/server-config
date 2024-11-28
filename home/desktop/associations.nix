@@ -3,7 +3,8 @@ let
   archiveManager = [ "org.gnome.FileRoller.desktop" ];
   imageViewer = [ "org.gnome.Loupe.desktop" ];
   videoPlayer = [ "mpv.desktop" ];
-in {
+in
+{
   xdg = {
     enable = true;
 

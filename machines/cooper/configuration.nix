@@ -1,4 +1,10 @@
-{ config, lib, pkgs, secrets, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  secrets,
+  ...
+}:
 
 {
   imports = [
@@ -41,7 +47,10 @@
 
     systemd.services.nix-daemon.environment.TMPDIR = "/var/tmp";
 
-    nix.settings.trusted-users = [ "root" "tomas" ];
+    nix.settings.trusted-users = [
+      "root"
+      "tomas"
+    ];
 
     system.stateVersion = "24.05";
 
@@ -78,8 +87,14 @@
 
         tomas = {
           isNormalUser = true;
-          extraGroups =
-            [ "audio" "networkmanager" "users" "video" "wheel" "wireshark" ];
+          extraGroups = [
+            "audio"
+            "networkmanager"
+            "users"
+            "video"
+            "wheel"
+            "wireshark"
+          ];
           hashedPasswordFile = config.age.secrets.users-tomas-password.path;
           shell = pkgs.zsh;
         };

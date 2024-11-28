@@ -1,7 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
-let inherit (pkgs) infra;
-in {
+let
+  inherit (pkgs) infra;
+in
+{
   options.infra.intranet.devices = lib.mkOption {
     type = lib.types.attrsOf infra.types.device;
     description = "Devices present in the intranet";
@@ -22,14 +29,12 @@ in {
             subnet = null;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-internal) subnet location;
               host = 1;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-internal) subnet location;
               host = 1;
             };
           };
@@ -42,14 +47,12 @@ in {
             subnet = null;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-isolated)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-isolated) subnet location;
               host = 1;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-isolated)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-isolated) subnet location;
               host = 1;
             };
           };
@@ -62,14 +65,12 @@ in {
             subnet = null;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-passthru)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-passthru) subnet location;
               host = 1;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-passthru)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-passthru) subnet location;
               host = 1;
             };
           };
@@ -94,14 +95,12 @@ in {
             subnet = config.infra.intranet.subnets.l-internal;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-isolated)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-isolated) subnet location;
               host = 10;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-isolated)
-                subnet location;
+              inherit (config.infra.intranet.ranges.wg-isolated) subnet location;
               host = 10;
             };
           };
@@ -134,14 +133,12 @@ in {
             subnet = null;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 50;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 50;
             };
           };
@@ -158,14 +155,12 @@ in {
             subnet = null;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 51;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 51;
             };
           };
@@ -182,14 +177,12 @@ in {
             subnet = null;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 52;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 52;
             };
           };
@@ -206,14 +199,12 @@ in {
             subnet = null;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 53;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-internal)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-internal) location subnet;
               host = 53;
             };
           };
@@ -230,14 +221,12 @@ in {
             subnet = config.infra.intranet.subnets.t-internal;
 
             ipv4 = {
-              inherit (config.infra.intranet.ranges.wg-passthru)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-passthru) location subnet;
               host = 10;
             };
 
             ipv6 = {
-              inherit (config.infra.intranet.ranges.wg-passthru)
-                location subnet;
+              inherit (config.infra.intranet.ranges.wg-passthru) location subnet;
               host = 10;
             };
           };

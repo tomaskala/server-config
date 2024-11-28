@@ -287,4 +287,13 @@ let
       };
     };
   };
-in { inherit ipv4Address ipv6Address device wgSubnet nonWgSubnet; }
+in
+{
+  inherit
+    ipv4Address
+    ipv6Address
+    device
+    wgSubnet
+    nonWgSubnet
+    ;
+}

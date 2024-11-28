@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
@@ -13,21 +18,24 @@ let
     passthru = deviceCfg.wireguard.passthru.name;
   };
 
-  accessibleSubnets = let
-    devices = if config.infra.wireguard.enable then
-      (lib.optionals config.infra.wireguard.enableInternal
-        config.infra.intranet.wireguard.internal.devices)
-      ++ (lib.optionals config.infra.wireguard.enableIsolated
-        config.infra.intranet.wireguard.isolated.devices)
-      ++ (lib.optionals config.infra.wireguard.enablePassthru
-        config.infra.intranet.wireguard.passthru.devices)
-    else
-      [ ];
+  accessibleSubnets =
+    let
+      devices =
+        if config.infra.wireguard.enable then
+          (lib.optionals config.infra.wireguard.enableInternal config.infra.intranet.wireguard.internal.devices)
+          ++ (lib.optionals config.infra.wireguard.enableIsolated config.infra.intranet.wireguard.isolated.devices)
+          ++ (lib.optionals config.infra.wireguard.enablePassthru config.infra.intranet.wireguard.passthru.devices)
+        else
+          [ ];
 
-    deviceSubnets = builtins.map ({ interface, ... }: interface.subnet) devices;
-  in builtins.filter (subnet: subnet != null) deviceSubnets;
-in {
-  options.infra.firewall = { enable = lib.mkEnableOption "firewall"; };
+      deviceSubnets = builtins.map ({ interface, ... }: interface.subnet) devices;
+    in
+    builtins.filter (subnet: subnet != null) deviceSubnets;
+in
+{
+  options.infra.firewall = {
+    enable = lib.mkEnableOption "firewall";
+  };
 
   config = lib.mkIf cfg.enable {
     networking.firewall.enable = false;
@@ -122,10 +130,7 @@ in {
               type ipv4_addr
               flags interval
               elements = {
-                ${
-                  lib.concatMapStringsSep ","
-                  ({ ipv4, ... }: infra.ipSubnet ipv4) accessibleSubnets
-                }
+                ${lib.concatMapStringsSep "," ({ ipv4, ... }: infra.ipSubnet ipv4) accessibleSubnets}
               }
             }
 
@@ -134,10 +139,7 @@ in {
               type ipv6_addr
               flags interval
               elements = {
-                ${
-                  lib.concatMapStringsSep ","
-                  ({ ipv6, ... }: infra.ipSubnet ipv6) accessibleSubnets
-                }
+                ${lib.concatMapStringsSep "," ({ ipv6, ... }: infra.ipSubnet ipv6) accessibleSubnets}
               }
             }
 
@@ -188,11 +190,12 @@ in {
               iifname ${wgInterface.passthru} tcp dport @tcp_accepted_wg_passthru ct state new accept
               iifname ${wgInterface.passthru} udp dport @udp_accepted_wg_passthru ct state new accept
               ${
-                builtins.concatStringsSep "\n" (lib.mapAttrsToList
-                  (_: interface: ''
+                builtins.concatStringsSep "\n" (
+                  lib.mapAttrsToList (_: interface: ''
                     iifname ${interface} tcp dport @tcp_accepted_wan ct state new accept
                     iifname ${interface} udp dport @udp_accepted_wan ct state new accept
-                  '') wgInterface)
+                  '') wgInterface
+                )
               }
             }
 

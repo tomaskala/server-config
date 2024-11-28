@@ -1,11 +1,17 @@
-{ config, pkgs, secrets, ... }:
+{
+  config,
+  pkgs,
+  secrets,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
 
   intranetCfg = config.infra.intranet;
   acmeEmail = "public+acme@tomaskala.com";
-in {
+in
+{
   imports = [
     ./modules/firewall.nix
     ./modules/mealie.nix
@@ -48,8 +54,7 @@ in {
     };
 
     age.secrets = {
-      users-tomas-password.file =
-        "${secrets}/secrets/users/whitelodge/tomas.age";
+      users-tomas-password.file = "${secrets}/secrets/users/whitelodge/tomas.age";
       users-root-password.file = "${secrets}/secrets/users/whitelodge/root.age";
 
       wg-whitelodge-internal-pk = {
@@ -168,7 +173,13 @@ in {
 
     environment = {
       noXlibs = true;
-      systemPackages = with pkgs; [ curl ldns rsync tree wireguard-tools ];
+      systemPackages = with pkgs; [
+        curl
+        ldns
+        rsync
+        tree
+        wireguard-tools
+      ];
     };
 
     networking = {
@@ -193,13 +204,11 @@ in {
 
         listenAddresses = [
           {
-            addr = infra.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
+            addr = infra.ipAddress intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
             port = 22;
           }
           {
-            addr = infra.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.internal.ipv6;
+            addr = infra.ipAddress intranetCfg.devices.whitelodge.wireguard.internal.ipv6;
             port = 22;
           }
         ];
@@ -211,7 +220,10 @@ in {
           openFirewall = false;
           listenAddress = "127.0.0.1";
           port = 9100;
-          enabledCollectors = [ "processes" "systemd" ];
+          enabledCollectors = [
+            "processes"
+            "systemd"
+          ];
         };
       };
     };
@@ -234,29 +246,21 @@ in {
           # resolving internal domain names as well as to use it for
           # domain filtering when accessing the public internet.
           {
-            addr = infra.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
+            addr = infra.ipAddress intranetCfg.devices.whitelodge.wireguard.internal.ipv4;
             port = 53;
           }
           {
-            addr = "[${
-                infra.ipAddress
-                intranetCfg.devices.whitelodge.wireguard.internal.ipv6
-              }]";
+            addr = "[${infra.ipAddress intranetCfg.devices.whitelodge.wireguard.internal.ipv6}]";
             port = 53;
           }
           # Allow isolated peers to use the resolver. This is to allow
           # resolving internal domain names.
           {
-            addr = infra.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.isolated.ipv4;
+            addr = infra.ipAddress intranetCfg.devices.whitelodge.wireguard.isolated.ipv4;
             port = 53;
           }
           {
-            addr = "[${
-                infra.ipAddress
-                intranetCfg.devices.whitelodge.wireguard.isolated.ipv6
-              }]";
+            addr = "[${infra.ipAddress intranetCfg.devices.whitelodge.wireguard.isolated.ipv6}]";
             port = 53;
           }
           # Allow passthru peers to use the resolver. This is to allow
@@ -264,15 +268,11 @@ in {
           # internal domain names, the passthru peers do not have access
           # to those services.
           {
-            addr = infra.ipAddress
-              intranetCfg.devices.whitelodge.wireguard.passthru.ipv4;
+            addr = infra.ipAddress intranetCfg.devices.whitelodge.wireguard.passthru.ipv4;
             port = 53;
           }
           {
-            addr = "[${
-                infra.ipAddress
-                intranetCfg.devices.whitelodge.wireguard.passthru.ipv6
-              }]";
+            addr = "[${infra.ipAddress intranetCfg.devices.whitelodge.wireguard.passthru.ipv6}]";
             port = 53;
           }
         ];
@@ -309,16 +309,15 @@ in {
             static_configs = [
               {
                 targets = [ "127.0.0.1:9100" ];
-                labels = { peer = "whitelodge"; };
+                labels = {
+                  peer = "whitelodge";
+                };
               }
               {
-                targets = [
-                  "${
-                    infra.ipAddress
-                    intranetCfg.devices.bob.wireguard.isolated.ipv4
-                  }:9100"
-                ];
-                labels = { peer = "bob"; };
+                targets = [ "${infra.ipAddress intranetCfg.devices.bob.wireguard.isolated.ipv4}:9100" ];
+                labels = {
+                  peer = "bob";
+                };
               }
             ];
           }
@@ -327,16 +326,15 @@ in {
             static_configs = [
               {
                 targets = [ "127.0.0.1:4000" ];
-                labels = { peer = "whitelodge"; };
+                labels = {
+                  peer = "whitelodge";
+                };
               }
               {
-                targets = [
-                  "${
-                    infra.ipAddress
-                    intranetCfg.devices.bob.wireguard.isolated.ipv4
-                  }:4000"
-                ];
-                labels = { peer = "bob"; };
+                targets = [ "${infra.ipAddress intranetCfg.devices.bob.wireguard.isolated.ipv4}:4000" ];
+                labels = {
+                  peer = "bob";
+                };
               }
             ];
           }

@@ -1,1 +1,8 @@
-{ imports = [ ./devices.nix ./ranges.nix ./subnets.nix ./wireguard.nix ]; }
+{
+  imports = [
+    ./devices.nix
+    ./ranges.nix
+    ./subnets.nix
+    ./wireguard.nix
+  ];
+}

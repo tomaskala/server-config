@@ -3,7 +3,8 @@
 let
   deviceCfg = config.infra.intranet.devices.bob;
   lanInterface = deviceCfg.external.lan.name;
-in {
+in
+{
   systemd.network = {
     enable = true;
 

@@ -9,6 +9,8 @@
 
   home = {
     packages = [ pkgs.libsForQt5.qtstyleplugin-kvantum ];
-    sessionVariables = { "QT_STYLE_OVERRIDE" = "kvantum"; };
+    sessionVariables = {
+      "QT_STYLE_OVERRIDE" = "kvantum";
+    };
   };
 }

@@ -1,4 +1,10 @@
-{ config, lib, pkgs, secrets, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  secrets,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
@@ -10,7 +16,8 @@ let
     intranetCfg.wireguard.internal.ipv4
     intranetCfg.wireguard.internal.ipv6
   ];
-in {
+in
+{
   options.infra.miniflux = {
     enable = lib.mkEnableOption "rss";
 
@@ -36,10 +43,8 @@ in {
 
   config = lib.mkIf cfg.enable {
     age.secrets = {
-      cloudflare-dns-challenge-api-tokens.file =
-        "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
-      miniflux-admin-credentials.file =
-        "${secrets}/secrets/other/whitelodge/miniflux-whitelodge.age";
+      cloudflare-dns-challenge-api-tokens.file = "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
+      miniflux-admin-credentials.file = "${secrets}/secrets/other/whitelodge/miniflux-whitelodge.age";
     };
 
     services.miniflux = {
@@ -59,8 +64,7 @@ in {
       certs.${cfg.domain} = {
         dnsProvider = "cloudflare";
         email = cfg.acmeEmail;
-        environmentFile =
-          config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
+        environmentFile = config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
       };
     };
 

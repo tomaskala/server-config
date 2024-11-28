@@ -2,6 +2,8 @@
   programs.zathura = {
     enable = true;
 
-    options = { selection-clipboard = "clipboard"; };
+    options = {
+      selection-clipboard = "clipboard";
+    };
   };
 }

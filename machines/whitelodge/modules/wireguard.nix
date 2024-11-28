@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
@@ -7,16 +12,27 @@ let
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.whitelodge;
 
-  mkPeer = { interface, presharedKeyFile }:
-    let inherit (interface) publicKey subnet ipv4 ipv6;
-    in {
+  mkPeer =
+    { interface, presharedKeyFile }:
+    let
+      inherit (interface)
+        publicKey
+        subnet
+        ipv4
+        ipv6
+        ;
+    in
+    {
       wireguardPeerConfig = {
         PublicKey = publicKey;
 
         PresharedKeyFile = presharedKeyFile;
 
         AllowedIPs =
-          [ (infra.ipAddressMasked ipv4 32) (infra.ipAddressMasked ipv6 128) ]
+          [
+            (infra.ipAddressMasked ipv4 32)
+            (infra.ipAddressMasked ipv6 128)
+          ]
           ++ lib.optionals (subnet != null) [
             (infra.ipSubnet subnet.ipv4)
             (infra.ipSubnet subnet.ipv6)
@@ -24,38 +40,57 @@ let
       };
     };
 
-  mkRoute = { ipv4, ipv6, ... }: [
-    {
-      routeConfig = {
-        Destination = infra.ipSubnet ipv4;
-        Scope = "link";
-        Type = "unicast";
-      };
-    }
-    {
-      routeConfig = {
-        Destination = infra.ipSubnet ipv6;
-        Scope = "link";
-        Type = "unicast";
-      };
-    }
-  ];
+  mkRoute =
+    { ipv4, ipv6, ... }:
+    [
+      {
+        routeConfig = {
+          Destination = infra.ipSubnet ipv4;
+          Scope = "link";
+          Type = "unicast";
+        };
+      }
+      {
+        routeConfig = {
+          Destination = infra.ipSubnet ipv6;
+          Scope = "link";
+          Type = "unicast";
+        };
+      }
+    ];
 
-  mkLocalDomains = let
-    mkLocalDomain = _:
-      { url, ipv4, ipv6 }:
-      lib.nameValuePair url { inherit ipv4 ipv6; };
-  in { services, ... }: lib.mapAttrs' mkLocalDomain services;
-
-  mkSubnet = interface: subnet:
+  mkLocalDomains =
     let
-      inherit (interface) name privateKeyFile port ipv4 ipv6;
+      mkLocalDomain =
+        _:
+        {
+          url,
+          ipv4,
+          ipv6,
+        }:
+        lib.nameValuePair url { inherit ipv4 ipv6; };
+    in
+    { services, ... }:
+    lib.mapAttrs' mkLocalDomain services;
 
-      accessibleSubnets = let
-        deviceSubnets =
-          builtins.map ({ interface, ... }: interface.subnet) subnet.devices;
-      in builtins.filter (subnet: subnet != null) deviceSubnets;
-    in {
+  mkSubnet =
+    interface: subnet:
+    let
+      inherit (interface)
+        name
+        privateKeyFile
+        port
+        ipv4
+        ipv6
+        ;
+
+      accessibleSubnets =
+        let
+          deviceSubnets = builtins.map ({ interface, ... }: interface.subnet) subnet.devices;
+        in
+        builtins.filter (subnet: subnet != null) deviceSubnets;
+    in
+    {
       systemd.network = {
         enable = true;
 
@@ -66,7 +101,9 @@ let
           };
 
           wireguardConfig = {
-            PrivateKeyFile = assert privateKeyFile != null; privateKeyFile;
+            PrivateKeyFile =
+              assert privateKeyFile != null;
+              privateKeyFile;
             ListenPort = port;
           };
 
@@ -87,10 +124,12 @@ let
         };
       };
 
-      infra.blocky.localDomains = lib.attrsets.mergeAttrsList
-        (builtins.map mkLocalDomains ([ subnet ] ++ accessibleSubnets));
+      infra.blocky.localDomains = lib.attrsets.mergeAttrsList (
+        builtins.map mkLocalDomains ([ subnet ] ++ accessibleSubnets)
+      );
     };
-in {
+in
+{
   options.infra.wireguard = {
     enable = lib.mkEnableOption "wireguard";
 
@@ -101,14 +140,13 @@ in {
     enablePassthru = lib.mkEnableOption "passthru subnet";
   };
 
-  config = lib.mkIf cfg.enable (lib.mkMerge [
-    (lib.mkIf cfg.enableInternal
-      (mkSubnet deviceCfg.wireguard.internal intranetCfg.wireguard.internal))
+  config = lib.mkIf cfg.enable (
+    lib.mkMerge [
+      (lib.mkIf cfg.enableInternal (mkSubnet deviceCfg.wireguard.internal intranetCfg.wireguard.internal))
 
-    (lib.mkIf cfg.enableIsolated
-      (mkSubnet deviceCfg.wireguard.isolated intranetCfg.wireguard.isolated))
+      (lib.mkIf cfg.enableIsolated (mkSubnet deviceCfg.wireguard.isolated intranetCfg.wireguard.isolated))
 
-    (lib.mkIf cfg.enablePassthru
-      (mkSubnet deviceCfg.wireguard.passthru intranetCfg.wireguard.passthru))
-  ]);
+      (lib.mkIf cfg.enablePassthru (mkSubnet deviceCfg.wireguard.passthru intranetCfg.wireguard.passthru))
+    ]
+  );
 }

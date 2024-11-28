@@ -1,11 +1,18 @@
-{ config, lib, pkgs, secrets, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  secrets,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
 
   intranetCfg = config.infra.intranet;
   deviceCfg = intranetCfg.devices.bob;
-in {
+in
+{
   imports = [
     ./hardware-configuration.nix
     ./modules/firewall.nix
@@ -140,14 +147,20 @@ in {
           port = 4000;
         };
 
-        localDomains = let
-          lServices =
-            builtins.attrValues intranetCfg.subnets.l-internal.services;
+        localDomains =
+          let
+            lServices = builtins.attrValues intranetCfg.subnets.l-internal.services;
 
-          urlsToIPs = builtins.map
-            ({ url, ipv4, ipv6 }: lib.nameValuePair url { inherit ipv4 ipv6; })
-            lServices;
-        in builtins.listToAttrs urlsToIPs;
+            urlsToIPs = builtins.map (
+              {
+                url,
+                ipv4,
+                ipv6,
+              }:
+              lib.nameValuePair url { inherit ipv4 ipv6; }
+            ) lServices;
+          in
+          builtins.listToAttrs urlsToIPs;
       };
 
       firewall.enable = true;

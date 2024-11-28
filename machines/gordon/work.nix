@@ -1,10 +1,20 @@
-{ lib, pkgs, secrets, ... }:
+{
+  lib,
+  pkgs,
+  secrets,
+  ...
+}:
 
 {
   homebrew = {
-    masApps = { Slack = 803453959; };
+    masApps = {
+      Slack = 803453959;
+    };
 
-    casks = [ "tunnelblick" "visual-studio-code" ];
+    casks = [
+      "tunnelblick"
+      "visual-studio-code"
+    ];
   };
 
   age.secrets.work-ssh-config = {
@@ -20,10 +30,12 @@
         nix-direnv.enable = true;
       };
 
-      git.includes = [{
-        condition = "gitdir:~/IPFabric/";
-        contents.user.email = "tomas.kala@ipfabric.io";
-      }];
+      git.includes = [
+        {
+          condition = "gitdir:~/IPFabric/";
+          contents.user.email = "tomas.kala@ipfabric.io";
+        }
+      ];
 
       neovim = {
         extraPackages = with pkgs; [

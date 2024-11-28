@@ -6,5 +6,8 @@
     package = pkgs.usbmuxd2;
   };
 
-  environment.systemPackages = with pkgs; [ libimobiledevice ifuse ];
+  environment.systemPackages = with pkgs; [
+    libimobiledevice
+    ifuse
+  ];
 }

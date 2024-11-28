@@ -29,7 +29,8 @@ let
       esac
     '';
   };
-in pkgs.mkShell {
+in
+pkgs.mkShell {
   name = "shell-work";
 
   packages = with pkgs; [

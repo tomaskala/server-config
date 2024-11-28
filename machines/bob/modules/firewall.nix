@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
@@ -9,8 +14,11 @@ let
   lanInterface = deviceCfg.external.lan.name;
   wgInterface = deviceCfg.wireguard.isolated.name;
   privateSubnet = deviceCfg.wireguard.isolated.subnet;
-in {
-  options.infra.firewall = { enable = lib.mkEnableOption "firewall"; };
+in
+{
+  options.infra.firewall = {
+    enable = lib.mkEnableOption "firewall";
+  };
 
   config = lib.mkIf cfg.enable {
     networking.firewall.enable = false;
@@ -34,12 +42,7 @@ in {
             set tcp_accepted_wg {
               type inet_service
               elements = {
-                ${
-                  lib.optionalString
-                  config.services.prometheus.exporters.node.enable
-                  (builtins.toString
-                    config.services.prometheus.exporters.node.port)
-                }
+                ${lib.optionalString config.services.prometheus.exporters.node.enable (builtins.toString config.services.prometheus.exporters.node.port)}
               }
             }
 
@@ -86,20 +89,12 @@ in {
               } accept
 
               # Allow the specified TCP ports from the private subnet.
-              iifname ${lanInterface} ip saddr ${
-                infra.ipSubnet privateSubnet.ipv4
-              } tcp dport @tcp_accepted_lan ct state new accept
-              iifname ${lanInterface} ip6 saddr ${
-                infra.ipSubnet privateSubnet.ipv6
-              } tcp dport @tcp_accepted_lan ct state new accept
+              iifname ${lanInterface} ip saddr ${infra.ipSubnet privateSubnet.ipv4} tcp dport @tcp_accepted_lan ct state new accept
+              iifname ${lanInterface} ip6 saddr ${infra.ipSubnet privateSubnet.ipv6} tcp dport @tcp_accepted_lan ct state new accept
 
               # Allow the specified UDP ports from the private subnet.
-              iifname ${lanInterface} ip saddr ${
-                infra.ipSubnet privateSubnet.ipv4
-              } udp dport @udp_accepted_lan ct state new accept
-              iifname ${lanInterface} ip6 saddr ${
-                infra.ipSubnet privateSubnet.ipv6
-              } udp dport @udp_accepted_lan ct state new accept
+              iifname ${lanInterface} ip saddr ${infra.ipSubnet privateSubnet.ipv4} udp dport @udp_accepted_lan ct state new accept
+              iifname ${lanInterface} ip6 saddr ${infra.ipSubnet privateSubnet.ipv6} udp dport @udp_accepted_lan ct state new accept
 
               # Allow the specified TCP and UDP ports from WireGuard.
               iifname ${wgInterface} tcp dport @tcp_accepted_lan ct state new accept

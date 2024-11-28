@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
@@ -16,7 +21,8 @@ let
     intranetCfg.wireguard.isolated.ipv4
     intranetCfg.wireguard.isolated.ipv6
   ];
-in {
+in
+{
   options.infra.navidrome = {
     enable = lib.mkEnableOption "music";
 
@@ -99,9 +105,7 @@ in {
             }
 
             handle @internal {
-              reverse_proxy :${
-                builtins.toString config.services.navidrome.settings.Port
-              }
+              reverse_proxy :${builtins.toString config.services.navidrome.settings.Port}
             }
 
             respond "Access denied" 403 {

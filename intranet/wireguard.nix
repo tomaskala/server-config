@@ -1,7 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
-let inherit (pkgs) infra;
-in {
+let
+  inherit (pkgs) infra;
+in
+{
   options.infra.intranet.wireguard = lib.mkOption {
     type = lib.types.attrsOf infra.types.wgSubnet;
     description = "WireGuard subnets in the intranet";
@@ -22,8 +29,7 @@ in {
 
         devices = [
           {
-            interface =
-              config.infra.intranet.devices.blacklodge.wireguard.internal;
+            interface = config.infra.intranet.devices.blacklodge.wireguard.internal;
             presharedKeyFile = config.age.secrets.wg-blacklodge2whitelodge.path;
           }
           {
@@ -52,10 +58,12 @@ in {
           mask = 64;
         };
 
-        devices = [{
-          interface = config.infra.intranet.devices.bob.wireguard.isolated;
-          presharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
-        }];
+        devices = [
+          {
+            interface = config.infra.intranet.devices.bob.wireguard.isolated;
+            presharedKeyFile = config.age.secrets.wg-bob2whitelodge.path;
+          }
+        ];
       };
 
       passthru = {
@@ -69,10 +77,12 @@ in {
           mask = 64;
         };
 
-        devices = [{
-          interface = config.infra.intranet.devices.audrey.wireguard.passthru;
-          presharedKeyFile = config.age.secrets.wg-audrey2whitelodge.path;
-        }];
+        devices = [
+          {
+            interface = config.infra.intranet.devices.audrey.wireguard.passthru;
+            presharedKeyFile = config.age.secrets.wg-audrey2whitelodge.path;
+          }
+        ];
       };
     };
   };

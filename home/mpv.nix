@@ -21,8 +21,7 @@
       "af" = "scaletempo";
       "geometry" = "50%:50%";
       "script-opts-append" = "ytdl_hook-ytdl_path=yt-dlp";
-      "ytdl-format" =
-        "bestvideo[height<=?720][vcodec!=?vp9]+bestaudio/best[height<=?720]";
+      "ytdl-format" = "bestvideo[height<=?720][vcodec!=?vp9]+bestaudio/best[height<=?720]";
     };
   };
 }

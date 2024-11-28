@@ -9,7 +9,10 @@
     nix.settings = {
       # Disabled because of https://github.com/NixOS/nix/issues/7273.
       auto-optimise-store = lib.mkForce false;
-      trusted-users = [ "root" "tomas" ];
+      trusted-users = [
+        "root"
+        "tomas"
+      ];
     };
 
     users.users.tomas = {
@@ -57,8 +60,7 @@
       ];
     };
 
-    fonts.packages = with pkgs;
-      [ (nerdfonts.override { fonts = [ "FiraCode" ]; }) ];
+    fonts.packages = with pkgs; [ (nerdfonts.override { fonts = [ "FiraCode" ]; }) ];
 
     homebrew = {
       enable = true;

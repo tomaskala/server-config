@@ -1,4 +1,10 @@
-{ config, lib, pkgs, secrets, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  secrets,
+  ...
+}:
 
 let
   inherit (pkgs) infra;
@@ -12,7 +18,8 @@ let
   ];
 
   dbName = "mealie";
-in {
+in
+{
   options.infra.mealie = {
     enable = lib.mkEnableOption "mealie";
 
@@ -38,8 +45,7 @@ in {
 
   config = lib.mkIf cfg.enable {
     age.secrets = {
-      cloudflare-dns-challenge-api-tokens.file =
-        "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
+      cloudflare-dns-challenge-api-tokens.file = "${secrets}/secrets/other/whitelodge/cloudflare-dns-challenge-api-tokens.age";
     };
 
     security.acme = {
@@ -48,8 +54,7 @@ in {
       certs.${cfg.domain} = {
         dnsProvider = "cloudflare";
         email = cfg.acmeEmail;
-        environmentFile =
-          config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
+        environmentFile = config.age.secrets.cloudflare-dns-challenge-api-tokens.path;
       };
     };
 
@@ -64,18 +69,19 @@ in {
         settings = {
           ALLOW_SIGNUP = "false";
           DB_ENGINE = "postgres";
-          POSTGRES_URL_OVERRIDE =
-            "postgresql://${dbName}:@/${dbName}?host=/run/postgresql";
+          POSTGRES_URL_OVERRIDE = "postgresql://${dbName}:@/${dbName}?host=/run/postgresql";
         };
       };
 
       postgresql = {
         enable = true;
         ensureDatabases = [ dbName ];
-        ensureUsers = [{
-          name = dbName;
-          ensureDBOwnership = true;
-        }];
+        ensureUsers = [
+          {
+            name = dbName;
+            ensureDBOwnership = true;
+          }
+        ];
       };
 
       caddy = {

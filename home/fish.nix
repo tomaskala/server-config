@@ -25,8 +25,7 @@
       grep = "${pkgs.gnugrep}/bin/grep --color=auto $argv";
       ll = "ls -l $argv";
       lla = "ls -la $argv";
-      ls =
-        "${pkgs.coreutils}/bin/ls -FNh --color=auto --group-directories-first $argv";
+      ls = "${pkgs.coreutils}/bin/ls -FNh --color=auto --group-directories-first $argv";
       vim = "nvim $argv";
     };
   };
