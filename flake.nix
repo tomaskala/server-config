@@ -203,7 +203,7 @@
         work = import ./shells/work.nix { inherit pkgs; };
       });
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-classic);
+      formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
 
       checks = forAllSystems (pkgs: {
         deadnix = import ./checks/deadnix.nix { inherit pkgs; };

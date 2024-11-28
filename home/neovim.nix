@@ -8,7 +8,14 @@
     withPython3 = false;
     withRuby = false;
 
-    extraPackages = with pkgs; [ gopls lua-language-server nil pyright ruff ];
+    extraPackages = with pkgs; [
+      gopls
+      lua-language-server
+      nil
+      nixfmt-rfc-style
+      pyright
+      ruff
+    ];
 
     plugins = with pkgs.vimPlugins; [
       {
@@ -72,7 +79,13 @@
                 },
               },
             })
-            lspconfig.nil_ls.setup({})
+            lspconfig.nil_ls.setup({
+              settings = {
+                ["nil"] = {
+                  formatting = { command = { "nixfmt" } },
+                },
+              },
+            })
             lspconfig.pyright.setup({
               settings = {
                 pyright = {
