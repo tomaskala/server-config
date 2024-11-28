@@ -10,8 +10,6 @@
         "$hostname"
         "$directory"
         "$git_branch"
-        "$git_state"
-        "$git_status"
         "$fill"
 
         "$c"
@@ -50,24 +48,6 @@
         symbol = " ";
         format = "[$symbol $branch]($style)";
         style = "green";
-      };
-
-      git_status = {
-        format =
-          "[[( $conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)";
-        style = "cyan";
-        conflicted = "=$count ";
-        untracked = "?$count ";
-        modified = "!$count ";
-        staged = "+$count ";
-        renamed = "»$count ";
-        deleted = "✘$count ";
-        stashed = "≡";
-      };
-
-      git_state = {
-        format = "([$state( $progress_current/$progress_total)]($style)) ";
-        style = "bright-black";
       };
 
       c.symbol = " ";
