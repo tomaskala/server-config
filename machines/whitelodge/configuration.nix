@@ -168,11 +168,13 @@ in
         baseIndex = 1;
       };
 
-      vim.defaultEditor = true;
+      vim = {
+        enable = true;
+        defaultEditor = true;
+      };
     };
 
     environment = {
-      noXlibs = true;
       systemPackages = with pkgs; [
         curl
         ldns

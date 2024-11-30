@@ -89,7 +89,10 @@ in
       wireguard-tools
     ];
 
-    programs.vim.defaultEditor = true;
+    programs.vim = {
+      enable = true;
+      defaultEditor = true;
+    };
 
     networking.hostName = "bob";
 

@@ -23,39 +23,31 @@ let
         ;
     in
     {
-      wireguardPeerConfig = {
-        PublicKey = publicKey;
-
-        PresharedKeyFile = presharedKeyFile;
-
-        AllowedIPs =
-          [
-            (infra.ipAddressMasked ipv4 32)
-            (infra.ipAddressMasked ipv6 128)
-          ]
-          ++ lib.optionals (subnet != null) [
-            (infra.ipSubnet subnet.ipv4)
-            (infra.ipSubnet subnet.ipv6)
-          ];
-      };
+      PublicKey = publicKey;
+      PresharedKeyFile = presharedKeyFile;
+      AllowedIPs =
+        [
+          (infra.ipAddressMasked ipv4 32)
+          (infra.ipAddressMasked ipv6 128)
+        ]
+        ++ lib.optionals (subnet != null) [
+          (infra.ipSubnet subnet.ipv4)
+          (infra.ipSubnet subnet.ipv6)
+        ];
     };
 
   mkRoute =
     { ipv4, ipv6, ... }:
     [
       {
-        routeConfig = {
-          Destination = infra.ipSubnet ipv4;
-          Scope = "link";
-          Type = "unicast";
-        };
+        Destination = infra.ipSubnet ipv4;
+        Scope = "link";
+        Type = "unicast";
       }
       {
-        routeConfig = {
-          Destination = infra.ipSubnet ipv6;
-          Scope = "link";
-          Type = "unicast";
-        };
+        Destination = infra.ipSubnet ipv6;
+        Scope = "link";
+        Type = "unicast";
       }
     ];
 
@@ -113,7 +105,10 @@ let
         networks."90-${name}" = {
           matchConfig.Name = name;
 
-          networkConfig.IPForward = true;
+          networkConfig = {
+            IPv4Forwarding = true;
+            IPv6Forwarding = true;
+          };
 
           address = [
             (infra.ipAddressMasked ipv4 subnet.ipv4.mask)

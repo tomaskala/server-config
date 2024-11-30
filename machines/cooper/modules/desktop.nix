@@ -27,8 +27,8 @@ in
     variables.NIXOS_OZONE_WL = "1";
 
     systemPackages = with pkgs; [
-      gnome.nautilus
-      gnome.zenity
+      nautilus
+      zenity
       # Enable HEIC image previews in Nautilus.
       libheif
       libheif.out
