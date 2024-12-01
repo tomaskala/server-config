@@ -48,9 +48,9 @@
           do
             local lspconfig = require("lspconfig")
             lspconfig.biome.setup({})
-            lspconfig.tsserver.setup({
+            lspconfig.ts_ls.setup({
               on_attach = function(client)
-                -- We format using biome instead of the tsserver.
+                -- We format using biome instead of ts_ls.
                 client.server_capabilities.documentFormattingProvider = false
               end,
             })
