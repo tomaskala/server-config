@@ -174,15 +174,13 @@ in
       };
     };
 
-    environment = {
-      systemPackages = with pkgs; [
-        curl
-        ldns
-        rsync
-        tree
-        wireguard-tools
-      ];
-    };
+    environment.systemPackages = with pkgs; [
+      curl
+      ldns
+      rsync
+      tree
+      wireguard-tools
+    ];
 
     networking = {
       hostName = "whitelodge";
