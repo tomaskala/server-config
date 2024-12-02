@@ -5,7 +5,10 @@
 
     delta = {
       enable = true;
-      options.syntax-theme = "ansi";
+      options = {
+        line-numbers = true;
+        syntax-theme = "ansi";
+      };
     };
 
     extraConfig = {
