@@ -6,6 +6,7 @@
     delta = {
       enable = true;
       options = {
+        hunk-header-style = "file syntax";
         line-numbers = true;
         syntax-theme = "ansi";
       };
