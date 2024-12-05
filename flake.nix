@@ -51,6 +51,7 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       nixpkgs-unstable,
       nixos-hardware,
@@ -223,9 +224,23 @@
       formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
 
       checks = forAllSystems (pkgs: {
-        deadnix = import ./checks/deadnix.nix { inherit pkgs; };
-        statix = import ./checks/statix.nix { inherit pkgs; };
-        nixfmt = import ./checks/nixfmt.nix { inherit pkgs; };
+        deadnix = pkgs.runCommandLocal "check-deadnix" { nativeBuildInputs = [ pkgs.deadnix ]; } ''
+          set -e
+          deadnix --fail ${self}
+          touch $out
+        '';
+
+        statix = pkgs.runCommandLocal "check-statix" { nativeBuildInputs = [ pkgs.statix ]; } ''
+          set -e
+          statix check ${self}
+          touch $out
+        '';
+
+        nixfmt = pkgs.runCommandLocal "check-nixfmt" { nativeBuildInputs = [ pkgs.nixfmt-rfc-style ]; } ''
+          set -e
+          find ${self} -type f -name '*.nix' -exec nixfmt --check {} \+
+          touch $out
+        '';
       });
     };
 }
