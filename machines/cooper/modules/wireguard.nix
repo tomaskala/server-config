@@ -23,14 +23,16 @@ let
       serverIPv4
       serverIPv6
     ];
-    postUp = ''
-      ${pkgs.systemd}/bin/resolvectl dns %i ${serverIPv4} ${serverIPv6}
-      ${pkgs.systemd}/bin/resolvectl domain %i "~."
-      ${pkgs.systemd}/bin/resolvectl default-route %i true
-    '';
-    preDown = ''
-      ${pkgs.systemd}/bin/resolvectl revert %i
-    '';
+    postUp = # bash
+      ''
+        ${pkgs.systemd}/bin/resolvectl dns %i ${serverIPv4} ${serverIPv6}
+        ${pkgs.systemd}/bin/resolvectl domain %i "~."
+        ${pkgs.systemd}/bin/resolvectl default-route %i true
+      '';
+    preDown = # bash
+      ''
+        ${pkgs.systemd}/bin/resolvectl revert %i
+      '';
   };
 
   peerCommonCfg = {

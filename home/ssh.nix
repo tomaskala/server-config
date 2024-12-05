@@ -10,10 +10,11 @@ in
     addKeysToAgent = "yes";
     serverAliveInterval = 60;
 
-    extraConfig = ''
-      IgnoreUnknown UseKeychain
-      UseKeychain yes
-    '';
+    extraConfig = # sshconfig
+      ''
+        IgnoreUnknown UseKeychain
+        UseKeychain yes
+      '';
 
     matchBlocks = {
       "github.com" = {

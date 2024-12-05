@@ -236,19 +236,21 @@ in
           };
         };
 
-        systemd.services.postgresql.postStart = lib.mkAfter ''
-          $PSQL -tA <<'EOF'
-            DO $$
-            DECLARE password TEXT;
-            BEGIN
-              password := trim(both from replace(pg_read_file('${config.age.secrets.blocky-grafana-postgresql-postgresql.path}'), E'\n', '''));
-              EXECUTE format('ALTER ROLE ${grafanaDbUser} WITH PASSWORD '''%s''';', password);
-            END $$;
-          EOF
+        systemd.services.postgresql.postStart =
+          lib.mkAfter # bash
+            ''
+              $PSQL -tA <<'EOF'
+                DO $$
+                DECLARE password TEXT;
+                BEGIN
+                  password := trim(both from replace(pg_read_file('${config.age.secrets.blocky-grafana-postgresql-postgresql.path}'), E'\n', '''));
+                  EXECUTE format('ALTER ROLE ${grafanaDbUser} WITH PASSWORD '''%s''';', password);
+                END $$;
+              EOF
 
-          $PSQL -d ${dbName} -tAc 'GRANT USAGE ON SCHEMA public TO ${grafanaDbUser};'
-          $PSQL -d ${dbName} -tAc 'GRANT SELECT ON public.log_entries TO ${grafanaDbUser};'
-        '';
+              $PSQL -d ${dbName} -tAc 'GRANT USAGE ON SCHEMA public TO ${grafanaDbUser};'
+              $PSQL -d ${dbName} -tAc 'GRANT SELECT ON public.log_entries TO ${grafanaDbUser};'
+            '';
       })
     ]
   );

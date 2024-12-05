@@ -8,13 +8,14 @@
     prefix = "C-s";
     sensibleOnTop = true;
 
-    extraConfig = ''
-      set -g renumber-windows on
-      set -gw automatic-rename on
-      set -g bell-action none
+    extraConfig = # tmux
+      ''
+        set -g renumber-windows on
+        set -gw automatic-rename on
+        set -g bell-action none
 
-      bind - split-window -v -c "#{pane_current_path}"
-      bind | split-window -h -c "#{pane_current_path}"
-    '';
+        bind - split-window -v -c "#{pane_current_path}"
+        bind | split-window -h -c "#{pane_current_path}"
+      '';
   };
 }

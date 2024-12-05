@@ -52,11 +52,12 @@ in
 
     greetd = {
       enable = true;
-      settings.default_session.command = ''
-        ${
-          lib.makeBinPath [ pkgs.greetd.tuigreet ]
-        }/tuigreet -r --asterisks --time --cmd ${lib.getExe hypr-run}
-      '';
+      settings.default_session.command = # bash
+        ''
+          ${
+            lib.makeBinPath [ pkgs.greetd.tuigreet ]
+          }/tuigreet -r --asterisks --time --cmd ${lib.getExe hypr-run}
+        '';
     };
   };
 }

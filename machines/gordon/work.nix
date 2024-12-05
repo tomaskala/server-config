@@ -44,18 +44,20 @@
           nodePackages.typescript-language-server
         ];
 
-        extraLuaConfig = lib.mkAfter ''
-          do
-            local lspconfig = require("lspconfig")
-            lspconfig.biome.setup({})
-            lspconfig.ts_ls.setup({
-              on_attach = function(client)
-                -- We format using biome instead of ts_ls.
-                client.server_capabilities.documentFormattingProvider = false
-              end,
-            })
-          end
-        '';
+        extraLuaConfig =
+          lib.mkAfter # lua
+            ''
+              do
+                local lspconfig = require("lspconfig")
+                lspconfig.biome.setup({})
+                lspconfig.ts_ls.setup({
+                  on_attach = function(client)
+                    -- We format using biome instead of ts_ls.
+                    client.server_capabilities.documentFormattingProvider = false
+                  end,
+                })
+              end
+            '';
       };
 
       ssh.includes = [ "/Users/tomas/.ssh/config.d/work" ];

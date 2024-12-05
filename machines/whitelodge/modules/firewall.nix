@@ -49,9 +49,10 @@ in
       # is available even inside the sandbox.
       # Source: https://github.com/NixOS/nixpkgs/pull/223283/files.
       checkRuleset = true;
-      preCheckRuleset = ''
-        ${pkgs.gnused}/bin/sed -i 's/${wanInterface}/lo/g' ruleset.conf
-      '';
+      preCheckRuleset = # bash
+        ''
+          ${pkgs.gnused}/bin/sed -i 's/${wanInterface}/lo/g' ruleset.conf
+        '';
 
       tables = {
         firewall = {

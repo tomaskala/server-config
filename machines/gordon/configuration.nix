@@ -106,9 +106,10 @@
       # them to the current session, so we do not need to log out and log in
       # again to make the changes take effect.
       # The script is run every time the system boots or darwin-rebuild runs.
-      activationScripts.postUserActivation.text = ''
-        /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-      '';
+      activationScripts.postUserActivation.text = # bash
+        ''
+          /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+        '';
 
       defaults = {
         smb.NetBIOSName = "gordon";
