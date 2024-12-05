@@ -22,7 +22,6 @@
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.4.1";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
     };
 
     agenix = {
@@ -32,7 +31,6 @@
         nixpkgs.follows = "nixpkgs";
         darwin.follows = "nix-darwin";
         home-manager.follows = "home-manager";
-        systems.follows = "systems";
       };
     };
 
@@ -48,14 +46,6 @@
         nixpkgs.follows = "nixpkgs";
         agenix.follows = "agenix";
       };
-    };
-
-    # Transitive dependencies only pinned here to minimize the closure size.
-    systems.url = "github:nix-systems/default";
-
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-      inputs.systems.follows = "systems";
     };
   };
 
