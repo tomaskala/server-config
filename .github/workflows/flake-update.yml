@@ -1,28 +1,22 @@
 name: 'Flake update'
-
 on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'
-
 jobs:
   flake-update:
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Checkout the repository'
         uses: 'actions/checkout@v4'
-
       - name: 'Install Nix'
         uses: 'DeterminateSystems/nix-installer-action@v16'
-
       - name: 'Setup Magic Nix Cache'
         uses: 'DeterminateSystems/magic-nix-cache-action@v8'
-
       - name: 'Give GitHub Actions access to infra-secrets'
         uses: 'webfactory/ssh-agent@v0.9.0'
         with:
           ssh-private-key: '${{ secrets.INFRA_SECRETS_DEPLOY_KEY }}'
-
       - name: 'Update Nix Flake Lock'
         uses: 'DeterminateSystems/update-flake-lock@v24'
         with:

@@ -34,6 +34,11 @@
       };
     };
 
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     openwrt-imagebuilder = {
       url = "github:astro/nix-openwrt-imagebuilder";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -61,6 +66,7 @@
       home-manager,
       lanzaboote,
       agenix,
+      treefmt-nix,
       openwrt-imagebuilder,
       secrets,
       ...
@@ -96,6 +102,25 @@
               "flakes"
             ];
           };
+        };
+      };
+
+      treefmtConfig = {
+        projectRootFile = "flake.nix";
+
+        programs = {
+          mdformat.enable = true;
+          nixfmt.enable = true;
+          yamlfmt.enable = true;
+        };
+
+        settings = {
+          global.excludes = [
+            "*.json"
+            "*.opml"
+            "LICENSE"
+          ];
+          formatter.mdformat.options = [ "--number" ];
         };
       };
 
@@ -221,7 +246,7 @@
         work = import ./shells/work.nix { inherit pkgs; };
       });
 
-      formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
+      formatter = forAllSystems (pkgs: treefmt-nix.lib.mkWrapper pkgs treefmtConfig);
 
       checks = forAllSystems (pkgs: {
         deadnix = pkgs.runCommandLocal "check-deadnix" { nativeBuildInputs = [ pkgs.deadnix ]; } ''
@@ -236,11 +261,7 @@
           touch $out
         '';
 
-        nixfmt = pkgs.runCommandLocal "check-nixfmt" { nativeBuildInputs = [ pkgs.nixfmt-rfc-style ]; } ''
-          set -e
-          find ${self} -type f -name '*.nix' -exec nixfmt --check {} \+
-          touch $out
-        '';
+        formatting = (treefmt-nix.lib.evalModule pkgs treefmtConfig).config.build.check self;
       });
     };
 }

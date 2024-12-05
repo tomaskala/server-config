@@ -1,8 +1,6 @@
 name: 'Flake check'
-
 on:
   push:
-
 jobs:
   flake-check:
     strategy:
@@ -14,23 +12,18 @@ jobs:
     steps:
       - name: 'Checkout the repository'
         uses: 'actions/checkout@v4'
-
       - name: 'Install Nix'
         uses: 'DeterminateSystems/nix-installer-action@v16'
-
       - name: 'Setup Magic Nix Cache'
         uses: 'DeterminateSystems/magic-nix-cache-action@v8'
-
       - name: 'Give GitHub Actions access to infra-secrets'
         uses: 'webfactory/ssh-agent@v0.9.0'
         with:
           ssh-private-key: '${{ secrets.INFRA_SECRETS_DEPLOY_KEY }}'
-
       - name: 'Run Nix flake checker'
         uses: 'DeterminateSystems/flake-checker-action@v9'
         with:
           ignore-missing-flake-lock: false
           fail-mode: true
-
       - name: 'Run checks'
         run: 'nix flake check'
