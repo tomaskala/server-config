@@ -32,5 +32,13 @@
 
     # Catppuccin for GTK has been discontinued.
     gtk.catppuccin.enable = lib.mkForce false;
+
+    xdg.desktopEntries.openmw = {
+      name = "OpenMW";
+      type = "Application";
+      exec = "${pkgs.gamemode}/bin/gamemoderun ${pkgs.openmw}/bin/openmw-launcher";
+      terminal = false;
+      categories = [ "Game" ];
+    };
   };
 }

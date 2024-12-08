@@ -13,6 +13,7 @@
     ./modules/desktop.nix
     ./modules/firewall.nix
     ./modules/fonts.nix
+    ./modules/gaming.nix
     ./modules/locale.nix
     ./modules/network.nix
     ./modules/phone.nix
