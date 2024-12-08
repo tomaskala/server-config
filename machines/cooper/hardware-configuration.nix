@@ -21,7 +21,8 @@
         "rtsx_pci_sdmmc"
       ];
       kernelModules = [ ];
-      luks.devices."luks-64e34b3e-c037-48ea-b11a-64ebbe3fb11c".device = "/dev/disk/by-uuid/64e34b3e-c037-48ea-b11a-64ebbe3fb11c";
+      luks.devices."luks-64e34b3e-c037-48ea-b11a-64ebbe3fb11c".device =
+        "/dev/disk/by-uuid/64e34b3e-c037-48ea-b11a-64ebbe3fb11c";
     };
   };
 
