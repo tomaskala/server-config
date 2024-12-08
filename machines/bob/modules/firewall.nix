@@ -42,7 +42,9 @@ in
             set tcp_accepted_wg {
               type inet_service
               elements = {
-                ${lib.optionalString config.services.prometheus.exporters.node.enable (builtins.toString config.services.prometheus.exporters.node.port)}
+                ${lib.optionalString config.services.prometheus.exporters.node.enable (
+                  builtins.toString config.services.prometheus.exporters.node.port
+                )}
               }
             }
 

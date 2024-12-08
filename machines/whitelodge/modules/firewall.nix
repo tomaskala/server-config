@@ -190,14 +190,12 @@ in
               iifname ${wgInterface.isolated} udp dport @udp_accepted_wg_isolated ct state new accept
               iifname ${wgInterface.passthru} tcp dport @tcp_accepted_wg_passthru ct state new accept
               iifname ${wgInterface.passthru} udp dport @udp_accepted_wg_passthru ct state new accept
-              ${
-                builtins.concatStringsSep "\n" (
-                  lib.mapAttrsToList (_: interface: ''
-                    iifname ${interface} tcp dport @tcp_accepted_wan ct state new accept
-                    iifname ${interface} udp dport @udp_accepted_wan ct state new accept
-                  '') wgInterface
-                )
-              }
+              ${builtins.concatStringsSep "\n" (
+                lib.mapAttrsToList (_: interface: ''
+                  iifname ${interface} tcp dport @tcp_accepted_wan ct state new accept
+                  iifname ${interface} udp dport @udp_accepted_wan ct state new accept
+                '') wgInterface
+              )}
             }
 
             chain forward {
