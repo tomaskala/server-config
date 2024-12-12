@@ -9,6 +9,7 @@ in
     enable = true;
     addKeysToAgent = "yes";
     serverAliveInterval = 60;
+    controlPath = "~/.ssh/master-%n:%p";
 
     extraConfig = # sshconfig
       ''
