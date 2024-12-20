@@ -10,16 +10,8 @@
         "$hostname"
         "$directory"
         "$git_branch"
-        "$fill"
 
-        "$c"
-        "$docker_context"
-        "$fennel"
-        "$golang"
-        "$haskell"
-        "$lua"
-        "$nodejs"
-        "$python"
+        "$fill"
 
         "$status"
         "$line_break"
@@ -38,6 +30,7 @@
       };
 
       directory = {
+        read_only = " 󰌾";
         style = "blue";
         truncate_to_repo = false;
         truncation_length = 5;
@@ -49,18 +42,6 @@
         format = "[$symbol $branch]($style)";
         style = "green";
       };
-
-      c.symbol = " ";
-      directory.read_only = " 󰌾";
-      docker_context.symbol = " ";
-      fennel.symbol = " ";
-      golang.symbol = " ";
-      haskell.symbol = " ";
-      lua.symbol = " ";
-      nix_shell.symbol = " ";
-      nodejs.symbol = " ";
-      package.symbol = "󰏗 ";
-      python.symbol = " ";
     };
   };
 }
