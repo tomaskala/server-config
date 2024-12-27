@@ -1,4 +1,11 @@
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+
+{
   imports = [
     ../../home/fish.nix
     ../../home/git.nix
@@ -14,5 +21,10 @@
   config.home = {
     stateVersion = "24.05";
     homeDirectory = "/Users/tomas";
+
+    file."${config.home.homeDirectory}/.config/ghostty/config".text = ''
+      theme = dark:catppuccin-macchiato,light:catppuccin-latte
+      command = ${lib.getExe pkgs.fish}
+    '';
   };
 }

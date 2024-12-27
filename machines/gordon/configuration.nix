@@ -30,6 +30,9 @@
     environment = {
       shells = [ pkgs.zsh ];
 
+      # Hack: https://github.com/ghostty-org/ghostty/discussions/2832
+      variables.XDG_DATA_DIRS = [ "$GHOSTTY_SHELL_INTEGRATION_XDG_DIR" ];
+
       systemPackages = with pkgs; [
         # System utilities
         coreutils
@@ -60,8 +63,6 @@
       ];
     };
 
-    fonts.packages = with pkgs; [ (nerdfonts.override { fonts = [ "FiraCode" ]; }) ];
-
     homebrew = {
       enable = true;
 
@@ -83,8 +84,8 @@
       casks = [
         "discord"
         "firefox"
+        "ghostty"
         "iina"
-        "iterm2"
         "obsidian"
         "signal"
         "telegram"
@@ -165,10 +166,6 @@
         CustomUserPreferences = {
           "com.apple.AdLib".allowApplePersonalizedAdvertising = false;
           "com.apple.finder"._FXSortFoldersFirst = true;
-
-          # Explicitly disable displaying the accented characters prompt on key
-          # hold for the terminal.
-          "com.googlecode.iterm2".ApplePressAndHoldEnabled = false;
 
           "com.apple.desktopservices" = {
             DSDontWriteNetworkStores = true;
