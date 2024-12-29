@@ -7,7 +7,16 @@
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     vps-admin-os.url = "github:vpsfreecz/vpsadminos";
-    catppuccin.url = "github:catppuccin/nix";
+
+    catppuccin = {
+      url = "github:catppuccin/nix";
+
+      inputs = {
+        nixpkgs.follows = "nixpkgs-unstable";
+        nixpkgs-stable.follows = "nixpkgs";
+        home-manager-stable.follows = "home-manager";
+      };
+    };
 
     nix-darwin = {
       url = "github:LnL7/nix-darwin";
