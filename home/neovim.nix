@@ -9,6 +9,7 @@
     withRuby = false;
 
     extraPackages = with pkgs; [
+      fennel-ls
       gopls
       lua-language-server
       nil
@@ -71,6 +72,13 @@
           ''
             do
               local lspconfig = require("lspconfig")
+              lspconfig.fennel_ls.setup({
+                settings = {
+                  ["fennel-ls"] = {
+                    ["extra-globals"] = "love",
+                  },
+                },
+              })
               lspconfig.gopls.setup({})
               lspconfig.lua_ls.setup({
                 settings = {

@@ -86,6 +86,7 @@
         "firefox"
         "ghostty"
         "iina"
+        "love"
         "obsidian"
         "signal"
         "telegram"
