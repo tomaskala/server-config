@@ -200,7 +200,7 @@
                 end,
               })
 
-              vim.api.nvim_set_keymap("n", "<C-h>", ":NvimTreeToggle<cr>", { silent = true, noremap = true })
+              vim.api.nvim_set_keymap("n", "<C-h>", "<cmd>NvimTreeToggle<cr>", { silent = true, noremap = true })
             end
           '';
       }
@@ -238,54 +238,43 @@
         vim.g.loaded_netrwPlugin = 1
         vim.g.mapleader = ","
 
-        vim.opt.path = "**"
-        vim.opt.fileformat = "unix"
-        vim.opt.ttimeoutlen = 0
-
-        vim.opt.shortmess:append({ I = true })
         vim.opt.tabstop = 2
         vim.opt.softtabstop = 2
         vim.opt.shiftwidth = 2
         vim.opt.expandtab = true
+        vim.opt.breakindent = true
 
-        vim.opt.termguicolors = true
+        vim.opt.shortmess:append({ I = true })
         vim.opt.splitbelow = true
         vim.opt.splitright = true
+        vim.opt.termguicolors = true
+
         vim.opt.backup = false
         vim.opt.swapfile = false
-        vim.opt.cpoptions:remove("a")
 
         vim.opt.cursorline = true
         vim.opt.scrolloff = 3
-        vim.opt.colorcolumn = { 80 }
         vim.opt.number = true
         vim.opt.relativenumber = true
         vim.opt.wildmode = { "longest:full", "full" }
+        vim.opt.showmode = false
 
         vim.opt.ignorecase = true
         vim.opt.smartcase = true
 
-        vim.opt.cinoptions = { "t0", "l1", ":0" }
-        vim.opt.cinkeys:remove("0#")
-
-        vim.keymap.set("n", "<leader><space>", ":nohlsearch<CR>", { noremap = true })
-        vim.keymap.set("n", "[q", ":cprevious<CR>", { noremap = true })
-        vim.keymap.set("n", "]q", ":cnext<CR>", { noremap = true })
-        vim.keymap.set("n", "[Q", ":cfirst<CR>", { noremap = true })
-        vim.keymap.set("n", "]Q", ":clast<CR>", { noremap = true })
+        vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { noremap = true })
+        vim.keymap.set("n", "[q", "<cmd>cprevious<cr>", { noremap = true })
+        vim.keymap.set("n", "]q", "<cmd>cnext<cr>", { noremap = true })
+        vim.keymap.set("n", "[Q", "<cmd>cfirst<cr>", { noremap = true })
+        vim.keymap.set("n", "]Q", "<cmd>clast<cr>", { noremap = true })
 
         vim.api.nvim_create_autocmd({ "FileType" }, {
           desc = "Go settings",
           pattern = "go",
           group = vim.api.nvim_create_augroup("golang", { clear = true }),
           callback = function(args)
-            vim.opt_local.makeprg = "go build"
             vim.opt_local.expandtab = false
-            vim.keymap.set("n", "<leader>f", [[
-              :update<CR>
-              :cexpr system("goimports -w " . expand("%"))<CR>
-              :edit<CR>
-            ]], { noremap = true, buffer = args.buf, silent = true })
+            vim.opt_local.makeprg = "go build"
           end,
         })
 
