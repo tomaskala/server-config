@@ -82,6 +82,7 @@
       brews = [ "curl" ];
 
       casks = [
+        "anki"
         "discord"
         "firefox"
         "ghostty"
