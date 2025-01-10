@@ -18,6 +18,7 @@
         email = "me@tomaskala.com";
       };
 
+      init.defaultBranch = "main";
       fetch.prune = true;
       pull.ff = "only";
 
