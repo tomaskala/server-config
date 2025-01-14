@@ -17,6 +17,8 @@
   config = {
     nix.package = pkgs.nix;
 
+    programs.zsh.enable = true;
+
     home = {
       stateVersion = "24.05";
       username = "tomas";
