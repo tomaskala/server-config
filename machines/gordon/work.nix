@@ -13,7 +13,6 @@
 
     casks = [
       "tunnelblick"
-      "visual-studio-code"
     ];
   };
 
