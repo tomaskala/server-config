@@ -15,7 +15,7 @@ jobs:
       - name: 'Install Nix'
         uses: 'DeterminateSystems/nix-installer-action@v16'
       - name: 'Setup Magic Nix Cache'
-        uses: 'DeterminateSystems/magic-nix-cache-action@v8'
+        uses: 'DeterminateSystems/magic-nix-cache-action@v9'
       - name: 'Give GitHub Actions access to infra-secrets'
         uses: 'webfactory/ssh-agent@v0.9.0'
         with:
