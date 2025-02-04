@@ -223,6 +223,7 @@
                   vim.keymap.set("n", "L", vsplit_preview, opts)
                   vim.keymap.set("n", "h", api.node.navigate.parent_close, opts)
                   vim.keymap.set("n", "H", api.tree.collapse_all, opts)
+                  vim.keymap.set("n", "<Esc>", api.tree.close, opts)
                 end,
               })
 
