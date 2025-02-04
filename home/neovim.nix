@@ -113,32 +113,32 @@
                   local opts = { buffer = args.buf, noremap = true, silent = true }
 
                   -- Trigger code completion
-                  vim.keymap.set("i", "<C-Space>", "<C-x><C-o>")
+                  vim.keymap.set("i", "<C-Space>", "<C-x><C-o>", opts)
 
                   -- Display a function's signature
-                  vim.keymap.set("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<cr>")
+                  vim.keymap.set("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
 
                   -- Rename all references
-                  vim.keymap.set("n", "grn", "<cmd>lua vim.lsp.buf.rename()<cr>")
+                  vim.keymap.set("n", "grn", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
 
                   -- Format file
-                  vim.keymap.set("n", "grf", "<cmd>lua vim.lsp.buf.format()<cr>")
+                  vim.keymap.set("n", "grf", "<cmd>lua vim.lsp.buf.format()<cr>", opts)
 
                   -- Select a code action
-                  vim.keymap.set("n", "gra", "<cmd>lua vim.lsp.buf.code_action()<cr>")
+                  vim.keymap.set("n", "gra", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
 
                   -- The following is done using telescope.nvim.
                   -- List references
-                  -- vim.keymap.set("n", "grr", "<cmd>lua vim.lsp.buf.references()<cr>")
+                  -- vim.keymap.set("n", "grr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
 
                   -- Go to definition
-                  -- vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>")
+                  -- vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", opts)
 
                   -- List implementations
-                  -- vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>")
+                  -- vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", opts)
 
                   -- Go to type definition
-                  -- vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>")
+                  -- vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", opts)
                 end,
               })
             end
