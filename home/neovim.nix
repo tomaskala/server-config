@@ -155,84 +155,11 @@
           '';
       }
       {
-        plugin = nvim-tree-lua;
+        plugin = telescope-fzf-native-nvim;
         type = "lua";
-        config = # lua
-          ''
-            do
-              local height_ratio = 0.8
-              local width_ratio = 0.5
-
-              require("nvim-tree").setup({
-                git = { enable = false },
-                update_focused_file = { enable = true },
-                view = {
-                  float = {
-                    enable = true,
-                    open_win_config = function()
-                      local screen_w = vim.opt.columns:get()
-                      local screen_h = vim.opt.lines:get() - vim.opt.cmdheight:get()
-
-                      local window_w = screen_w * width_ratio
-                      local window_h = screen_h * height_ratio
-
-                      local window_w_int = math.floor(window_w)
-                      local window_h_int = math.floor(window_h)
-
-                      local center_x = (screen_w - window_w) / 2
-                      local center_y = ((vim.opt.lines:get() - window_h) / 2) - vim.opt.cmdheight:get()
-
-                      return {
-                        border = "rounded",
-                        relative = "editor",
-                        row = center_y,
-                        col = center_x,
-                        width = window_w_int,
-                        height = window_h_int,
-                      }
-                    end,
-                  },
-                  width = function()
-                    return math.floor(vim.opt.columns:get() * width_ratio)
-                  end,
-                },
-                on_attach = function(bufnr)
-                  local api = require("nvim-tree.api")
-                  local opts = { buffer = bufnr, noremap = true, silent = true, nowait = true }
-
-                  local function edit_or_open()
-                    local node = api.tree.get_node_under_cursor()
-                    api.node.open.edit()
-                    if node.nodes == nil then
-                      api.tree.close()
-                    end
-                  end
-
-                  local function vsplit_preview()
-                    local node = api.tree.get_node_under_cursor()
-                    if node.nodes == nil then
-                      api.node.open.vertical()
-                    else
-                      api.node.open.edit()
-                    end
-                    api.tree.focus()
-                  end
-
-                  api.config.mappings.default_on_attach(bufnr)
-                  vim.keymap.set("n", "l", edit_or_open, opts)
-                  vim.keymap.set("n", "L", vsplit_preview, opts)
-                  vim.keymap.set("n", "h", api.node.navigate.parent_close, opts)
-                  vim.keymap.set("n", "H", api.tree.collapse_all, opts)
-                  vim.keymap.set("n", "<Esc>", api.tree.close, opts)
-                end,
-              })
-
-              vim.api.nvim_set_keymap("n", "<C-h>", "<cmd>NvimTreeToggle<cr>", { silent = true, noremap = true })
-            end
-          '';
       }
       {
-        plugin = telescope-fzf-native-nvim;
+        plugin = telescope-file-browser-nvim;
         type = "lua";
       }
       {
@@ -241,25 +168,37 @@
         config = # lua
           ''
             do
-              local telescope = require("telescope.builtin")
+              local telescope_api = require("telescope.builtin")
               local opts = { noremap = true, silent = true }
 
-              vim.keymap.set("n", "<C-p>", telescope.find_files, opts)
-              vim.keymap.set("n", "<C-S-p>", telescope.live_grep, opts)
-              vim.keymap.set("n", "<C-b>", telescope.buffers, opts)
+              vim.keymap.set("n", "<C-p>", telescope_api.find_files, opts)
+              vim.keymap.set("n", "<C-S-p>", telescope_api.live_grep, opts)
+              vim.keymap.set("n", "<C-b>", telescope_api.buffers, opts)
 
-              vim.keymap.set("n", "grr", telescope.lsp_references, opts)
+              vim.keymap.set("n", "grr", telescope_api.lsp_references, opts)
               vim.keymap.set("n", "gd", function()
-                telescope.lsp_definitions({ reuse_win = true })
+                telescope_api.lsp_definitions({ reuse_win = true })
               end, opts)
               vim.keymap.set("n", "gi", function()
-                telescope.lsp_implementations({ reuse_win = true })
+                telescope_api.lsp_implementations({ reuse_win = true })
               end, opts)
               vim.keymap.set("n", "go", function()
-                telescope.lsp_type_definitions({ reuse_win = true })
+                telescope_api.lsp_type_definitions({ reuse_win = true })
               end, opts)
 
-              require("telescope").load_extension("fzf");
+              local telescope = require("telescope")
+              telescope.load_extension("fzf")
+
+              telescope.load_extension("file_browser")
+              vim.keymap.set("n", "<C-h>", function()
+                telescope.extensions.file_browser.file_browser({
+                  path = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
+                  select_buffer = true,
+                })
+              end, opts)
+              vim.keymap.set("n", "<C-S-h>", function()
+                telescope.extensions.file_browser.file_browser()
+              end, opts)
             end
           '';
       }
@@ -267,8 +206,6 @@
 
     extraLuaConfig = # lua
       ''
-        vim.g.loaded_netrw = 1
-        vim.g.loaded_netrwPlugin = 1
         vim.g.mapleader = ","
 
         vim.opt.tabstop = 2
