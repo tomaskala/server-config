@@ -10,12 +10,7 @@
 
     catppuccin = {
       url = "github:catppuccin/nix";
-
-      inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
-        nixpkgs-stable.follows = "nixpkgs";
-        home-manager-stable.follows = "home-manager";
-      };
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     nix-darwin = {
