@@ -206,6 +206,7 @@
 
     extraLuaConfig = # lua
       ''
+        vim.loader.enable()
         vim.g.mapleader = ","
 
         vim.opt.tabstop = 2
