@@ -230,6 +230,10 @@
           '';
       }
       {
+        plugin = telescope-fzf-native-nvim;
+        type = "lua";
+      }
+      {
         plugin = telescope-nvim;
         type = "lua";
         config = # lua
@@ -252,6 +256,8 @@
               vim.keymap.set("n", "go", function()
                 telescope.lsp_type_definitions({ reuse_win = true })
               end, opts)
+
+              require("telescope").load_extension("fzf");
             end
           '';
       }
