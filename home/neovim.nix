@@ -164,6 +164,7 @@
               local width_ratio = 0.5
 
               require("nvim-tree").setup({
+                git = { enable = false },
                 update_focused_file = { enable = true },
                 view = {
                   float = {
