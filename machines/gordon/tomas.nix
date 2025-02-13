@@ -25,6 +25,7 @@
     file."${config.home.homeDirectory}/.config/ghostty/config".text = ''
       theme = dark:catppuccin-macchiato,light:catppuccin-latte
       command = ${lib.getExe pkgs.fish}
+      macos-icon = retro
     '';
   };
 }
