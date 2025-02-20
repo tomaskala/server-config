@@ -3,7 +3,10 @@
 let
   work = pkgs.writeShellApplication {
     name = "work";
-    runtimeInputs = [ pkgs.yarn ];
+    runtimeInputs = with pkgs; [
+      biome
+      yarn
+    ];
     text = ''
       die() {
         printf '%s\n' "$1" >&2 && exit 1
@@ -18,7 +21,7 @@ let
 
       case "$cmd" in
         fmt)
-          yarn biome check --write --javascript-linter-enabled=false "$@"
+          biome check --write --javascript-linter-enabled=false "$@"
           ;;
         test)
           yarn nx test "$@"
