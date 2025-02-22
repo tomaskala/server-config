@@ -1,10 +1,10 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   programs.rofi = {
     enable = true;
     package = pkgs.rofi-wayland;
-    terminal = "${pkgs.alacritty}/bin/alacritty";
+    terminal = lib.getExe pkgs.ghostty;
 
     extraConfig = {
       modi = "drun";

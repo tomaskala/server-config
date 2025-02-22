@@ -137,7 +137,7 @@ in
           format-disconnected = "";
           tooltip-format = "{ifname} / {essid} ({signalStrength}%) / {ipaddr}";
           max-length = 15;
-          on-click = "${pkgs.alacritty}/bin/alacritty -e ${pkgs.networkmanager}/bin/nmtui";
+          on-click = "${lib.getExe pkgs.ghostty} -e ${pkgs.networkmanager}/bin/nmtui";
         };
 
         "battery" = {

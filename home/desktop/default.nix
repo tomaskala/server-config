@@ -2,8 +2,8 @@
 
 {
   imports = [
-    ./alacritty.nix
     ./associations.nix
+    ./ghostty.nix
     ./gtk.nix
     ./hyprland.nix
     ./hyprlock.nix
