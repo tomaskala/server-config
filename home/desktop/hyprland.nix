@@ -68,7 +68,7 @@
     extraConfig = # hyprlang
       ''
         # terminal, screen locking, launcher
-        bind = $mod, RETURN, exec, alacritty
+        bind = $mod, RETURN, exec, ghostty
         bind = $mod, X, exec, hyprlock
         bind = $mod, SPACE, exec, rofi -show drun
         bind = ALT, Q, killactive,
