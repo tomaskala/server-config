@@ -2,7 +2,8 @@
 
 {
   imports = [
-    ../../home/desktop
+    ../../home/desktop/ghostty.nix
+    ../../home/desktop/zathura.nix
     ../../home/fish.nix
     ../../home/git.nix
     ../../home/mpv.nix

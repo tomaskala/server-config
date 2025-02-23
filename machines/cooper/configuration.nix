@@ -10,9 +10,8 @@
   imports = [
     ./hardware-configuration.nix
     ./modules/audio.nix
-    ./modules/desktop.nix
+    ./modules/gnome.nix
     ./modules/firewall.nix
-    ./modules/fonts.nix
     ./modules/gaming.nix
     ./modules/locale.nix
     ./modules/network.nix
@@ -173,7 +172,6 @@
       timesyncd.enable = true;
       fstrim.enable = true;
       fwupd.enable = true;
-      tlp.enable = true;
     };
   };
 }
