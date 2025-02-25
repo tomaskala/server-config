@@ -22,6 +22,11 @@
       fetch.prune = true;
       pull.ff = "only";
 
+      push = {
+        autoSetupRemote = true;
+        followTags = true;
+      };
+
       rebase = {
         autoSquash = true;
         autoStash = true;
@@ -33,6 +38,8 @@
       };
 
       diff.algorithm = "histogram";
+      branch.sort = "-committerdate";
+      tag.sort = "version:refname";
     };
   };
 }
